@@ -231,7 +231,7 @@ const props = defineProps<{
 // palaceDisplayIndex[i] 表示第i个格子对应palaces数组的哪个下标（即哪个宫位）
 // palaceDisplayIndex[0] 对应寅宫，1对应卯宫，2对应辰宫，...，11对应丑宫
 const palaceDisplayIndex = [3, 4, 5, 6, 2, 7, 1, 8, 0, 11, 10, 9];
-// palaces数组，包含12个宫位对象，每个对象包含名称、天干地支、星曜等
+// palaces数组，包含12个本命宫位对象，每个对象包含名称、天干地支、星曜等
 const palaces = props.astrolabe.palaces;
 
 // 当前选中的宫位索引
@@ -793,27 +793,84 @@ function handleHoroscopeUpdate(horoscopeData: any) {
                 const gender = props.astrolabe.gender;
                 const yearGan = props.astrolabe.chineseDate?.split(' ')[0]?.charAt(0) || '';
                 const isYangGan = ['甲', '丙', '戊', '庚', '壬'].includes(yearGan);
-                // 阳男阴女顺行
-                const isClockwise = (gender === '男' && isYangGan) || (gender === '女' && !isYangGan);
+                
+                // 彻底修正：严格按照 “阳男阴女顺行，阴男阳女逆行” 规则
+                // 顺行(Clockwise)条件：(阳天干 AND 男) OR (阴天干 AND 女)
+                const isClockwise = (isYangGan && gender === '男') || (!isYangGan && gender === '女');
+
                 console.log(`大限移动方向: ${isClockwise ? '顺时针 (->父母宫)' : '逆时针 (->兄弟宫)'}`);
 
-                // 3. 计算当前大限命宫的索引
-                // 顺时针（父母宫方向）是索引-1，逆时针（兄弟宫方向）是索引+1
-                const directionStep = isClockwise ? -1 : 1;
-                // selectedDecadeIndex 从0开始，所以第二个大限（索引1）移动1步，以此类推
+                // 3. 修正：根据大限宫位轮转规则，确定大限命宫落在哪个本命宫位上，并找出其索引
+                let decadalLifePalaceIndex = -1;
                 if (selectedDecadeIndex !== null) {
-                  const decadalLifePalaceIndex = (natalLifePalaceIndex + (selectedDecadeIndex * directionStep) + 12) % 12;
-                  console.log(`本命命宫索引: ${natalLifePalaceIndex}, 大限序号: ${selectedDecadeIndex}, 计算出的大限命宫索引: ${decadalLifePalaceIndex}`);
-          
-                  // 4. 以计算出的大限命宫为基准，为所有宫位命名
+                  // standardPalaceOrder是本命盘的逻辑顺序（逆时针）
                   const standardPalaceOrder = ['命宫', '兄弟宫', '夫妻宫', '子女宫', '财帛宫', '疾厄宫', '迁移宫', '仆役宫', '官禄宫', '田宅宫', '福德宫', '父母宫'];
-                  for (let i = 0; i < 12; i++) {
-                    // 计算当前本命宫位(i)相对于新大限命宫的偏移量
-                    const offset = (i - decadalLifePalaceIndex + 12) % 12;
-                    // 根据偏移量从标准顺序中获取名称
-                    const palaceName = standardPalaceOrder[offset];
-                    adjustedPalaceNames[i] = palaceName.endsWith('宫') ? palaceName : `${palaceName}宫`;
+                  
+                  let targetPalaceName: string;
+
+                  if (isClockwise) {
+                    // 顺时针轮转：命宫 -> 父母宫 -> 福德宫 ... (在逻辑顺序数组中逆向查找)
+                    const targetOrderIndex = (0 - selectedDecadeIndex + 12) % 12;
+                    targetPalaceName = standardPalaceOrder[targetOrderIndex];
+                  } else {
+                    // 逆时针轮转：命宫 -> 兄弟宫 -> 夫妻宫 ... (在逻辑顺序数组中正向查找)
+                    const targetOrderIndex = (0 + selectedDecadeIndex) % 12;
+                    targetPalaceName = standardPalaceOrder[targetOrderIndex];
                   }
+
+                  // 在本命盘中找到目标宫位对象
+                  const searchName = targetPalaceName.replace('宫', '');
+                  const targetBenMingPalace = palaces.find(p => p.name === searchName);
+
+                  if (targetBenMingPalace) {
+                    // 获取目标宫位在palaces数组中的实际索引，这才是大限命宫的正确位置
+                    decadalLifePalaceIndex = palaces.indexOf(targetBenMingPalace);
+                  } else {
+                    console.error(`无法找到名为 '${targetPalaceName}' 的本命宫位`);
+                    return;
+                  }
+
+                  // 修正：更新用于高亮显示的大限命宫索引
+                  horoscopeLifePalaceIndex.value = decadalLifePalaceIndex;
+
+                  console.log(`本命命宫索引: ${natalLifePalaceIndex}, 大限序号: ${selectedDecadeIndex}, 目标宫位: ${targetPalaceName}, 计算出的大限命宫索引: ${decadalLifePalaceIndex}`);
+          
+                  // 4. 以计算出的大限命宫为基准，为所有宫位命名 (彻底修正版)
+                  // 4a. 创建本命盘宫位名称到其物理索引的映射 (修正版：使用标准化的宫位名作为key)
+                  const natalPhysicalIndex = new Map<string, number>();
+                  palaces.forEach((p, index) => {
+                    if (p.name) {
+                      // 统一去掉'宫'字，避免'命宫'和'父母'这种不一致
+                      natalPhysicalIndex.set(p.name.replace('宫', ''), index);
+                    }
+                  });
+
+                  const natalLifePalaceIndexFromMap = natalPhysicalIndex.get('命'); // 使用标准化的'命'
+                  if (natalLifePalaceIndexFromMap === undefined) {
+                      console.error('错误: 无法在映射中找到本命命宫');
+                      return;
+                  }
+
+                  // 4b. 遍历标准逻辑顺序，计算每个大限宫位应在的物理位置
+                  standardPalaceOrder.forEach((palaceNameToPlace) => {
+                      const natalPalaceName = palaceNameToPlace.replace('宫', ''); // 标准化，如'父母宫' -> '父母'
+                      const natalPalaceToPlaceIndex = natalPhysicalIndex.get(natalPalaceName);
+
+                      if (natalPalaceToPlaceIndex === undefined) {
+                          console.error(`错误: 无法在本命盘中找到 '${natalPalaceName}' 宫`);
+                          return;
+                      }
+                      
+                      // 4c. 计算该宫相对于其本命命宫的物理偏移量
+                      const physicalOffset = (natalPalaceToPlaceIndex - natalLifePalaceIndexFromMap + 12) % 12;
+
+                      // 4d. 将此偏移量应用到大限命宫的物理位置上，得到该大限宫位的新位置
+                      const decadalPalacePhysicalIndex = (decadalLifePalaceIndex + physicalOffset + 12) % 12;
+                      
+                      // 4e. 在新位置上设置大限宫位名称
+                      const nameWithSuffix = palaceNameToPlace.endsWith('宫') ? palaceNameToPlace : `${palaceNameToPlace}宫`;
+                      adjustedPalaceNames[decadalPalacePhysicalIndex] = nameWithSuffix;
+                  });
                 }
               }
               
