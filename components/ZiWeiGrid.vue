@@ -4,120 +4,27 @@
   <div v-if="isAstrolabeReady" class="ziwei-content">
   <!-- 紫微斗数命盘网格容器 -->
   <div class="ziwei-grid">
-    <!-- 遍历12个宫位，palaceDisplayIndex[i] 表示第i个格子对应palaces数组的哪个下标（即哪个宫位）
-         palaceDisplayIndex[0] 对应寅宫，1对应卯宫，2对应辰宫，...，11对应丑宫 -->
-    <div v-for="(palaceIdx, i) in palaceDisplayIndex" :key="i" 
-         class="palace" 
-         :class="[
-           {'active': selectedPalaceIndex === palaceIdx,
-            'opposite': oppositePalaceIndex === palaceIdx,
-            'surrounded': surroundedPalaceIndices.includes(palaceIdx),
-            'horoscope-surrounded': horoscopeSurroundedPalaceIndices.includes(palaceIdx),
-            'horoscope-life-palace': horoscopeLifePalaceIndex === palaceIdx,
-            'body-palace': palaces[palaceIdx] && palaces[palaceIdx].isBodyPalace
-           },
-           horoscopeSurroundedPalaceIndices.includes(palaceIdx) ? currentHoroscopeType : ''
-         ]"
-         @click="selectPalace(palaceIdx)">
-      <!-- 宫位序号（1~12，格子顺序） -->
-      <div class="palace-index">{{ i + 1 }}</div>
-      <!-- 本命宫位名称（如：命宫、兄弟宫等） -->
-      <div class="palace-name">
-        <!-- palaces[palaceIdx] 取出当前格子对应的宫位对象，name为宫位名称 -->
-        {{ palaces[palaceIdx] && palaces[palaceIdx].name ? palaces[palaceIdx].name : '' }}
-        
-        <!-- 显示大限宫位名称 -->
-        <span v-if="showDecadalScope && getDecadalPalaceName(palaceIdx, i)" class="decadal-palace-name">
-          <!-- 基于本命宫位名称获取对应的大限宫位名称 -->
-          {{ getDecadalPalaceName(palaceIdx, i) }}
-        </span>
-      </div>
-      <!-- 身宫标识 -->
-      <div v-if="palaces[palaceIdx] && palaces[palaceIdx].isBodyPalace" class="body-palace-indicator">
-        身宫
-      </div>
-      
-      <!-- 天干地支显示 -->
-      <div class="palace-hb">
-        <span v-if="palaces[palaceIdx]">
-          {{ palaces[palaceIdx].heavenlyStem }}{{ palaces[palaceIdx].earthlyBranch }}
-        </span>
-      </div>
-      <!-- 星曜列表，分开渲染主星、辅星和杂曜 -->
-      <div class="star-container" v-if="palaces[palaceIdx] && (
-        palaces[palaceIdx].majorStars.length || palaces[palaceIdx].minorStars.length || palaces[palaceIdx].adjectiveStars.length
-      )">
-        <!-- 主星和辅星区域 -->
-        <div class="main-minor-stars">
-          <!-- 主星显示 -->
-          <div
-            v-for="star in palaces[palaceIdx].majorStars"
-            :key="star.name + star.type + star.scope" 
-            class="star-item major-star">
-            <span class="star-name">{{ star.name }}</span>
-            <span class="star-state">{{ star.brightness }}</span>
-            <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
-            <!-- 添加四化标识 -->
-            <span class="sihua-badge" v-if="getStarMutagenType(star.name)" :data-type="getStarMutagenType(star.name)">{{ getStarMutagenType(star.name) }}</span>
-          </div>
-          
-          <!-- 辅星显示 -->
-          <div
-            v-for="star in palaces[palaceIdx].minorStars"
-            :key="star.name + star.type + star.scope" 
-            class="star-item minor-star">
-            <span class="star-name">{{ star.name }}</span>
-            <span class="star-state">{{ star.brightness }}</span>
-            <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
-            <!-- 添加四化标识 -->
-            <span class="sihua-badge" v-if="getStarMutagenType(star.name)" :data-type="getStarMutagenType(star.name)">{{ getStarMutagenType(star.name) }}</span>
-          </div>
-        </div>
-        
-        <!-- 杂曜区域 -->
-        <div class="adjective-stars-container" 
-             :class="{ 'two-rows': palaces[palaceIdx].adjectiveStars.length > 5 }">
-          <div
-            v-for="star in palaces[palaceIdx].adjectiveStars"
-            :key="star.name + star.type + star.scope" 
-            class="star-item adjective-star">
-            <span class="star-name">{{ star.name }}</span>
-            <span class="star-state">{{ star.brightness }}</span>
-            <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
-            <!-- 添加四化标识 -->
-            <span class="sihua-badge" v-if="getStarMutagenType(star.name)" :data-type="getStarMutagenType(star.name)">{{ getStarMutagenType(star.name) }}</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 神煞区域 - 长生12神和博士12神 -->
-      <div class="decorative-stars-container" v-if="palaces[palaceIdx]">
-        <!-- 长生12神 -->
-        <div v-if="palaces[palaceIdx].changsheng12" class="decorative-star changsheng" :data-length="palaces[palaceIdx].changsheng12.length">
-          {{ palaces[palaceIdx].changsheng12 }}
-        </div>
-        <!-- 博士12神 -->
-        <div v-if="palaces[palaceIdx].boshi12" class="decorative-star boshi">
-          {{ palaces[palaceIdx].boshi12 }}
-        </div>
-      </div>
-
-      <!-- 运限星曜区域（恢复为只显示当前层级） -->
-      <div class="horoscope-stars-container" v-if="palaces[palaceIdx] && currentHoroscope">
-        <!-- 移除流年/流月/流日/流时四化星显示元素 -->
-        <!-- 流年/流月/流日/流时流曜星 -->
-        <div v-for="star in getHoroscopeStars(palaceIdx)" :key="star.name + '-' + (star.horoscopeType || '')"
-             class="horoscope-star" :class="star.horoscopeType">
-          {{ star.name }}
-        </div>
-      </div>
-
-      <!--
-        palaceDisplayIndex[i] 与地支宫位的对应关系：
-        palaceDisplayIndex[0] 对应寅宫，1对应卯宫，2对应辰宫，...，11对应丑宫。
-        这样每个格子内容与天干地支、星曜完全对应。
-      -->
-    </div>
+    <!-- 重构：使用 ZiWeiPalaceDisplay 组件循环渲染 -->
+    <ZiWeiPalaceDisplay
+      v-for="(palaceIdx, i) in palaceDisplayIndex"
+      :key="i"
+      :display-index="i + 1"
+      :palace-data="palaces[palaceIdx]"
+      :decadal-name="showDecadalScope ? getDecadalPalaceName(palaceIdx, i) : ''"
+      :palace-classes="{
+        'active': selectedPalaceIndex === palaceIdx,
+        'opposite': oppositePalaceIndex === palaceIdx,
+        'surrounded': surroundedPalaceIndices.includes(palaceIdx),
+        'horoscope-surrounded': horoscopeSurroundedPalaceIndices.includes(palaceIdx),
+        'horoscope-life-palace': horoscopeLifePalaceIndex === palaceIdx,
+        'body-palace': palaces[palaceIdx]?.isBodyPalace,
+        [currentHoroscopeType]: horoscopeSurroundedPalaceIndices.includes(palaceIdx)
+      }"
+      :horoscope-stars="getHoroscopeStars(palaceIdx)"
+      :get-star-mutagen-type="getStarMutagenType"
+      @palace-click="selectPalace(palaceIdx)"
+    />
+    
     <!-- 中央信息区域，显示生肖、命主、身主、五行局等 -->
     <div class="center-info">
       <div class="info-header">
@@ -139,7 +46,7 @@
       
       <div class="info-row">
         <span class="info-label">时辰</span>
-        <span class="info-value">{{ getTimeInfo() }}</span>
+        <span class="info-value">{{ timeInfo }}</span>
       </div>
       
       <div class="info-row">
@@ -155,7 +62,7 @@
         
         <div class="info-cell">
           <span class="info-label">星座</span>
-          <span class="info-value">{{ getZodiacSign() }}</span>
+          <span class="info-value">{{ zodiacSign }}</span>
         </div>
         
         <div class="info-cell">
@@ -170,12 +77,12 @@
         
         <div class="info-cell">
           <span class="info-label">命宫</span>
-          <span class="info-value">{{ getLifePalace() }}</span>
+          <span class="info-value">{{ lifePalaceBranch }}</span>
         </div>
         
         <div class="info-cell">
           <span class="info-label">身宫</span>
-          <span class="info-value">{{ getBodyPalace() }}</span>
+          <span class="info-value">{{ bodyPalaceBranch }}</span>
         </div>
         
         <div class="info-cell">
@@ -208,10 +115,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, toRef } from 'vue';
 import type { IFunctionalAstrolabe } from '../src/astro/FunctionalAstrolabe'
 import ZiWeiHoroscope from './ZiWeiHoroscope.vue'; // 导入ZiWeiHoroscope组件
 import { useHoroscopeStore } from '../src/stores/horoscopeStore';
+import { usePalaceCalculations } from '../src/composables/usePalaceCalculations';
+import ZiWeiPalaceDisplay from './ZiWeiPalaceDisplay.vue';
 
 // 添加一个标志，确保只有astrolabe完全初始化后才渲染组件
 const isAstrolabeReady = ref(false);
@@ -232,80 +141,25 @@ const props = defineProps<{
 // palaceDisplayIndex[0] 对应寅宫，1对应卯宫，2对应辰宫，...，11对应丑宫
 const palaceDisplayIndex = [3, 4, 5, 6, 2, 7, 1, 8, 0, 11, 10, 9];
 // palaces数组，包含12个本命宫位对象，每个对象包含名称、天干地支、星曜等
-const palaces = props.astrolabe.palaces;
+// const palaces = props.astrolabe.palaces; // 已移至Composable
 
 // 当前选中的宫位索引
 const selectedPalaceIndex = ref<number | null>(null);
 
-// 计算对宫索引
-const oppositePalaceIndex = computed<number | null>(() => {
-  if (selectedPalaceIndex.value === null) return null;
-  
-  try {
-    // 直接使用地支计算对宫
-    // 对宫地支相差6个位置（如寅对申，卯对酉等）
-    const selectedPalace = palaces[selectedPalaceIndex.value];
-    if (!selectedPalace) return null;
-    
-    const earthlyBranchArray = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
-    const earthlyBranchIndex = earthlyBranchArray.indexOf(selectedPalace.earthlyBranch);
-    
-    if (earthlyBranchIndex !== -1) {
-      const oppositeEarthlyBranch = earthlyBranchArray[(earthlyBranchIndex + 6) % 12];
-      // 在palaces数组中找到对应地支的宫位
-      const oppositeIndex = palaces.findIndex(p => p.earthlyBranch === oppositeEarthlyBranch);
-      
-      console.log('对宫计算:', {
-        当前宫位: selectedPalaceIndex.value,
-        当前地支: selectedPalace.earthlyBranch,
-        对宫地支: oppositeEarthlyBranch,
-        对宫索引: oppositeIndex
-      });
-      
-      return oppositeIndex !== -1 ? oppositeIndex : null;
-    }
-  } catch (error) {
-    console.error("获取对宫出错:", error);
-  }
-  
-  return null;
-});
+// === 重构：使用 usePalaceCalculations Composable ===
+const astrolabeRef = toRef(props, 'astrolabe');
+const {
+  palaces,
+  oppositePalaceIndex,
+  surroundedPalaceIndices,
+  zodiacSign,
+  nominalAge,
+  lifePalaceBranch,
+  bodyPalaceBranch,
+  timeInfo,
+} = usePalaceCalculations(astrolabeRef, selectedPalaceIndex);
+// === 重构结束 ===
 
-// 计算三方四正宫位索引（官禄位和财帛位）
-const surroundedPalaceIndices = computed<number[]>(() => {
-  if (selectedPalaceIndex.value === null) return [];
-  
-  try {
-    // 使用iztro库的surroundedPalaces方法获取三方四正
-    const surroundedPalaces = props.astrolabe.surroundedPalaces(selectedPalaceIndex.value);
-    if (!surroundedPalaces) return [];
-    
-    const indices: number[] = [];
-    
-    // 添加官禄位（career）
-    if (surroundedPalaces.career) {
-      const careerIndex = palaces.findIndex(p => 
-        p.earthlyBranch === surroundedPalaces.career.earthlyBranch && 
-        p.heavenlyStem === surroundedPalaces.career.heavenlyStem
-      );
-      if (careerIndex !== -1) indices.push(careerIndex);
-    }
-    
-    // 添加财帛位（wealth）
-    if (surroundedPalaces.wealth) {
-      const wealthIndex = palaces.findIndex(p => 
-        p.earthlyBranch === surroundedPalaces.wealth.earthlyBranch && 
-        p.heavenlyStem === surroundedPalaces.wealth.heavenlyStem
-      );
-      if (wealthIndex !== -1) indices.push(wealthIndex);
-    }
-    
-    return indices;
-  } catch (error) {
-    console.error("获取三方四正出错:", error);
-    return [];
-  }
-});
 
 // 选择宫位
 function selectPalace(index: number) {
@@ -317,82 +171,35 @@ function selectPalace(index: number) {
   }
 }
 
+// --------------------------------------------------
+// 以下计算逻辑已被迁移到 usePalaceCalculations.ts 中
+// --------------------------------------------------
+
+// 计算对宫索引
+// const oppositePalaceIndex = computed<number | null>(...);
+
+// 计算三方四正宫位索引（官禄位和财帛位）
+// const surroundedPalaceIndices = computed<number[]>(...);
+
 // 获取星座
-function getZodiacSign() {
-  // 简单的星座计算，根据阳历日期
-  if (!props.astrolabe.solarDate) return '';
-  
-  const [year, month, day] = props.astrolabe.solarDate.split('-').map(Number);
-  const monthDay = month * 100 + day; // 将月和日组合成一个数字，如8月16日为816
-  
-  if ((monthDay >= 321 && monthDay <= 419)) return '白羊座';
-  if ((monthDay >= 420 && monthDay <= 520)) return '金牛座';
-  if ((monthDay >= 521 && monthDay <= 621)) return '双子座';
-  if ((monthDay >= 622 && monthDay <= 722)) return '巨蟹座';
-  if ((monthDay >= 723 && monthDay <= 822)) return '狮子座';
-  if ((monthDay >= 823 && monthDay <= 922)) return '处女座';
-  if ((monthDay >= 923 && monthDay <= 1023)) return '天秤座';
-  if ((monthDay >= 1024 && monthDay <= 1122)) return '天蝎座';
-  if ((monthDay >= 1123 && monthDay <= 1221)) return '射手座';
-  if ((monthDay >= 1222 || monthDay <= 119)) return '摩羯座';
-  if ((monthDay >= 120 && monthDay <= 218)) return '水瓶座';
-  if ((monthDay >= 219 && monthDay <= 320)) return '双鱼座';
-  
-  return '';
-}
+// function getZodiacSign() { ... }
 
 // 获取命宫信息
-function getLifePalace() {
-  const lifePalace = props.astrolabe.palace('命宫');
-  return lifePalace ? lifePalace.earthlyBranch : '';
-}
+// function getLifePalace() { ... }
 
 // 获取身宫信息
-function getBodyPalace() {
-  const bodyPalace = props.astrolabe.palaces.find(palace => palace.isBodyPalace);
-  return bodyPalace ? bodyPalace.earthlyBranch : '';
-}
+// function getBodyPalace() { ... }
 
 // 获取时间信息
-function getTimeInfo() {
-  // 时辰名称数组
-  const times = ['早子时(0-1)', '丑时(1-3)', '寅时(3-5)', '卯时(5-7)', '辰时(7-9)', '巳时(9-11)', 
-                '午时(11-13)', '未时(13-15)', '申时(15-17)', '酉时(17-19)', '戌时(19-21)', '亥时(21-23)', '晚子时(23-0)'];
-  
-  // 从四柱中获取时柱信息
-  const chineseDateParts = props.astrolabe.chineseDate.split(' ');
-  
-  // 四柱格式为"年柱 月柱 日柱 时柱"，取第四部分作为时柱
-  const timeColumn = chineseDateParts.length > 3 ? chineseDateParts[3] : '';
-  
-  // 提取时柱地支
-  const timeBranch = timeColumn.length >= 1 ? timeColumn.charAt(1) : '';
-  
-  // 地支对应的时辰索引
-  const branchToTimeIndex = {
-    '子': [0, 12], // 早子时或晚子时，默认显示为子时
-    '丑': [1],
-    '寅': [2],
-    '卯': [3],
-    '辰': [4],
-    '巳': [5],
-    '午': [6],
-    '未': [7],
-    '申': [8],
-    '酉': [9],
-    '戌': [10],
-    '亥': [11]
-  };
-  
-  // 根据地支获取时辰名称
-  if (timeBranch && branchToTimeIndex[timeBranch]) {
-    const timeIndices = branchToTimeIndex[timeBranch];
-    // 如果是子时，默认显示子时(23-1)
-    return times[timeIndices[0]];
-  }
-  
-  return timeColumn; // 如果无法匹配，则返回原始时柱
-}
+// function getTimeInfo() { ... }
+
+// 计算虚岁
+// const nominalAge = computed(...);
+
+// --------------------------------------------------
+// 迁移结束
+// --------------------------------------------------
+
 
 // 设置运限日期的方法，委托给ZiWeiHoroscope组件
 function setFortuneDate(dateStr: string) {
@@ -407,30 +214,6 @@ function refreshHoroscopeInfo() {
     fortuneRef.value.refreshHoroscopeInfo();
   }
 }
-
-// 计算虚岁
-const nominalAge = computed(() => {
-  try {
-    // 从horoscope方法获取年龄信息
-    const horoscope = props.astrolabe.horoscope();
-    if (horoscope && horoscope.age && horoscope.age.nominalAge) {
-      return horoscope.age.nominalAge;
-    }
-    
-    // 如果上面的方法失败，尝试根据日期计算
-    if (props.astrolabe.solarDate) {
-      const birthYear = parseInt(props.astrolabe.solarDate.split('-')[0]);
-      if (!isNaN(birthYear)) {
-        const currentYear = new Date().getFullYear();
-        return currentYear - birthYear + 1; // 虚岁计算
-      }
-    }
-    return '';
-  } catch (error) {
-    console.error('计算虚岁出错:', error);
-    return '';
-  }
-});
 
 // 组件挂载后，获取并打印身宫信息和神煞信息
 onMounted(() => {
@@ -467,7 +250,7 @@ onMounted(() => {
   // 打印本命宫位索引和名称
   try {
     console.log('本命宫位索引和名称:');
-    palaces.forEach((palace, index) => {
+    palaces.value.forEach((palace, index) => {
       if (palace && palace.name) {
         console.log(`  索引${index}: ${palace.name} (${palace.heavenlyStem}${palace.earthlyBranch})`);
       }
@@ -484,7 +267,7 @@ onMounted(() => {
     
     // 获取命宫索引
     const lifePalace = props.astrolabe.palace('命宫');
-    const lifePalaceIndex = props.astrolabe.palaces.findIndex(p => p.name === '命宫');
+    const lifePalaceIndex = palaces.value.findIndex(p => p.name === '命宫');
     console.log('命宫索引:', lifePalaceIndex);
     console.log('命宫对象:', lifePalace);
   } catch (error) {
@@ -503,7 +286,7 @@ onMounted(() => {
     
     // 遍历所有宫位，检查神煞信息
     if (props.astrolabe.palaces && Array.isArray(props.astrolabe.palaces)) {
-      props.astrolabe.palaces.forEach((palace, index) => {
+      palaces.value.forEach((palace, index) => {
         if (palace && palace.name) {
           console.log(`${palace.name}宫(${index})的神煞:`, {
             changsheng12: palace.changsheng12,
@@ -652,8 +435,8 @@ function debugDecadalStarsCalculation() {
   
   // 检查每个宫位的四化星和流曜星
   console.log('各宫位四化星和流曜星:');
-  for (let i = 0; i < palaces.length; i++) {
-    const palace = palaces[i];
+  for (let i = 0; i < palaces.value.length; i++) {
+    const palace = palaces.value[i];
     if (!palace) continue;
     
     // 收集该宫位所有星曜
@@ -731,7 +514,7 @@ function handleHoroscopeUpdate(horoscopeData: any) {
         
         // 打印本命宫位索引和名称
         console.log('本命宫位索引和名称:');
-        palaces.forEach((palace, i) => {
+        palaces.value.forEach((palace, i) => {
           if (palace) {
             console.log(`  索引${i}: ${palace.name} (${palace.heavenlyStem}${palace.earthlyBranch})`);
           }
@@ -771,8 +554,8 @@ function handleHoroscopeUpdate(horoscopeData: any) {
               if (selectedDecadeIndex === 0) {
                 // 第一个大限, 宫位名称与本命宫位名称一致
                 console.log('设置第一个大限宫位名称，与本命宫位名称一一对应');
-                for (let i = 0; i < palaces.length; i++) {
-                  const palace = palaces[i];
+                for (let i = 0; i < palaces.value.length; i++) {
+                  const palace = palaces.value[i];
                   if (palace && palace.name) {
                     const adjustedName = palace.name.endsWith('宫') ? palace.name : `${palace.name}宫`;
                     adjustedPalaceNames[i] = adjustedName;
@@ -783,7 +566,7 @@ function handleHoroscopeUpdate(horoscopeData: any) {
                 console.log('设置后续大限宫位名称，根据规则计算大限命宫位置');
                 
                 // 1. 找到本命命宫的索引
-                const natalLifePalaceIndex = palaces.findIndex(p => p.name === '命宫');
+                const natalLifePalaceIndex = palaces.value.findIndex(p => p.name === '命宫');
                 if (natalLifePalaceIndex === -1) {
                   console.error('错误：无法在本命盘中找到命宫');
                   return; // 无法继续则退出
@@ -820,11 +603,11 @@ function handleHoroscopeUpdate(horoscopeData: any) {
 
                   // 在本命盘中找到目标宫位对象
                   const searchName = targetPalaceName.replace('宫', '');
-                  const targetBenMingPalace = palaces.find(p => p.name === searchName);
+                  const targetBenMingPalace = palaces.value.find(p => p.name === searchName);
 
                   if (targetBenMingPalace) {
                     // 获取目标宫位在palaces数组中的实际索引，这才是大限命宫的正确位置
-                    decadalLifePalaceIndex = palaces.indexOf(targetBenMingPalace);
+                    decadalLifePalaceIndex = palaces.value.indexOf(targetBenMingPalace);
                   } else {
                     console.error(`无法找到名为 '${targetPalaceName}' 的本命宫位`);
                     return;
@@ -838,7 +621,7 @@ function handleHoroscopeUpdate(horoscopeData: any) {
                   // 4. 以计算出的大限命宫为基准，为所有宫位命名 (彻底修正版)
                   // 4a. 创建本命盘宫位名称到其物理索引的映射 (修正版：使用标准化的宫位名作为key)
                   const natalPhysicalIndex = new Map<string, number>();
-                  palaces.forEach((p, index) => {
+                  palaces.value.forEach((p, index) => {
                     if (p.name) {
                       // 统一去掉'宫'字，避免'命宫'和'父母'这种不一致
                       natalPhysicalIndex.set(p.name.replace('宫', ''), index);
@@ -919,7 +702,7 @@ function handleHoroscopeUpdate(horoscopeData: any) {
       console.log('  命宫宫位名称:', horoscopePalaceNamesByType.value.decadal[decadalLifePalaceIndex]);
       
       // 获取命宫地支和天干
-      const lifePalace = palaces[decadalLifePalaceIndex];
+      const lifePalace = palaces.value[decadalLifePalaceIndex];
       if (lifePalace) {
         console.log('  命宫地支:', lifePalace.earthlyBranch);
         console.log('  命宫天干:', lifePalace.heavenlyStem);
@@ -939,7 +722,7 @@ function handleHoroscopeUpdate(horoscopeData: any) {
   // 打印每个宫位的大限宫位名称
   for (let i = 0; i < palaceDisplayIndex.length; i++) {
     const palaceIndex = palaceDisplayIndex[i];
-    const palace = palaces[palaceIndex];
+    const palace = palaces.value[palaceIndex];
     if (palace) {
       const decadalPalaceName = getDecadalPalaceName(palaceIndex, horoscopeLifePalaceIndex.value || 0);
       console.log(`  宫位${i+1}(索引=${palaceIndex})的大限宫位名称: ${decadalPalaceName}`);
@@ -1236,8 +1019,8 @@ function updateHoroscopeSurroundedPalaces(surroundedPalaces: any) {
     // 打印每个索引对应的宫位信息，帮助调试
     console.log('运限三方四正宫位详情:');
     uniqueIndices.forEach(idx => {
-      if (palaces[idx]) {
-        console.log(`  索引${idx}: ${palaces[idx].name}宫 (${palaces[idx].heavenlyStem}${palaces[idx].earthlyBranch})`);
+      if (palaces.value[idx]) {
+        console.log(`  索引${idx}: ${palaces.value[idx].name}宫 (${palaces.value[idx].heavenlyStem}${palaces.value[idx].earthlyBranch})`);
         // 查找该索引在palaceDisplayIndex中的位置，即对应的格子位置
         const displayPos = palaceDisplayIndex.indexOf(idx);
         console.log(`  在命盘上的位置: 第${displayPos + 1}格 (${displayPos >= 0 ? '可见' : '不可见'})`);
@@ -1296,7 +1079,7 @@ function findPalaceIndex(palaceInfo: { name?: string, earthlyBranch?: string, he
     
     // 如果有天干地支，尝试匹配
     if (palaceInfo.earthlyBranch && palaceInfo.heavenlyStem) {
-      const index = palaces.findIndex(p => 
+      const index = palaces.value.findIndex(p => 
         p.earthlyBranch === palaceInfo.earthlyBranch && 
         p.heavenlyStem === palaceInfo.heavenlyStem
       );
@@ -1308,7 +1091,7 @@ function findPalaceIndex(palaceInfo: { name?: string, earthlyBranch?: string, he
     
     // 如果只有地支，尝试匹配
     if (palaceInfo.earthlyBranch) {
-      const index = palaces.findIndex(p => p.earthlyBranch === palaceInfo.earthlyBranch);
+      const index = palaces.value.findIndex(p => p.earthlyBranch === palaceInfo.earthlyBranch);
       
       if (index !== -1) {
         return index;
@@ -1317,7 +1100,7 @@ function findPalaceIndex(palaceInfo: { name?: string, earthlyBranch?: string, he
     
     // 如果有宫位名称，尝试匹配
     if (palaceInfo.name) {
-      const index = palaces.findIndex(p => p.name === palaceInfo.name);
+      const index = palaces.value.findIndex(p => p.name === palaceInfo.name);
       
       if (index !== -1) {
         return index;
@@ -1501,7 +1284,7 @@ function getHoroscopeStars(palaceIndex: number): Array<{name: string, type?: str
   
   try {
     // 获取宫位的地支
-    const palace = palaces[palaceIndex];
+    const palace = palaces.value[palaceIndex];
     if (!palace) return [];
     
     const earthlyBranch = palace.earthlyBranch;
