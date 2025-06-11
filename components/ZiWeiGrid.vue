@@ -10,7 +10,7 @@
       :key="i"
       :display-index="i + 1"
       :palace-data="palaces[palaceIdx]"
-      :decadal-name="showDecadalScope ? getDecadalPalaceName(palaceIdx, i) : ''"
+      :horoscope-names="getHoroscopeNames(palaceIdx)"
       :palace-classes="{
         'active': selectedPalaceIndex === palaceIdx,
         'opposite': oppositePalaceIndex === palaceIdx,
@@ -492,244 +492,71 @@ function handleHoroscopeUpdate(horoscopeData: any) {
   currentHoroscope.value = [];
   currentHoroscopeType.value = '';
   
-  if (!horoscopeData) {
-    console.log('运限数据为空，不进行处理');
+  if (!horoscopeData || !Array.isArray(horoscopeData) || horoscopeData.length === 0) {
+    console.log('运限数据为空或格式不正确，不进行处理');
     return;
   }
   
-  if (Array.isArray(horoscopeData)) {
-    console.log(`运限数组长度: ${horoscopeData.length}`);
-    
-    // 收集所有层级的命宫索引和类型
-    horoscopeData.forEach((horoscopeItem, index) => {
-      try {
-        console.log(`处理第${index+1}个运限项：类型=${horoscopeItem.type}, 命宫索引=${horoscopeItem.lifePalaceIndex}`);
-        
-        // 打印运限项的完整数据（小心循环引用）
-        try {
-          console.log(`运限项${index+1}完整数据:`, JSON.stringify(horoscopeItem, null, 2));
-        } catch (error) {
-          console.log(`运限项${index+1}数据无法序列化:`, error.message);
-        }
-        
-        // 打印本命宫位索引和名称
-        console.log('本命宫位索引和名称:');
-        palaces.value.forEach((palace, i) => {
-          if (palace) {
-            console.log(`  索引${i}: ${palace.name} (${palace.heavenlyStem}${palace.earthlyBranch})`);
-          }
-        });
-        
-        // 添加命宫索引
-        if (horoscopeItem.type === 'decadal') {
-          console.log(`添加${horoscopeItem.type}命宫索引: ${horoscopeItem.lifePalaceIndex}`);
-          allHoroscopeLifePalace.value.push({
-            type: horoscopeItem.type,
-            index: horoscopeItem.lifePalaceIndex
-          });
-          
-          // 设置当前运限命宫索引和类型
-          console.log(`设置当前运限命宫索引: ${horoscopeItem.lifePalaceIndex}, 类型: ${horoscopeItem.type}`);
-          horoscopeLifePalaceIndex.value = horoscopeItem.lifePalaceIndex;
-          currentHoroscopeType.value = horoscopeItem.type;
-          
-          // 更新运限三方四正
-          console.log(`更新运限三方四正，数据类型: ${typeof horoscopeItem.surroundedPalaces}`);
-          if (horoscopeItem.surroundedPalaces) {
-            updateHoroscopeSurroundedPalaces(horoscopeItem.surroundedPalaces);
-          }
-          
-          // 保存宫位名称
-          if (horoscopeItem.data && horoscopeItem.data.palaceNames) {
-            console.log(`保存${horoscopeItem.type}宫位名称:`, horoscopeItem.data.palaceNames);
-            
-            // 获取大限索引
-            const selectedDecadeIndex = horoscopeStore.selectedDecadeIndex;
-            console.log(`当前大限索引: ${selectedDecadeIndex}`);
-            
-            if (horoscopeItem.type === 'decadal' && horoscopeItem.lifePalaceIndex !== undefined) {
-              const adjustedPalaceNames: string[] = new Array(12).fill('');
+  // 直接从 horoscopeData 更新状态，不再进行复杂的重新计算
+  horoscopeData.forEach((horoscopeItem) => {
+    const { type, lifePalaceIndex, data, surroundedPalaces } = horoscopeItem;
 
-              // 检查是否为第一个大限
-              if (selectedDecadeIndex === 0) {
-                // 第一个大限, 宫位名称与本命宫位名称一致
-                console.log('设置第一个大限宫位名称，与本命宫位名称一一对应');
-                for (let i = 0; i < palaces.value.length; i++) {
-                  const palace = palaces.value[i];
-                  if (palace && palace.name) {
-                    const adjustedName = palace.name.endsWith('宫') ? palace.name : `${palace.name}宫`;
-                    adjustedPalaceNames[i] = adjustedName;
-                  }
-                }
-              } else {
-                // 后续大限, 根据大限命宫位置重新排布宫位名称
-                console.log('设置后续大限宫位名称，根据规则计算大限命宫位置');
-                
-                // 1. 找到本命命宫的索引
-                const natalLifePalaceIndex = palaces.value.findIndex(p => p.name === '命宫');
-                if (natalLifePalaceIndex === -1) {
-                  console.error('错误：无法在本命盘中找到命宫');
-                  return; // 无法继续则退出
-                }
+    if (!type || lifePalaceIndex === undefined || !data) {
+      console.warn('跳过不完整的运限数据:', horoscopeItem);
+      return;
+    }
 
-                // 2. 根据性别和年干确定大限移动方向
-                const gender = props.astrolabe.gender;
-                const yearGan = props.astrolabe.chineseDate?.split(' ')[0]?.charAt(0) || '';
-                const isYangGan = ['甲', '丙', '戊', '庚', '壬'].includes(yearGan);
-                
-                // 彻底修正：严格按照 “阳男阴女顺行，阴男阳女逆行” 规则
-                // 顺行(Clockwise)条件：(阳天干 AND 男) OR (阴天干 AND 女)
-                const isClockwise = (isYangGan && gender === '男') || (!isYangGan && gender === '女');
+    console.log(`处理运限项: 类型=${type}, 命宫索引=${lifePalaceIndex}`);
 
-                console.log(`大限移动方向: ${isClockwise ? '顺时针 (->父母宫)' : '逆时针 (->兄弟宫)'}`);
+    // 保存宫位名称 (如果存在)
+    if (data.palaceNames && Array.isArray(data.palaceNames)) {
+      console.log(`保存 ${type} 宫位名称:`, data.palaceNames);
+      horoscopePalaceNamesByType.value[type] = data.palaceNames;
+    }
 
-                // 3. 修正：根据大限宫位轮转规则，确定大限命宫落在哪个本命宫位上，并找出其索引
-                let decadalLifePalaceIndex = -1;
-                if (selectedDecadeIndex !== null) {
-                  // standardPalaceOrder是本命盘的逻辑顺序（逆时针）
-                  const standardPalaceOrder = ['命宫', '兄弟宫', '夫妻宫', '子女宫', '财帛宫', '疾厄宫', '迁移宫', '仆役宫', '官禄宫', '田宅宫', '福德宫', '父母宫'];
-                  
-                  let targetPalaceName: string;
+    // 更新命宫高亮 (以最后一个或最精确的为准)
+    horoscopeLifePalaceIndex.value = lifePalaceIndex;
+    currentHoroscopeType.value = type;
 
-                  if (isClockwise) {
-                    // 顺时针轮转：命宫 -> 父母宫 -> 福德宫 ... (在逻辑顺序数组中逆向查找)
-                    const targetOrderIndex = (0 - selectedDecadeIndex + 12) % 12;
-                    targetPalaceName = standardPalaceOrder[targetOrderIndex];
-                  } else {
-                    // 逆时针轮转：命宫 -> 兄弟宫 -> 夫妻宫 ... (在逻辑顺序数组中正向查找)
-                    const targetOrderIndex = (0 + selectedDecadeIndex) % 12;
-                    targetPalaceName = standardPalaceOrder[targetOrderIndex];
-                  }
+    // 更新三方四正
+    if (surroundedPalaces) {
+      updateHoroscopeSurroundedPalaces(surroundedPalaces);
+    }
 
-                  // 在本命盘中找到目标宫位对象
-                  const searchName = targetPalaceName.replace('宫', '');
-                  const targetBenMingPalace = palaces.value.find(p => p.name === searchName);
+    // 添加到当前运限数据
+    currentHoroscope.value.push(horoscopeItem);
+  });
 
-                  if (targetBenMingPalace) {
-                    // 获取目标宫位在palaces数组中的实际索引，这才是大限命宫的正确位置
-                    decadalLifePalaceIndex = palaces.value.indexOf(targetBenMingPalace);
-                  } else {
-                    console.error(`无法找到名为 '${targetPalaceName}' 的本命宫位`);
-                    return;
-                  }
-
-                  // 修正：更新用于高亮显示的大限命宫索引
-                  horoscopeLifePalaceIndex.value = decadalLifePalaceIndex;
-
-                  console.log(`本命命宫索引: ${natalLifePalaceIndex}, 大限序号: ${selectedDecadeIndex}, 目标宫位: ${targetPalaceName}, 计算出的大限命宫索引: ${decadalLifePalaceIndex}`);
-          
-                  // 4. 以计算出的大限命宫为基准，为所有宫位命名 (彻底修正版)
-                  // 4a. 创建本命盘宫位名称到其物理索引的映射 (修正版：使用标准化的宫位名作为key)
-                  const natalPhysicalIndex = new Map<string, number>();
-                  palaces.value.forEach((p, index) => {
-                    if (p.name) {
-                      // 统一去掉'宫'字，避免'命宫'和'父母'这种不一致
-                      natalPhysicalIndex.set(p.name.replace('宫', ''), index);
-                    }
-                  });
-
-                  const natalLifePalaceIndexFromMap = natalPhysicalIndex.get('命'); // 使用标准化的'命'
-                  if (natalLifePalaceIndexFromMap === undefined) {
-                      console.error('错误: 无法在映射中找到本命命宫');
-                      return;
-                  }
-
-                  // 4b. 遍历标准逻辑顺序，计算每个大限宫位应在的物理位置
-                  standardPalaceOrder.forEach((palaceNameToPlace) => {
-                      const natalPalaceName = palaceNameToPlace.replace('宫', ''); // 标准化，如'父母宫' -> '父母'
-                      const natalPalaceToPlaceIndex = natalPhysicalIndex.get(natalPalaceName);
-
-                      if (natalPalaceToPlaceIndex === undefined) {
-                          console.error(`错误: 无法在本命盘中找到 '${natalPalaceName}' 宫`);
-                          return;
-                      }
-                      
-                      // 4c. 计算该宫相对于其本命命宫的物理偏移量
-                      const physicalOffset = (natalPalaceToPlaceIndex - natalLifePalaceIndexFromMap + 12) % 12;
-
-                      // 4d. 将此偏移量应用到大限命宫的物理位置上，得到该大限宫位的新位置
-                      const decadalPalacePhysicalIndex = (decadalLifePalaceIndex + physicalOffset + 12) % 12;
-                      
-                      // 4e. 在新位置上设置大限宫位名称
-                      const nameWithSuffix = palaceNameToPlace.endsWith('宫') ? palaceNameToPlace : `${palaceNameToPlace}宫`;
-                      adjustedPalaceNames[decadalPalacePhysicalIndex] = nameWithSuffix;
-                  });
-                }
-              }
-              
-              console.log('调整后的大限宫位名称数组:', adjustedPalaceNames);
-              horoscopePalaceNamesByType.value.decadal = adjustedPalaceNames;
-            } else {
-              // 非大限运限的处理逻辑
-              horoscopePalaceNamesByType.value[horoscopeItem.type] = horoscopeItem.data.palaceNames;
-            }
-          }
-        }
-        
-        // 添加到当前运限数据
-        currentHoroscope.value.push(horoscopeItem);
-      } catch (error) {
-        console.error(`处理第${index+1}个运限项时出错:`, error);
-      }
-    });
-    
-    // 调用调试函数
-    setTimeout(() => {
-      try {
-        debugDecadalStarsCalculation();
-      } catch (error) {
-        console.error('调试函数执行出错:', error);
-      }
-    }, 1000);
-  }
-  
   console.log('===== 更新后的运限状态 =====');
   console.log('命宫索引:', horoscopeLifePalaceIndex.value);
   console.log('运限类型:', currentHoroscopeType.value);
   console.log('宫位名称:', horoscopePalaceNamesByType.value);
   console.log('三方四正索引:', horoscopeSurroundedPalaceIndices.value);
-  console.log('所有命宫:', allHoroscopeLifePalace.value);
   console.log('当前运限数据长度:', currentHoroscope.value.length);
-  
-  // 打印大限宫位名称信息
-  if (currentHoroscopeType.value === 'decadal') {
-    console.log('大限宫位名称信息:');
-    console.log('  宫位名称数组:', horoscopePalaceNamesByType.value.decadal);
-    console.log('  命宫索引:', horoscopeLifePalaceIndex.value);
-    
-    const decadalLifePalaceIndex = horoscopeLifePalaceIndex.value;
-    if (decadalLifePalaceIndex !== null && horoscopePalaceNamesByType.value.decadal.length > 0) {
-      console.log('  命宫宫位名称:', horoscopePalaceNamesByType.value.decadal[decadalLifePalaceIndex]);
-      
-      // 获取命宫地支和天干
-      const lifePalace = palaces.value[decadalLifePalaceIndex];
-      if (lifePalace) {
-        console.log('  命宫地支:', lifePalace.earthlyBranch);
-        console.log('  命宫天干:', lifePalace.heavenlyStem);
-      }
-      
-      // 打印palaceDisplayIndex数组
-      console.log('  palaceDisplayIndex数组:', palaceDisplayIndex);
-      
-      // 查找命宫在palaceDisplayIndex中的位置
-      const lifePalaceDisplayIndex = palaceDisplayIndex.findIndex(index => index === decadalLifePalaceIndex);
-      if (lifePalaceDisplayIndex !== -1) {
-        console.log('  命宫在palaceDisplayIndex中的位置:', lifePalaceDisplayIndex);
-      }
-    }
-  }
-  
-  // 打印每个宫位的大限宫位名称
-  for (let i = 0; i < palaceDisplayIndex.length; i++) {
-    const palaceIndex = palaceDisplayIndex[i];
-    const palace = palaces.value[palaceIndex];
-    if (palace) {
-      const decadalPalaceName = getDecadalPalaceName(palaceIndex, horoscopeLifePalaceIndex.value || 0);
-      console.log(`  宫位${i+1}(索引=${palaceIndex})的大限宫位名称: ${decadalPalaceName}`);
-    }
-  }
-  
   console.log('===============================');
+}
+
+// 新增：获取宫位的所有运限名称
+function getHoroscopeNames(palaceIndex: number): Array<{ name: string, type: string }> {
+  const names: Array<{ name: string, type: string }> = [];
+
+  // 检查是否显示大限宫位
+  if (showDecadalScope.value) {
+    const decadalName = horoscopePalaceNamesByType.value.decadal?.[palaceIndex];
+    if (decadalName) {
+      names.push({ name: decadalName.replace('宫', ''), type: 'decadal' });
+    }
+  }
+  
+  // 检查并添加流年宫位
+  const yearlyName = horoscopePalaceNamesByType.value.yearly?.[palaceIndex];
+  if (yearlyName) {
+    names.push({ name: yearlyName.replace('宫', ''), type: 'yearly' });
+  }
+
+  // 未来可以扩展以添加月、日、时等
+  
+  return names;
 }
 
 // 获取运限宫位名称（返回数组，包含类型和值）

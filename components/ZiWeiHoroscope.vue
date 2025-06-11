@@ -33,7 +33,7 @@
             <div v-if="selectedDecadeIndex !== null && i-1 < (safeSelectedDecadeYears as YearInfo[]).length"
                  class="table-row"
                  :class="{'active': selectedYearIndex === i-1}"
-                 @click="selectYear(i-1, getActualYear(safeSelectedDecade, i-1))">
+                 @click="selectYear(i-1, Number(getActualYear(safeSelectedDecade, i-1)))">
               <div class="row-age">{{ getActualYear(safeSelectedDecade, i-1)}}年</div>
               <div class="row-value">{{ (safeSelectedDecadeYears as YearInfo[])[i-1].heavenlyStem }}{{ (safeSelectedDecadeYears as YearInfo[])[i-1].earthlyBranch }}</div>
             </div>
@@ -215,232 +215,41 @@ const emit = defineEmits<{
 function selectDecade(index: number) {
   try {
     console.log(`===== 选择大限 ${index} =====`);
-    
-    // 使用store中的selectDecade方法
+
+    const selectedDecadeData = safeAllDecades.value[index];
+    if (!selectedDecadeData) {
+      console.error('无法获取选定的大限信息');
+      return;
+    }
+
+    // 调用store来处理逻辑 - 修正参数顺序和类型
     horoscopeStore.selectDecade(index, props.astrolabe, safeAllDecades.value);
-    
-    // 更新父组件
+
+    // 从store中发出更新后的历史记录
     emit('updateHoroscope', horoscopeStore.horoscopeHistory);
-    
-    // 如果选择了大限，获取该大限的流曜、四化和12宫位信息
-    if (horoscopeStore.selectedDecadeIndex !== null) {
-      const selectedDecade = safeAllDecades.value[index];
-      if (selectedDecade) {
-        console.log(`选中大限: ${selectedDecade.heavenlyStem}${selectedDecade.earthlyBranch}, 范围: ${selectedDecade.range[0]}-${selectedDecade.range[1]}岁`);
-        
-        try {
-          // 计算该大限的起始年份
-          const birthYear = parseInt(props.astrolabe.solarDate.split('-')[0]);
-          // 大限起始年份 = 出生年份 + 起运年龄 - 2
-          const decadeStartYear = birthYear + selectedDecade.range[0] - 2;
-          // 构造大限年份的日期字符串
-          const decadeDate = `${decadeStartYear}-1-1`;
-          
-          console.log(`计算大限运限信息，大限范围: ${selectedDecade.range[0]}-${selectedDecade.range[1]}岁，使用年份: ${decadeStartYear}`);
-          
-          // 获取大限运限信息，使用该大限的年份
-          const horoscope = HoroscopeCalculator.calculateHoroscope(props.astrolabe, decadeDate);
-          
-          // 检查horoscope.decadal是否存在
-          if (!horoscope || !horoscope.decadal) {
-            console.error('大限运限信息不完整:', horoscope);
-            return;
-          }
-          
-          // 提取大限信息
-          const decadalInfo: HoroscopeInfo = {
-            type: 'decadal',
-            data: horoscope.decadal,
-            lifePalaceIndex: horoscope.decadal.index,
-            surroundedPalaces: props.astrolabe.surroundedPalaces(horoscope.decadal.index)
-          };
-          
-          // 手动创建一个简化的副本，避免循环引用
-          const safeDecadalInfo: HoroscopeInfo = {
-            type: 'decadal',
-            data: {
-              index: horoscope.decadal.index,
-              name: horoscope.decadal.name,
-              heavenlyStem: horoscope.decadal.heavenlyStem,
-              earthlyBranch: horoscope.decadal.earthlyBranch,
-              // 添加原始选择的大限天干地支信息
-              originalHeavenlyStem: selectedDecade.heavenlyStem,
-              originalEarthlyBranch: selectedDecade.earthlyBranch,
-              // 这里不设置固定的大限宫位名称，以便在ZiWeiGrid.vue中根据本命宫位名称设置
-              // 对于第一个大限，宫位名称与本命宫位名称一一对应
-              // 对于后续大限，根据性别和年干确定顺/逆时针方向:
-              // - 阳男阴女逆行：阳年干(甲丙戊庚壬)男命或阴年干(乙丁己辛癸)女命
-              // - 阴男阳女顺行：阴年干(乙丁己辛癸)男命或阳年干(甲丙戊庚壬)女命
-              // 每个大限跨越10年，大限顺序以本命为基准，按顺/逆时针方向每大限偏移一个宫位
-              palaceNames: horoscope.decadal.palaceNames || [],
-              mutagen: Array.isArray(horoscope.decadal.mutagen) 
-                ? [...horoscope.decadal.mutagen] 
-                : horoscope.decadal.mutagen,
-              // 不复制stars数组，可能导致循环引用
-            },
-            lifePalaceIndex: horoscope.decadal.index,
-            // 创建安全的三方四正数据
-            surroundedPalaces: {
-              target: horoscope.decadal.index,
-              opposite: (horoscope.decadal.index + 6) % 12,
-              wealth: (horoscope.decadal.index + 3) % 12,
-              career: (horoscope.decadal.index + 9) % 12
-            }
-          };
-          
-          // 更新父组件，传递大限运限信息
-          emit('updateHoroscope', [safeDecadalInfo]);
-          
-          // 打印详细的大限信息用于调试
-          console.log('===== 大限详细信息 =====');
-          console.log(`大限年份: ${decadeStartYear}`);
-          console.log(`大限天干地支: ${horoscope.decadal.heavenlyStem}${horoscope.decadal.earthlyBranch}`);
-          console.log(`大限命宫索引: ${horoscope.decadal.index}`);
-          console.log(`大限命宫宫位名称: ${horoscope.decadal.palaceNames?.[horoscope.decadal.index] || '未知'}`);
-          
-          // 打印地支对应关系
-          const earthlyBranches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-          if (horoscope.decadal.index >= 0 && horoscope.decadal.index < 12) {
-            const palace = props.astrolabe.palaces[horoscope.decadal.index];
-            console.log(`大限命宫地支: ${palace?.earthlyBranch || '未知'}`);
-            console.log(`大限命宫地支索引: ${earthlyBranches.indexOf(palace?.earthlyBranch || '')}`);
-          }
-          
-          // 打印12宫位名称
-          console.log('大限12宫位名称:');
-          if (horoscope.decadal.palaceNames && Array.isArray(horoscope.decadal.palaceNames)) {
-            horoscope.decadal.palaceNames.forEach((name, idx) => {
-              console.log(`  ${idx + 1}. ${name}`);
-            });
-          } else {
-            console.log('  未找到宫位名称数组');
-          }
-          
-          // 打印四化星
-          console.log('大限四化星:');
-          if (horoscope.decadal.mutagen) {
-            if (Array.isArray(horoscope.decadal.mutagen)) {
-              console.log(`  禄: ${horoscope.decadal.mutagen[0] || '无'}`);
-              console.log(`  权: ${horoscope.decadal.mutagen[1] || '无'}`);
-              console.log(`  科: ${horoscope.decadal.mutagen[2] || '无'}`);
-              console.log(`  忌: ${horoscope.decadal.mutagen[3] || '无'}`);
-            } else {
-              console.log('  四化星数据格式:', typeof horoscope.decadal.mutagen);
-              // 使用类型断言避免类型错误
-              const mutagen = horoscope.decadal.mutagen as Record<string, any>;
-              for (const key in mutagen) {
-                console.log(`  ${key}: ${mutagen[key]}`);
-              }
-            }
-          } else {
-            console.log('  未找到四化星数据');
-          }
-          
-          // 打印流曜
-          console.log('大限流曜:');
-          if (horoscope.decadal.stars) {
-            if (Array.isArray(horoscope.decadal.stars)) {
-              horoscope.decadal.stars.forEach((starArray, palaceIdx) => {
-                const palaceName = horoscope.decadal.palaceNames?.[palaceIdx] || `宫位${palaceIdx + 1}`;
-                console.log(`  ${palaceName}:`);
-                
-                if (Array.isArray(starArray) && starArray.length > 0) {
-                  starArray.forEach(star => {
-                    if (typeof star === 'string') {
-                      console.log(`    - ${star}`);
-                    } else if (star && star.name) {
-                      console.log(`    - ${star.name}${star.brightness ? `(${star.brightness})` : ''}`);
-                    }
-                  });
-                } else {
-                  console.log('    无星曜');
-                }
-              });
-            } else {
-              console.log('  流曜数据格式:', typeof horoscope.decadal.stars);
-              console.log('  流曜数据键:', Object.keys(horoscope.decadal.stars).join(', '));
-            }
-          } else {
-            console.log('  未找到流曜数据');
-          }
-          
-          // 打印三方四正
-          console.log('大限三方四正:');
-          console.log('  本宫索引:', horoscope.decadal.index);
-          console.log('  对宫索引:', (horoscope.decadal.index + 6) % 12);
-          console.log('  财帛位索引:', (horoscope.decadal.index + 3) % 12);
-          console.log('  官禄位索引:', (horoscope.decadal.index + 9) % 12);
-          
-          console.log('========================');
-        } catch (error) {
-          console.error('获取大限运限信息出错:', error);
-        }
-      }
-    }
   } catch (error) {
-    console.error('选择大限出错:', error);
+    console.error('选择大限时发生错误:', error);
   }
 }
 
-// 使用store处理流年选择
-function selectYear(index: number, year: string) {
-  console.log(`选择流年: 索引=${index}, 年份=${year}`);
-  
-  // 使用store中的selectYear方法
-  horoscopeStore.selectYear(parseInt(year), index, props.astrolabe);
-  
-  // 更新父组件
-  emit('updateHoroscope', horoscopeStore.horoscopeHistory);
-  
-  // 更新选中年份的运限信息
-  if (horoscopeStore.selectedYearIndex !== null) {
-    // 获取流年运限信息
-    try {
-        // 构造选中年份的日期字符串（使用该年的1月1日）
-        const yearDate = `${year}-1-1`;
-      console.log(`计算流年运限，日期: ${yearDate}`);
-      
-        // 调用HoroscopeCalculator计算选中年份的运限信息
-      const horoscope = HoroscopeCalculator.calculateHoroscope(props.astrolabe, yearDate);
-      
-      // 提取流年信息
-      const yearlyInfo: HoroscopeInfo = {
-          type: 'yearly',
-        data: horoscope.yearly,
-        lifePalaceIndex: horoscope.yearly.index,
-        surroundedPalaces: props.astrolabe.surroundedPalaces(horoscope.yearly.index)
-      };
-      
-      // 准备传递给父组件的运限信息
-      const horoscopeInfoArray: HoroscopeInfo[] = [];
-      
-      // 如果有大限信息，保留大限信息
-      if (horoscopeStore.horoscopeHistory.length > 0 && horoscopeStore.horoscopeHistory[0].type === 'decadal') {
-        horoscopeInfoArray.push(horoscopeStore.horoscopeHistory[0] as unknown as HoroscopeInfo);
-      }
-      
-      // 添加流年信息
-      horoscopeInfoArray.push(yearlyInfo);
-      
-      // 更新父组件
-      emit('updateHoroscope', horoscopeInfoArray);
-      
-      console.log('流年运限信息:', {
-        流曜: horoscope.yearly.stars,
-        四化: horoscope.yearly.mutagen,
-        宫位名称: horoscope.yearly.palaceNames
-      });
-      
-      // 更新流年数据
-      updateYearHoroscope(year);
-    } catch (error) {
-      console.error('获取流年运限信息出错:', error);
-    }
+// 选中流年
+function selectYear(index: number, year: number) {
+  try {
+    console.log(`选择流年: 索引=${index}, 年份=${year}`);
+
+    // 调用store处理逻辑。store将调用适配器。- 修正参数顺序
+    horoscopeStore.selectYear(year, index, props.astrolabe);
+
+    // 从store中发出更新后的历史记录。历史记录将包含大限和流年信息。
+    console.log('发送合并后的运限数据:', horoscopeStore.horoscopeHistory);
+    emit('updateHoroscope', horoscopeStore.horoscopeHistory);
+  } catch (error) {
+    console.error('选择流年时发生错误:', error);
   }
 }
 
-// 使用store处理流月选择
-function selectMonth(index: number) {
+// 选中流月
+async function selectMonth(index: number) {
   // 确保已选择年份
   if (selectedYear.value === null) {
     console.error('未选择年份，无法选择流月');

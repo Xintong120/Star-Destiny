@@ -10,8 +10,13 @@
     <!-- 本命与大限宫位名称 -->
     <div class="palace-name">
       {{ palaceData?.name ?? '' }}
-      <span v-if="decadalName" class="decadal-palace-name">
-        {{ decadalName }}
+      <span
+        v-for="horoscope in horoscopeNames"
+        :key="horoscope.type"
+        class="horoscope-palace-name"
+        :class="horoscope.type"
+      >
+        {{ horoscope.name }}
       </span>
     </div>
 
@@ -89,7 +94,7 @@ type PalaceData = IFunctionalAstrolabe['palaces'][number];
 const props = defineProps<{
   palaceData?: PalaceData;
   displayIndex: number;
-  decadalName?: string;
+  horoscopeNames?: Array<{ name: string, type: string }>;
   palaceClasses: Record<string, boolean>;
   horoscopeStars: Array<{name: string, type?: string, horoscopeType?: string}>;
   getStarMutagenType: (starName: string) => string | null;
@@ -209,6 +214,31 @@ defineEmits(['palace-click']);
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.horoscope-palace-name {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 11px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  border-style: dashed;
+  border-width: 1px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+/* 为不同运限类型定义不同的颜色 */
+.horoscope-palace-name.decadal {
+  color: #673AB7; /* 紫色 */
+  background-color: rgba(103, 58, 183, 0.1);
+  border-color: #673AB7;
+}
+
+.horoscope-palace-name.yearly {
+  color: #F44336; /* 红色 */
+  background-color: rgba(244, 67, 54, 0.1);
+  border-color: #F44336;
 }
 
 .decadal-palace-name {
