@@ -153,7 +153,7 @@ export class HoroscopeAdapter {
         decadalPalaceNames[palaceIndex] = palaceNamesBase[i];
       }
       // === 计算结束 ===
-
+      
       // 格式化结果
       const result: HoroscopeHistoryItem = {
         type: 'decadal',
@@ -273,7 +273,7 @@ export class HoroscopeAdapter {
         宫位名称:`, yearlyPalaceNames
       );
       // === 计算结束 ===
-
+      
       // 格式化结果
       const result: HoroscopeHistoryItem = {
         type: 'yearly',

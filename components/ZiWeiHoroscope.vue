@@ -215,19 +215,19 @@ const emit = defineEmits<{
 function selectDecade(index: number) {
   try {
     console.log(`===== 选择大限 ${index} =====`);
-
+    
     const selectedDecadeData = safeAllDecades.value[index];
     if (!selectedDecadeData) {
       console.error('无法获取选定的大限信息');
-      return;
-    }
-
+            return;
+          }
+          
     // 调用store来处理逻辑 - 修正参数顺序和类型
     horoscopeStore.selectDecade(index, props.astrolabe, safeAllDecades.value);
 
     // 从store中发出更新后的历史记录
     emit('updateHoroscope', horoscopeStore.horoscopeHistory);
-  } catch (error) {
+        } catch (error) {
     console.error('选择大限时发生错误:', error);
   }
 }
@@ -235,15 +235,15 @@ function selectDecade(index: number) {
 // 选中流年
 function selectYear(index: number, year: number) {
   try {
-    console.log(`选择流年: 索引=${index}, 年份=${year}`);
-
+  console.log(`选择流年: 索引=${index}, 年份=${year}`);
+  
     // 调用store处理逻辑。store将调用适配器。- 修正参数顺序
     horoscopeStore.selectYear(year, index, props.astrolabe);
-
+  
     // 从store中发出更新后的历史记录。历史记录将包含大限和流年信息。
     console.log('发送合并后的运限数据:', horoscopeStore.horoscopeHistory);
-    emit('updateHoroscope', horoscopeStore.horoscopeHistory);
-  } catch (error) {
+  emit('updateHoroscope', horoscopeStore.horoscopeHistory);
+    } catch (error) {
     console.error('选择流年时发生错误:', error);
   }
 }

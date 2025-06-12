@@ -503,8 +503,8 @@ function handleHoroscopeUpdate(horoscopeData: any) {
 
     if (!type || lifePalaceIndex === undefined || !data) {
       console.warn('跳过不完整的运限数据:', horoscopeItem);
-      return;
-    }
+                    return;
+                  }
 
     console.log(`处理运限项: 类型=${type}, 命宫索引=${lifePalaceIndex}`);
 
@@ -521,12 +521,12 @@ function handleHoroscopeUpdate(horoscopeData: any) {
     // 更新三方四正
     if (surroundedPalaces) {
       updateHoroscopeSurroundedPalaces(surroundedPalaces);
-    }
-
-    // 添加到当前运限数据
-    currentHoroscope.value.push(horoscopeItem);
+        }
+        
+        // 添加到当前运限数据
+        currentHoroscope.value.push(horoscopeItem);
   });
-
+  
   console.log('===== 更新后的运限状态 =====');
   console.log('命宫索引:', horoscopeLifePalaceIndex.value);
   console.log('运限类型:', currentHoroscopeType.value);
@@ -720,7 +720,30 @@ function getStarMutagenType(starName: string): string | null {
         }
 
         // 这里可以添加对流年、流月等其他运限四化的处理
-        // ...
+        if (horoscopeItem.type === 'yearly') {
+          const heavenlyStem = horoscopeItem.data.heavenlyStem;
+          if (!heavenlyStem) continue;
+
+          let mutagenStars: string[] = [];
+          switch(heavenlyStem) {
+            case '甲': mutagenStars = ['廉贞', '破军', '武曲', '太阳']; break;
+            case '乙': mutagenStars = ['天机', '天梁', '紫微', '太阴']; break;
+            case '丙': mutagenStars = ['天同', '天机', '文昌', '廉贞']; break;
+            case '丁': mutagenStars = ['太阴', '天同', '天机', '巨门']; break;
+            case '戊': mutagenStars = ['贪狼', '太阴', '右弼', '天机']; break;
+            case '己': mutagenStars = ['武曲', '贪狼', '天梁', '文曲']; break;
+            case '庚': mutagenStars = ['太阳', '武曲', '太阴', '天同']; break;
+            case '辛': mutagenStars = ['巨门', '太阳', '文曲', '文昌']; break;
+            case '壬': mutagenStars = ['天梁', '紫微', '左辅', '武曲']; break;
+            case '癸': mutagenStars = ['破军', '巨门', '太阴', '贪狼']; break;
+          }
+          
+          const mutagenTypes = ['禄', '权', '科', '忌'];
+          const starIndex = mutagenStars.indexOf(starName);
+          if (starIndex !== -1) {
+            return mutagenTypes[starIndex]; // 找到流年四化，立即返回
+          }
+        }
       }
     }
   } catch (error) {
@@ -1103,169 +1126,176 @@ function getDecadalPalaceName(palaceIndex: number, i: number): string {
   }
 }
 
-// 获取宫位对应的运限流耀星
-function getHoroscopeStars(palaceIndex: number): Array<{name: string, type?: string, horoscopeType?: string}> {
+// 获取宫位对应的运限流曜星
+function getHoroscopeStars(palaceIndex: number): Array<{ name: string, type: string }> {
+  const stars: Array<{ name: string, type: string }> = [];
+
   if (!currentHoroscope.value || currentHoroscope.value.length === 0) {
-    return [];
+    return stars;
   }
-  
-  try {
-    // 获取宫位的地支
-    const palace = palaces.value[palaceIndex];
-    if (!palace) return [];
-    
-    const earthlyBranch = palace.earthlyBranch;
-    const result: Array<{name: string, type?: string, horoscopeType?: string}> = [];
-    
-    // 遍历所有运限层级，收集流耀星
+
+  // 运限数据按 decadal, yearly, monthly ... 的顺序处理，后面的会覆盖前面的
     for (const horoscopeItem of currentHoroscope.value) {
-      if (horoscopeItem && horoscopeItem.data) {
-        const horoscopeType = horoscopeItem.type || '';
+    if (!horoscopeItem || !horoscopeItem.data || !horoscopeItem.type) {
+      continue;
+    }
 
-        // 新增：处理由大限天干决定的流曜（禄存、擎羊、陀罗、天魁、天钺）
-        if (horoscopeType === 'decadal') {
-          let heavenlyStem = '';
-          if (horoscopeItem.data.originalHeavenlyStem) {
-            heavenlyStem = horoscopeItem.data.originalHeavenlyStem;
-          } else if (horoscopeItem.data.heavenlyStem) {
-            heavenlyStem = horoscopeItem.data.heavenlyStem;
-          }
+    const { type, lifePalaceIndex } = horoscopeItem;
+    const { heavenlyStem, earthlyBranch } = horoscopeItem.data;
 
-          let decadalBranch = '';
-          if (horoscopeItem.data.originalEarthlyBranch) {
-            decadalBranch = horoscopeItem.data.originalEarthlyBranch;
-          } else if (horoscopeItem.data.earthlyBranch) {
-            decadalBranch = horoscopeItem.data.earthlyBranch;
+    if (!heavenlyStem || !earthlyBranch) {
+      continue;
           }
 
           const branches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+    const palaceBranch = palaces.value[palaceIndex].earthlyBranch;
+    const palaceBranchIndex = branches.indexOf(palaceBranch);
 
-          // 基于天干的流曜
-          if (heavenlyStem) {
-            // 1. 运禄、运羊、运陀
+    // 处理大限流曜
+    if (type === 'decadal') {
+      const decadalLifePalaceBranch = palaces.value[lifePalaceIndex].earthlyBranch;
+      const decadalLifePalaceBranchIndex = branches.indexOf(decadalLifePalaceBranch);
+
+      const addDecadalStar = (starName: string, branchName: string) => {
+        if (palaceBranch === branchName) {
+          stars.push({ name: `运${starName}`, type: 'decadal' });
+        }
+      };
+
+      // 大限禄存、羊、陀
             const luCunBranch = { '甲': '寅', '乙': '卯', '丙': '巳', '丁': '午', '戊': '巳', '己': '午', '庚': '申', '辛': '酉', '壬': '亥', '癸': '子' }[heavenlyStem];
             if (luCunBranch) {
+        addDecadalStar('禄', luCunBranch);
               const luCunIndex = branches.indexOf(luCunBranch);
-              if (luCunIndex !== -1) {
-                  const yangBranch = branches[(luCunIndex + 1) % 12];
-                  const luoBranch = branches[(luCunIndex + 11) % 12];
-                  if (palace.earthlyBranch === luCunBranch) result.push({ name: '运禄', horoscopeType });
-                  if (palace.earthlyBranch === yangBranch) result.push({ name: '运羊', horoscopeType });
-                  if (palace.earthlyBranch === luoBranch) result.push({ name: '运陀', horoscopeType });
-              }
-            }
+        if (branches[(luCunIndex + 1) % 12] === palaceBranch) stars.push({ name: '运羊', type: 'decadal' });
+        if (branches[(luCunIndex + 11) % 12] === palaceBranch) stars.push({ name: '运陀', type: 'decadal' });
+      }
 
-            // 2. 运魁、运钺
-            const kuiYueBranches = {
+      // 大限魁钺
+      const kuiYueBranch = {
               '甲': { kui: '丑', yue: '未' }, '戊': { kui: '丑', yue: '未' }, '庚': { kui: '丑', yue: '未' },
               '乙': { kui: '子', yue: '申' }, '己': { kui: '子', yue: '申' },
               '丙': { kui: '亥', yue: '酉' }, '丁': { kui: '亥', yue: '酉' },
-              '壬': { kui: '卯', yue: '巳' }, '癸': { kui: '卯', yue: '巳' },
-              '辛': { kui: '午', yue: '寅' }
+        '辛': { kui: '寅', yue: '午' },
+        '壬': { kui: '卯', yue: '巳' }, '癸': { kui: '卯', yue: '巳' }
             }[heavenlyStem];
-            if (kuiYueBranches) {
-              if (palace.earthlyBranch === kuiYueBranches.kui) result.push({ name: '运魁', horoscopeType });
-              if (palace.earthlyBranch === kuiYueBranches.yue) result.push({ name: '运钺', horoscopeType });
-            }
+      if (kuiYueBranch) {
+        addDecadalStar('魁', kuiYueBranch.kui);
+        addDecadalStar('钺', kuiYueBranch.yue);
+      }
+      
+      // 大限昌曲
+      const changQuBranch = {
+        '甲': { chang: '巳', qu: '酉' }, '乙': { chang: '午', qu: '申' },
+        '丙': { chang: '申', qu: '午' }, '戊': { chang: '申', qu: '午' },
+        '丁': { chang: '酉', qu: '巳' }, '己': { chang: '酉', qu: '巳' },
+        '庚': { chang: '亥', qu: '卯' },
+        '辛': { chang: '子', qu: '寅' },
+        '壬': { chang: '寅', qu: '子' },
+        '癸': { chang: '卯', qu: '亥' }
+      }[heavenlyStem];
+      if (changQuBranch) {
+        addDecadalStar('昌', changQuBranch.chang);
+        addDecadalStar('曲', changQuBranch.qu);
+      }
 
-            // 3. 运昌、运曲
-            const changBranch = { '甲': '巳', '乙': '午', '丙': '申', '丁': '酉', '戊': '申', '己': '酉', '庚': '亥', '辛': '子', '壬': '寅', '癸': '卯' }[heavenlyStem];
-            const quBranch = { '甲': '酉', '乙': '申', '丙': '午', '丁': '巳', '戊': '午', '己': '巳', '庚': '寅', '辛': '卯', '壬': '子', '癸': '亥' }[heavenlyStem];
-            if (palace.earthlyBranch === changBranch) result.push({ name: '运昌', horoscopeType });
-            if (palace.earthlyBranch === quBranch) result.push({ name: '运曲', horoscopeType });
-          }
+      // 大限天马、红鸾、天喜 (以大限命宫地支为准)
+      const tianMaBranch = { '寅': '申', '午': '申', '戌': '申', '申': '寅', '子': '寅', '辰': '寅', '亥': '巳', '卯': '巳', '未': '巳' }[decadalLifePalaceBranch];
+      if (tianMaBranch) addDecadalStar('马', tianMaBranch);
 
-          // 基于地支的流曜
-          if (decadalBranch) {
-              // 4. 运马
-              const tianMaBranch = { '寅': '申', '午': '申', '戌': '申', '申': '寅', '子': '寅', '辰': '寅', '巳': '亥', '酉': '亥', '丑': '亥', '亥': '巳', '卯': '巳', '未': '巳' }[decadalBranch];
-              if (palace.earthlyBranch === tianMaBranch) result.push({ name: '运马', horoscopeType });
+      const hongLuanIndex = (12 - branches.indexOf('卯') + decadalLifePalaceBranchIndex) % 12;
+      if (hongLuanIndex === palaceBranchIndex) stars.push({ name: '运鸾', type: 'decadal' });
 
-              // 5. 运鸾、运喜
-              const decadalBranchIndex = branches.indexOf(decadalBranch);
-              if (decadalBranchIndex !== -1) {
-                  const hongLuanIndex = (3 - decadalBranchIndex + 12) % 12;
                   const tianXiIndex = (hongLuanIndex + 6) % 12;
-                  if (palace.earthlyBranch === branches[hongLuanIndex]) result.push({ name: '运鸾', horoscopeType });
-                  if (palace.earthlyBranch === branches[tianXiIndex]) result.push({ name: '运喜', horoscopeType });
-              }
-          }
-        }
-        
-        // 原有逻辑：处理随宫而转的流曜（如博士十二神等）和其他运限流曜
-        if (horoscopeItem.data.stars) {
-          if (horoscopeType === 'decadal' && Array.isArray(horoscopeItem.data.stars)) {
-            const gender = props.astrolabe.gender;
-            const yearGan = props.astrolabe.chineseDate?.split(' ')[0]?.charAt(0) || '';
-            const isYangGan = ['甲', '丙', '戊', '庚', '壬'].includes(yearGan);
-            const isYinGan = ['乙', '丁', '己', '辛', '癸'].includes(yearGan);
-            const isReverse = (gender === '男' && isYinGan) || (gender === '女' && isYangGan);
-            const isClockwise = !isReverse;
-            const branches = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-            const earthBranchIndex = branches.indexOf(earthlyBranch);
-            if (earthBranchIndex === -1) continue;
-            const decadalLifePalaceIndex = horoscopeItem.lifePalaceIndex;
-            if (decadalLifePalaceIndex === undefined) continue;
-            let selectedDecadeEarthlyBranch = '';
-            if (horoscopeItem.data.originalEarthlyBranch) {
-              selectedDecadeEarthlyBranch = horoscopeItem.data.originalEarthlyBranch;
-            } else if (horoscopeItem.data.earthlyBranch) {
-              selectedDecadeEarthlyBranch = horoscopeItem.data.earthlyBranch;
-            } else {
-              continue;
-            }
-            const selectedDecadeEarthlyBranchIndex = branches.indexOf(selectedDecadeEarthlyBranch);
-            if (selectedDecadeEarthlyBranchIndex === -1) continue;
-            let targetIndex = 0;
-            if (isClockwise) {
-              targetIndex = (earthBranchIndex + 12 - selectedDecadeEarthlyBranchIndex) % 12;
-            } else {
-              targetIndex = (selectedDecadeEarthlyBranchIndex + 12 - earthBranchIndex) % 12;
-            }
-            const starsForBranch = horoscopeItem.data.stars[targetIndex];
-            if (starsForBranch && Array.isArray(starsForBranch)) {
-              for (const star of starsForBranch) {
-                if (star && star.name) {
-                  result.push({
-                    name: star.name,
-                    horoscopeType: horoscopeType
-                  });
-                }
-              }
-            }
-          } else if (Array.isArray(horoscopeItem.data.stars)) {
-            if (horoscopeItem.data.palaceNames) {
-              const palaceIndex = horoscopeItem.data.palaceNames.indexOf(palace.name);
-              if (palaceIndex !== -1 && palaceIndex < horoscopeItem.data.stars.length) {
-                const stars = horoscopeItem.data.stars[palaceIndex] || [];
-                stars.forEach(star => {
-                  if (typeof star === 'string') {
-                    result.push({ name: star, horoscopeType });
-                  } else if (star && star.name) {
-                    result.push({ name: star.name, type: star.type, horoscopeType });
-                  }
-                });
-              }
-            }
-          } else if (typeof horoscopeItem.data.stars === 'object') {
-            const stars = horoscopeItem.data.stars[earthlyBranch] || [];
-            stars.forEach(star => {
-              if (typeof star === 'string') {
-                result.push({ name: star, horoscopeType });
-              } else if (star && star.name) {
-                result.push({ name: star.name, type: star.type, horoscopeType });
-              }
-            });
-          }
-        }
+      if (tianXiIndex === palaceBranchIndex) stars.push({ name: '运喜', type: 'decadal' });
+    }
+
+    // 处理流年流曜 (太岁、晦气、丧门、贯索、官符、小耗、大耗、龙德、白虎、天德、吊客、病符)
+    if (type === 'yearly') {
+      const yearlyLifePalaceBranch = palaces.value[lifePalaceIndex].earthlyBranch;
+      const yearlyLifePalaceBranchIndex = branches.indexOf(yearlyLifePalaceBranch);
+      
+      // 太岁十二神
+      const yearlyStars = [
+        "太岁", "晦气", "丧门", "贯索", "官符", "小耗",
+        "大耗", "龙德", "白虎", "天德", "吊客", "病符"
+      ];
+      const starIndex = (palaceBranchIndex - yearlyLifePalaceBranchIndex + 12) % 12;
+      stars.push({ name: yearlyStars[starIndex], type: 'yearly' });
+      
+      // 流禄、流羊、流陀
+      const luCunBranch = { '甲': '寅', '乙': '卯', '丙': '巳', '丁': '午', '戊': '巳', '己': '午', '庚': '申', '辛': '酉', '壬': '亥', '癸': '子' }[heavenlyStem];
+      if (luCunBranch) {
+        if (luCunBranch === palaceBranch) stars.push({ name: '流禄', type: 'yearly' });
+        const luCunIndex = branches.indexOf(luCunBranch);
+        if (branches[(luCunIndex + 1) % 12] === palaceBranch) stars.push({ name: '流羊', type: 'yearly' });
+        if (branches[(luCunIndex + 11) % 12] === palaceBranch) stars.push({ name: '流陀', type: 'yearly' });
+      }
+      
+      // 流魁、流钺
+      const kuiYueBranch = {
+        '甲': { kui: '丑', yue: '未' }, '戊': { kui: '丑', yue: '未' }, '庚': { kui: '丑', yue: '未' },
+        '乙': { kui: '子', yue: '申' }, '己': { kui: '子', yue: '申' },
+        '丙': { kui: '亥', yue: '酉' }, '丁': { kui: '亥', yue: '酉' },
+        '辛': { kui: '寅', yue: '午' },
+        '壬': { kui: '卯', yue: '巳' }, '癸': { kui: '卯', yue: '巳' }
+      }[heavenlyStem];
+      if (kuiYueBranch) {
+        if (kuiYueBranch.kui === palaceBranch) stars.push({ name: '流魁', type: 'yearly' });
+        if (kuiYueBranch.yue === palaceBranch) stars.push({ name: '流钺', type: 'yearly' });
+      }
+      
+      // 流昌、流曲
+      const changQuBranch = {
+        '甲': { chang: '巳', qu: '酉' }, '乙': { chang: '午', qu: '申' },
+        '丙': { chang: '申', qu: '午' }, '戊': { chang: '申', qu: '午' },
+        '丁': { chang: '酉', qu: '巳' }, '己': { chang: '酉', qu: '巳' },
+        '庚': { chang: '亥', qu: '卯' },
+        '辛': { chang: '子', qu: '寅' },
+        '壬': { chang: '寅', qu: '子' },
+        '癸': { chang: '卯', qu: '亥' }
+      }[heavenlyStem];
+      if (changQuBranch) {
+        if (changQuBranch.chang === palaceBranch) stars.push({ name: '流昌', type: 'yearly' });
+        if (changQuBranch.qu === palaceBranch) stars.push({ name: '流曲', type: 'yearly' });
+      }
+
+      // 流马、流鸾、流喜 (以流年命宫地支为准)
+      const tianMaBranch = {
+        '寅': '申', '午': '申', '戌': '申',
+        '申': '寅', '子': '寅', '辰': '寅',
+        '巳': '亥', '酉': '亥', '丑': '亥',
+        '亥': '巳', '卯': '巳', '未': '巳'
+      }[yearlyLifePalaceBranch];
+      if (tianMaBranch && tianMaBranch === palaceBranch) {
+        stars.push({ name: '流马', type: 'yearly' });
+      }
+
+      const maoIndex = branches.indexOf('卯');
+      const hongLuanIndex = (maoIndex - yearlyLifePalaceBranchIndex + 12) % 12;
+      if (hongLuanIndex === palaceBranchIndex) {
+        stars.push({ name: '流鸾', type: 'yearly' });
+      }
+
+      const tianXiIndex = (hongLuanIndex + 6) % 12;
+      if (tianXiIndex === palaceBranchIndex) {
+        stars.push({ name: '流喜', type: 'yearly' });
       }
     }
-    
-    return result;
-  } catch (error) {
-    console.error('获取运限流耀星时出错:', error);
-    return [];
   }
+
+  // 去重，因为可能会有多个运限数据
+  const uniqueStars: Array<{ name: string, type: string }> = [];
+  const starNames = new Set<string>();
+  for (let i = stars.length - 1; i >= 0; i--) {
+    const star = stars[i];
+    if (!starNames.has(star.name)) {
+      uniqueStars.unshift(star);
+      starNames.add(star.name);
+    }
+  }
+
+  return uniqueStars;
 }
 </script>
 
