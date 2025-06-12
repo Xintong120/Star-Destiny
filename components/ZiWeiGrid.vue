@@ -102,6 +102,9 @@
         <button class="toggle-button" @click="toggleShowDecadalScope">
           {{ showDecadalScope ? '隐藏大限宫位' : '显示大限宫位' }}
         </button>
+        <button class="toggle-button" @click="toggleShowYearlyScope">
+          {{ showYearlyScope ? '隐藏流年宫位' : '显示流年宫位' }}
+        </button>
       </div>
     </div>
   </div>
@@ -329,12 +332,12 @@ watch(() => props.astrolabe, (newAstrolabe) => {
 defineExpose({
   setFortuneDate,
   refreshHoroscopeInfo,
-  toggleShowDecadalScope
+  toggleShowDecadalScope,
+  toggleShowYearlyScope
 });
 
 // 当前运限信息
 const currentHoroscope = ref<any[]>([]);
-const currentHoroscopeType = ref<string>('');
 
 // 运限三方四正索引
 const horoscopeSurroundedPalaceIndices = ref<number[]>([]);
@@ -355,16 +358,147 @@ const horoscopePalaceNamesByType = ref<Record<string, string[]>>({
 });
 
 // 控制大限宫位名称显示
-const showDecadalScope = ref<boolean>(true);
+const showDecadalScope = ref(props.showDecadalScope ?? false);
+const showYearlyScope = ref(false);
 
 // 切换大限宫位名称显示
 function toggleShowDecadalScope() {
   showDecadalScope.value = !showDecadalScope.value;
-  console.log(`大限宫位名称显示: ${showDecadalScope.value ? '开启' : '关闭'}`);
 }
 
+// 切换流年宫位名称显示
+function toggleShowYearlyScope() {
+  showYearlyScope.value = !showYearlyScope.value;
+}
+
+const correctedDecadalLifePalaceIndex = computed(() => {
+  const selectedDecadeIndexValue = horoscopeStore.selectedDecadeIndex;
+  
+  if (selectedDecadeIndexValue === null || selectedDecadeIndexValue === undefined) {
+    return null;
+  }
+
+  const lifePalaceOriginalIndex = palaces.value.findIndex(p => p.name === '命宫');
+  if (lifePalaceOriginalIndex === -1) {
+    return null;
+  }
+  
+  const gender = props.astrolabe.gender;
+  const yearGan = props.astrolabe.chineseDate?.split(' ')[0]?.charAt(0) || '';
+  const isYangGan = ['甲', '丙', '戊', '庚', '壬'].includes(yearGan);
+
+  // 核心规则：阳男阴女为顺行 (Shun Xing), 阴男阳女为逆行 (Ni Xing).
+  const isShunXing = (gender === '男' && isYangGan) || (gender === '女' && !isYangGan);
+  
+  const stepDirection = isShunXing ? 1 : -1;
+  const totalStep = selectedDecadeIndexValue * stepDirection;
+  
+  return (lifePalaceOriginalIndex + totalStep + 12) % 12;
+});
+
+const correctedYearlyLifePalaceIndex = computed(() => {
+  const yearlyHoroscope = horoscopeStore.horoscopeHistory.find(h => h.type === 'yearly');
+  return yearlyHoroscope ? yearlyHoroscope.lifePalaceIndex : null;
+});
+
+const correctedDecadalPalaceNames = computed(() => {
+  const lifePalaceIdx = correctedDecadalLifePalaceIndex.value;
+
+  if (lifePalaceIdx === null) {
+    return [];
+  }
+
+  // 1. Create a map from the original palace name to its index.
+  // This captures the unique physical layout of the current natal chart.
+  const originalPalaceNameToIndex: Record<string, number> = {};
+  const originalIndexToPalaceName: Record<number, string> = {};
+  palaces.value.forEach((p, i) => {
+    const nameKey = p.name.replace('宫', '');
+    originalPalaceNameToIndex[nameKey] = i;
+    originalIndexToPalaceName[i] = p.name;
+  });
+
+  const gender = props.astrolabe.gender;
+  const yearGan = props.astrolabe.chineseDate?.split(' ')[0]?.charAt(0) || '';
+  const isYangGan = ['甲', '丙', '戊', '庚', '壬'].includes(yearGan);
+
+  // 核心规则：阳男阴女为顺行 (Shun Xing), 阴男阳女为逆行 (Ni Xing).
+  const isShunXing = (gender === '男' && isYangGan) || (gender === '女' && !isYangGan);
+
+  const STANDARD_PALACE_NAMES = [
+    '命宫', '兄弟宫', '夫妻宫', '子女宫', '财帛宫', '疾厄宫',
+    '迁移宫', '仆役宫', '官禄宫', '田宅宫', '福德宫', '父母宫'
+  ];
+
+  const result = new Array<string>(12);
+
+  for (let i = 0; i < 12; i++) { // i is the physical palace index (e.g. 寅=0, 卯=1, ...)
+    // Calculate the "distance" from the current physical palace (i) to the decadal life palace.
+    // 顺行 (isShunXing) 在图表上是顺时针，对应宫位数组索引增加.
+    const distance = isShunXing
+      ? (i - lifePalaceIdx + 12) % 12 // 顺行：目标宫位i - 大限命宫
+      : (lifePalaceIdx - i + 12) % 12; // 逆行：大限命宫 - 目标宫位i
+
+    // Find which original palace name corresponds to this distance from the original life palace.
+    const originalLifePalaceIndex = originalPalaceNameToIndex['命'];
+    if (originalLifePalaceIndex === undefined) {
+      result[i] = "未知"; // Fallback
+      continue;
+    }
+
+    const targetOriginalIndex = isShunXing
+      ? (originalLifePalaceIndex + distance + 12) % 12 // 顺行：本命命宫 + 距离
+      : (originalLifePalaceIndex - distance + 12) % 12; // 逆行：本命命宫 - 距离
+
+    result[i] = originalIndexToPalaceName[targetOriginalIndex] || '未知';
+  }
+
+  return result;
+});
+
+const correctedYearlyPalaceNames = computed(() => {
+  const lifePalaceIdx = correctedYearlyLifePalaceIndex.value;
+
+  if (lifePalaceIdx === null || lifePalaceIdx === undefined) {
+    return [];
+  }
+
+  const originalPalaceNameToIndex: Record<string, number> = {};
+  const originalIndexToPalaceName: Record<number, string> = {};
+  palaces.value.forEach((p, i) => {
+    const nameKey = p.name.replace('宫', '');
+    originalPalaceNameToIndex[nameKey] = i;
+    originalIndexToPalaceName[i] = p.name;
+  });
+
+  // 流年固定顺时针，在图表上宫位索引是增加的。
+  // 但我们的算法中，顺时针旋转对应 direction = -1
+  const direction = -1;
+
+  const newNames = new Array(12).fill('');
+
+  const standardPalaceOrder = [
+    '命', '兄弟', '夫妻', '子女', '财帛', '疾厄',
+    '迁移', '仆役', '官禄', '田宅', '福德', '父母'
+  ];
+
+  for (let i = 0; i < 12; i++) {
+    const distance = (i - lifePalaceIdx) * direction;
+    let normalizedDistance = (distance % 12 + 12) % 12;
+    
+    const palaceNameKey = standardPalaceOrder[normalizedDistance];
+    
+    const originalIndexOfTargetPalace = originalPalaceNameToIndex[palaceNameKey];
+
+    const finalName = originalIndexToPalaceName[originalIndexOfTargetPalace];
+    newNames[i] = finalName;
+  }
+
+  return newNames;
+});
+
 // 新增：用于存储所有层级的命宫索引和类型
-const allHoroscopeLifePalace = ref<Array<{type: string, index: number}>>([]);
+const allHoroscopeLifePalace = ref<Array<{ type: string; index: number }>>([]);
 
 // 添加调试函数，用于打印大限四化星和流曜星的计算过程
 function debugDecadalStarsCalculation() {
@@ -491,7 +625,6 @@ function handleHoroscopeUpdate(horoscopeData: any) {
   };
   
   currentHoroscope.value = [];
-  currentHoroscopeType.value = '';
   
   if (!horoscopeData || !Array.isArray(horoscopeData) || horoscopeData.length === 0) {
     console.log('运限数据为空或格式不正确，不进行处理');
@@ -517,7 +650,6 @@ function handleHoroscopeUpdate(horoscopeData: any) {
 
     // 更新命宫高亮 (以最后一个或最精确的为准)
     horoscopeLifePalaceIndex.value = lifePalaceIndex;
-    currentHoroscopeType.value = type;
 
     // 更新三方四正
     if (surroundedPalaces) {
@@ -541,22 +673,15 @@ function handleHoroscopeUpdate(horoscopeData: any) {
 function getHoroscopeNames(palaceIndex: number): Array<{ name: string, type: string }> {
   const names: Array<{ name: string, type: string }> = [];
 
-  // 检查是否显示大限宫位
-  if (showDecadalScope.value) {
-    const decadalName = horoscopePalaceNamesByType.value.decadal?.[palaceIndex];
-    if (decadalName) {
-      names.push({ name: decadalName.replace('宫', ''), type: 'decadal' });
-    }
-  }
-  
-  // 检查并添加流年宫位
-  const yearlyName = horoscopePalaceNamesByType.value.yearly?.[palaceIndex];
-  if (yearlyName) {
-    names.push({ name: yearlyName.replace('宫', ''), type: 'yearly' });
+  const horoscopePalace = getHoroscopePalaceName(palaceIndex);
+
+  if (horoscopePalace) {
+    names.push({ 
+      name: horoscopePalace.name.replace('宫', ''), 
+      type: horoscopePalace.type 
+    });
   }
 
-  // 未来可以扩展以添加月、日、时等
-  
   return names;
 }
 
@@ -966,108 +1091,17 @@ function findPalaceIndex(palaceInfo: { name?: string, earthlyBranch?: string, he
 }
 
 // 获取特定宫位的运限宫位名称
-function getHoroscopePalaceName(palaceIndex: number, horoscopeType: string): string {
-  try {
-    if (!horoscopePalaceNamesByType.value[horoscopeType] || 
-        horoscopePalaceNamesByType.value[horoscopeType].length === 0) {
-      return '';
-    }
-    
-    // 获取宫位在地支顺序中的索引
-    const displayIndex = palaceDisplayIndex.indexOf(palaceIndex);
-    if (displayIndex === -1) {
-      return '';
-    }
-    
-    // 根据运限类型和地支索引计算宫位索引
-    let adjustedIndex;
-    
-    // 获取性别和年干信息，用于确定大限排列方向
-    const gender = props.astrolabe.gender;
-    const yearGan = props.astrolabe.chineseDate?.split(' ')[0]?.charAt(0) || '';
-    
-    // 判断年干阴阳
-    const isYangGan = ['甲', '丙', '戊', '庚', '壬'].includes(yearGan);
-    const isYinGan = ['乙', '丁', '己', '辛', '癸'].includes(yearGan);
-    
-    // 判断是否逆排
-    // 阴男阳女顺排，阳男阴女逆排
-    const isReverse = (gender === '男' && isYinGan) || (gender === '女' && isYangGan);
-    
-    console.log(`大限排列方向计算: 性别=${gender}, 年干=${yearGan}, 阳干=${isYangGan}, 阴干=${isYinGan}, 逆排=${isReverse}`);
-    
-    switch (horoscopeType) {
-      case 'decadal':
-        // 大限宫位顺序: 官禄,仆役,迁移,疾厄,财帛,子女,夫妻,兄弟,命宫,父母,福德,田宅
-        // 命宫在索引8的位置，对应地支戌(8)
-        if (isReverse) {
-          // 逆排时，命宫索引不变，但其他宫位索引需要反向计算
-          // 计算与命宫的相对位置
-          const relativePos = (displayIndex - 8 + 12) % 12;
-          // 逆向计算新的相对位置
-          const newRelativePos = (12 - relativePos) % 12;
-          // 从命宫位置开始计算最终索引
-          adjustedIndex = (8 + newRelativePos) % 12;
-        } else {
-          // 顺排时，直接使用原来的计算方法
-          adjustedIndex = (displayIndex + 8) % 12;
-        }
-        break;
-      case 'yearly':
-        // 流年宫位顺序: 田宅,官禄,仆役,迁移,疾厄,财帛,子女,夫妻,兄弟,命宫,父母,福德
-        // 命宫在索引9的位置，对应地支亥(9)
-        adjustedIndex = (displayIndex + 9) % 12;
-        break;
-      case 'monthly':
-        // 流月宫位顺序: 兄弟,命宫,父母,福德,田宅,官禄,仆役,迁移,疾厄,财帛,子女,夫妻
-        // 命宫在索引1的位置，对应地支卯(1)
-        adjustedIndex = (displayIndex + 1) % 12;
-        break;
-      case 'daily':
-      case 'hourly':
-        // 流日/流时宫位顺序: 仆役,迁移,疾厄,财帛,子女,夫妻,兄弟,命宫,父母,福德,田宅,官禄
-        // 命宫在索引7的位置，对应地支酉(7)
-        adjustedIndex = (displayIndex + 7) % 12;
-        break;
-      default:
-        return '';
-    }
-    
-    // 确保索引在有效范围内
-    adjustedIndex = (adjustedIndex + 12) % 12;
-    
-    // 获取该索引对应的宫位名称
-    const palaceName = horoscopePalaceNamesByType.value[horoscopeType][adjustedIndex];
-    
-    if (!palaceName) {
-      return '';
-    }
-    
-    // 添加前缀
-    let prefix = '';
-    switch (horoscopeType) {
-      case 'decadal':
-        prefix = '大限';
-        break;
-      case 'yearly':
-        prefix = '流年';
-        break;
-      case 'monthly':
-        prefix = '流月';
-        break;
-      case 'daily':
-        prefix = '流日';
-        break;
-      case 'hourly':
-        prefix = '流时';
-        break;
-    }
-    
-    return `${prefix}${palaceName}`;
-  } catch (error) {
-    console.error('获取运限宫位名称出错:', error);
-    return '';
+function getHoroscopePalaceName(palaceIndex: number): { type: 'decadal' | 'yearly'; name: string } | null {
+  // 优先显示流年，因为它的层级更细
+  if (showYearlyScope.value && correctedYearlyPalaceNames.value.length > 0 && correctedYearlyPalaceNames.value[palaceIndex]) {
+    return { type: 'yearly', name: correctedYearlyPalaceNames.value[palaceIndex] };
   }
+
+  if (showDecadalScope.value && correctedDecadalPalaceNames.value.length > 0 && correctedDecadalPalaceNames.value[palaceIndex]) {
+    return { type: 'decadal', name: correctedDecadalPalaceNames.value[palaceIndex] };
+  }
+
+  return null;
 }
 
 // 获取大限宫位名称
@@ -1328,6 +1362,10 @@ function getYearlyDecorativeStars(palaceIndex: number): { jiangqian?: string; su
   }
   return result;
 }
+
+const currentHoroscopeType = computed(() => {
+  return currentHoroscope.value.length > 0 ? currentHoroscope.value[0].type : '';
+});
 </script>
 
 <style scoped>
