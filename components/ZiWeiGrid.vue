@@ -630,6 +630,40 @@ function handleHoroscopeUpdate(horoscopeData: any) {
     console.log('运限数据为空或格式不正确，不进行处理');
     return;
   }
+
+  // 新增：流月命宫计算逻辑 (新规则)
+  const monthlyHoroscope = horoscopeData.find(item => item.type === 'monthly');
+  if (monthlyHoroscope) {
+    const selectedMonthIndex = horoscopeStore.selectedMonthIndex;
+
+    // 确保流年宫位名称已计算，并且用户已选择某个月份
+    if (
+        correctedYearlyPalaceNames.value.length === 12 &&
+        selectedMonthIndex !== null && selectedMonthIndex !== undefined
+    ) {
+        // 规则1: 查看命盘中寅宫(iztro中固定索引为0)内是哪一个人事宫
+        const yinPalaceNatalName = palaces.value[0]?.name;
+
+        if (yinPalaceNatalName) {
+            // 规则2: 在流年命盘中找到该同名宫位 (e.g. 流年子女宫)
+            const yearlyPalaceTargetIndex = correctedYearlyPalaceNames.value.findIndex(
+                (name) => name === yinPalaceNatalName
+            );
+
+            if (yearlyPalaceTargetIndex !== -1) {
+                // 规则3: 在该宫位起正月，然后以顺时针方向依次排列
+                const monthOffset = selectedMonthIndex; // 0 for 正月, 1 for 二月...
+                // 因为 palaces 数组本身是顺时针(寅->卯->...)，所以直接相加即可
+                const newMonthlyLifePalaceIndex = (yearlyPalaceTargetIndex + monthOffset) % 12;
+
+                console.log(`流月命宫(新规则): 寅宫本名=${yinPalaceNatalName}, 流年 ${yinPalaceNatalName} 位于索引=${yearlyPalaceTargetIndex}, 选中月份=${selectedMonthIndex + 1}, 新命宫索引=${newMonthlyLifePalaceIndex}`);
+                
+                // 更新流月数据中的命宫索引
+                monthlyHoroscope.lifePalaceIndex = newMonthlyLifePalaceIndex;
+            }
+        }
+    }
+  }
   
   // 直接从 horoscopeData 更新状态，不再进行复杂的重新计算
   horoscopeData.forEach((horoscopeItem) => {
