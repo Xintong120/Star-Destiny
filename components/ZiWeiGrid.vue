@@ -1216,14 +1216,6 @@ function getHoroscopeStars(palaceIndex: number): Array<{ name: string, horoscope
       const yearlyLifePalaceBranch = palaces.value[lifePalaceIndex].earthlyBranch;
       const yearlyLifePalaceBranchIndex = branches.indexOf(yearlyLifePalaceBranch);
       
-      // 太岁十二神
-      const yearlyStars = [
-        "太岁", "晦气", "丧门", "贯索", "官符", "小耗",
-        "大耗", "龙德", "白虎", "天德", "吊客", "病符"
-      ];
-      const starIndex = (palaceBranchIndex - yearlyLifePalaceBranchIndex + 12) % 12;
-      stars.push({ name: yearlyStars[starIndex], horoscopeType: 'yearly' });
-      
       // 流禄、流羊、流陀
       const luCunBranch = { '甲': '寅', '乙': '卯', '丙': '巳', '丁': '午', '戊': '巳', '己': '午', '庚': '申', '辛': '酉', '壬': '亥', '癸': '子' }[heavenlyStem];
       if (luCunBranch) {
