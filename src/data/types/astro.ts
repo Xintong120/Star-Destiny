@@ -160,6 +160,10 @@ export type Astrolabe = {
   palaces: IFunctionalPalace[];
   /** 版权 */
   copyright: string;
+  /** 大限数据 */
+  decadals: Decadal[];
+  /** 小限年龄数据 */
+  ages: number[][];
 };
 
 /**

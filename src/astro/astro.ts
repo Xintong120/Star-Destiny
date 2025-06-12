@@ -17,7 +17,9 @@ import { getAdjectiveStar, getBoShi12, getchangsheng12, getMajorStar, getMinorSt
 import { fixIndex, translateChineseDate } from '../utils';
 import FunctionalAstrolabe from './FunctionalAstrolabe';
 import FunctionalPalace, { IFunctionalPalace } from './FunctionalPalace';
-import { getPalaceNames, getSoulAndBody, getHoroscope, getFiveElementsClass } from './palace';
+import { getSoulAndBody, getFiveElementsClass } from './palace';
+import TimePeriodCalculator from './TimePeriodCalculator';
+import { PalaceNameService } from './PalaceNameService';
 
 const _plugins = [] as Plugin[];
 const _mutagens: Partial<Record<HeavenlyStemKey, StarKey[]>> = {};
@@ -175,7 +177,7 @@ export function bySolar<T extends FunctionalAstrolabe>(
     timeIndex,
     fixLeap,
   });
-  const palaceNames = getPalaceNames(soulIndex);
+  const palaceNames = PalaceNameService.getPalaceNames();
   const majorStars = getMajorStar({ solarDate, timeIndex, fixLeap });
   const minorStars = getMinorStar(solarDate, timeIndex, fixLeap);
   const adjectiveStars = getAdjectiveStar({
@@ -192,7 +194,7 @@ export function bySolar<T extends FunctionalAstrolabe>(
   });
   const boshi12 = getBoShi12(solarDate, gender);
   const { jiangqian12, suiqian12 } = getYearly12(solarDate);
-  const { decadals, ages } = getHoroscope({ solarDate, timeIndex, gender, fixLeap });
+  const { decadals, ages } = TimePeriodCalculator.getHoroscope({ solarDate, timeIndex, gender, fixLeap });
 
   for (let i = 0; i < 12; i++) {
     const heavenlyStemOfPalace =
@@ -249,6 +251,8 @@ export function bySolar<T extends FunctionalAstrolabe>(
     fiveElementsClass: getFiveElementsClass(heavenlyStemOfSoul, earthlyBranchOfSoul),
     palaces,
     copyright: `copyright © 2023-${new Date().getFullYear()} iztro (https://github.com/SylarLong/iztro)`,
+    decadals,
+    ages,
   });
 
   _plugins.map((plugin) => result.use(plugin));
@@ -322,10 +326,10 @@ export function rearrangeAstrolable<T extends FunctionalAstrolabe>({
     from,
   });
   const fiveElementsClass = getFiveElementsClass(from.heavenlyStem, from.earthlyBranch);
-  const palaceNames = getPalaceNames(soulIndex);
+  const palaceNames = PalaceNameService.getPalaceNames();
   const majorStars = getMajorStar({ solarDate: astrolable.solarDate, timeIndex, fixLeap, from });
   const changsheng12 = getchangsheng12({ solarDate: astrolable.solarDate, timeIndex, fixLeap, from });
-  const { decadals, ages } = getHoroscope({
+  const { decadals, ages } = TimePeriodCalculator.getHoroscope({
     solarDate: astrolable.solarDate,
     timeIndex,
     gender: astrolable.gender as GenderName,

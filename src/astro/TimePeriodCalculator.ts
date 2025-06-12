@@ -83,11 +83,11 @@ export default class TimePeriodCalculator {
 
     // 计算小限索引
     const ageIdx = getAgeIndex(yearly[1]);
-    const ages = [];
+    const ages: number[][] = [];
 
     // 计算12个宫位的小限年龄
     for (let i = 0; i < 12; i++) {
-      const age = [];
+      const age: number[] = [];
 
       // 每个宫位有10个年龄
       for (let j = 0; j < 10; j++) {
@@ -156,31 +156,3 @@ export default class TimePeriodCalculator {
     return -1;
   }
 }
-
-// 导出函数版本，方便直接调用
-/**
- * 计算大限和小限信息
- * @param param 排盘参数
- * @returns 大限和小限信息
- */
-export const getHoroscope = TimePeriodCalculator.getHoroscope;
-
-/**
- * 计算虚岁
- * @param birthYear 出生年份
- * @param targetYear 目标年份
- * @param birthMonth 出生月份
- * @param birthDay 出生日期
- * @param targetMonth 目标月份
- * @param targetDay 目标日期
- * @returns 虚岁
- */
-export const calculateNominalAge = TimePeriodCalculator.calculateNominalAge;
-
-/**
- * 根据年龄获取大限索引
- * @param decadals 大限数组
- * @param age 年龄
- * @returns 大限索引
- */
-export const getDecadalIndexByAge = TimePeriodCalculator.getDecadalIndexByAge;

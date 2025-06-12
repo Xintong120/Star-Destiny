@@ -8,7 +8,7 @@ import { fixEarthlyBranchIndex, fixIndex, getMutagensByHeavenlyStem, timeToIndex
 import { IFunctionalAstrolabe } from './FunctionalAstrolabe';
 import FunctionalHoroscope, { IFunctionalHoroscope } from './FunctionalHoroscope';
 import { getConfig } from './astro';
-import { getDecadalPalaceNames, getPalaceNames } from './PalaceNameService';
+import { PalaceNameService } from './PalaceNameService';
 
 /**
  * 运限计算器类
@@ -104,9 +104,9 @@ export default class HoroscopeCalculator {
       // 此时应该取小限运
       // 一命二财三疾厄	四岁夫妻五福德
       // 六岁事业为童限	专就宫垣视吉凶
-      const palaces: PalaceName[] = ['命宫', '财帛', '疾厄', '夫妻', '福德', '官禄'];
-      const targetIndex = palaces[nominalAge - 1];
-      const targetPalace = astrolabe.palace(targetIndex);
+      const palaces: PalaceName[] = [t('命宫'), t('财帛'), t('疾厄'), t('夫妻'), t('福德'), t('官禄')];
+      const targetPalaceName = palaces[nominalAge - 1];
+      const targetPalace = astrolabe.palace(targetPalaceName);
 
       if (targetPalace) {
         isChildhood = true;
@@ -154,9 +154,9 @@ export default class HoroscopeCalculator {
         name: isChildhood ? t('childhood') : t('decadal'),
         heavenlyStem: t(kot(heavenlyStemOfDecade, 'Heavenly')),
         earthlyBranch: t(kot(earthlyBranchOfDecade, 'Earthly')),
-        palaceNames: getDecadalPalaceNames(decadalIndex),
+        palaceNames: PalaceNameService.getHoroscopePalaceNames(decadalIndex, true),
         mutagen: getMutagensByHeavenlyStem(heavenlyStemOfDecade),
-        stars: getHoroscopeStar(heavenlyStemOfDecade, kot<string>(earthlyBranchOfDecade), 'decadal'),
+        stars: getHoroscopeStar(heavenlyStemOfDecade, kot<string>(earthlyBranchOfDecade) as EarthlyBranchName, 'decadal'),
       },
       // 小限信息
       age: {
@@ -165,7 +165,7 @@ export default class HoroscopeCalculator {
         name: t('turn'),
         heavenlyStem: heavenlyStemOfAge,
         earthlyBranch: t(kot(earthlyBranchOfAge, 'Earthly')),
-        palaceNames: getPalaceNames(ageIndex),
+        palaceNames: PalaceNameService.getHoroscopePalaceNames(ageIndex),
         mutagen: getMutagensByHeavenlyStem(heavenlyStemOfAge),
       },
       // 流年信息
@@ -174,7 +174,7 @@ export default class HoroscopeCalculator {
         name: t('yearly'),
         heavenlyStem: t(kot(yearly[0], 'Heavenly')),
         earthlyBranch: t(kot(yearly[1], 'Earthly')),
-        palaceNames: getPalaceNames(yearlyIndex),
+        palaceNames: PalaceNameService.getHoroscopePalaceNames(yearlyIndex),
         mutagen: getMutagensByHeavenlyStem(yearly[0]),
         stars: getHoroscopeStar(yearly[0], yearly[1], 'yearly'),
         yearlyDecStar: getYearly12(targetDate),
@@ -185,7 +185,7 @@ export default class HoroscopeCalculator {
         name: t('monthly'),
         heavenlyStem: t(kot(monthly[0], 'Heavenly')),
         earthlyBranch: t(kot(monthly[1], 'Earthly')),
-        palaceNames: getPalaceNames(monthlyIndex),
+        palaceNames: PalaceNameService.getHoroscopePalaceNames(monthlyIndex),
         mutagen: getMutagensByHeavenlyStem(monthly[0]),
         stars: getHoroscopeStar(monthly[0], monthly[1], 'monthly'),
       },
@@ -195,7 +195,7 @@ export default class HoroscopeCalculator {
         name: t('daily'),
         heavenlyStem: t(kot(daily[0], 'Heavenly')),
         earthlyBranch: t(kot(daily[1], 'Earthly')),
-        palaceNames: getPalaceNames(dailyIndex),
+        palaceNames: PalaceNameService.getHoroscopePalaceNames(dailyIndex),
         mutagen: getMutagensByHeavenlyStem(daily[0]),
         stars: getHoroscopeStar(daily[0], daily[1], 'daily'),
       },
@@ -205,7 +205,7 @@ export default class HoroscopeCalculator {
         name: t('hourly'),
         heavenlyStem: t(kot(hourly[0], 'Heavenly')),
         earthlyBranch: t(kot(hourly[1], 'Earthly')),
-        palaceNames: getPalaceNames(hourlyIndex),
+        palaceNames: PalaceNameService.getHoroscopePalaceNames(hourlyIndex),
         mutagen: getMutagensByHeavenlyStem(hourly[0]),
         stars: getHoroscopeStar(hourly[0], hourly[1], 'hourly'),
       },

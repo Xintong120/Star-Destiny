@@ -2,6 +2,7 @@ import { getHeavenlyStemAndEarthlyBranchBySolarDate } from 'lunar-lite';
 import {
   HEAVENLY_STEMS,
   TIGER_RULE,
+  EARTHLY_BRANCHES,
 } from '../data';
 import { SoulAndBody, AstrolabeParam } from '../data/types';
 import {
@@ -14,11 +15,9 @@ import {
   kot,
   t,
 } from '../i18n';
-import { fixEarthlyBranchIndex, fixLunarMonthIndex } from '../utils';
+import { fixEarthlyBranchIndex, fixLunarMonthIndex, fixIndex } from '../utils';
 import { getConfig } from './astro';
-// 导入新的服务类
-import { getHoroscope } from './TimePeriodCalculator';
-import { getPalaceNames } from './PalaceNameService';
+import { PalaceNameService } from './PalaceNameService';
 
 /**
  * 获取命宫以及身宫数据
@@ -147,8 +146,3 @@ export const getFiveElementsClass = (
 
   return t<FiveElementsClassName>(fiveElementsTable[index - 1]);
 };
-
-// 这些函数已经移动到专门的服务类中
-// 导出函数版本，方便直接调用，保持向后兼容
-export { getPalaceNames } from './PalaceNameService';
-export { getHoroscope } from './TimePeriodCalculator';

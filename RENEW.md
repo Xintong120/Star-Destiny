@@ -792,3 +792,56 @@ ZiWeiHoroscope.vue：命盘UI组件，负责展示和用户交互
 1.  **功能完整性**: 补全了流年运势分析所需的重要神煞信息，使其功能更加完整。
 2.  **数据流完整性**: 确保了所有后端计算出的数据都能无遗漏地传递到前端，提高了程序的可靠性。
 3. **用户体验改善**: 用户现在可以查看到更丰富的流年信息，有助于进行更精细的命理分析。
+
+## 2025.06.25
+
+### 宫位逻辑重构：创建 PalaceNameService
+
+为了进一步贯彻"关注点分离"和"单一职责"的设计原则，我们对项目中所有与"宫位"相关的计算和分析逻辑进行了重构，将其统一收归到一个全新的服务类 `PalaceNameService` 中。
+
+#### 更新内容
+
+1.  **创建 `PalaceNameService.ts`**:
+    *   在 `src/astro/` 目录下新建了 `PalaceNameService.ts` 文件。
+    *   该服务类现在是处理所有宫位逻辑（获取、分析、名称计算）的唯一入口点。
+
+2.  **迁移并整合核心逻辑**:
+    *   **从 `analyzer.ts` 迁移**: 将之前分散在 `analyzer.ts` 中的 `getPalace` (获取单个宫位) 和 `getSurroundedPalaces` (获取三方四正) 函数，完整地迁移到了 `PalaceNameService` 中，并转为类的静态方法。
+    *   **从 `HoroscopeCalculator.ts` 整合**: 将运限计算器中的宫位名称排布逻辑也一并移入，并重构为一个更通用、更强大的 `getHoroscopePalaceNames(startIndex, isClockwise)` 方法。
+
+3.  **更新调用链路**:
+    *   重构了 `FunctionalAstrolabe.ts`，使其 `palace()` 和 `surroundedPalaces()` 方法直接调用 `PalaceNameService` 的相应方法。
+    *   重构了 `HoroscopeCalculator.ts`，使其在计算大限、小限、流年、流月等所有运限的宫位名称时，统一调用 `PalaceNameService.getHoroscopePalaceNames()`。
+
+4.  **清理冗余代码**:
+    *   彻底删除了 `analyzer.ts` 和 `PalaceNameService.ts` 中已经被迁移或废弃的旧函数及导出，保持了代码库的整洁。
+
+#### 重构的好处
+
+1.  **结构清晰**: 所有与宫位相关的操作都有了单一、明确的出处，极大地提升了代码的可读性和项目结构清晰度。
+2.  **高内聚**: `PalaceNameService` 内部的函数紧密相关，都围绕"宫位"这一核心概念。
+3.  **可维护性增强**: 当需要修改宫位的计算规则时，我们只需要在 `PalaceNameService` 一个地方修改，而无需在多个文件中寻找相关代码。
+4.  **消除潜在风险**: 清理了旧的、分散的函数，减少了未来因误用旧代码而产生 bug 的风险。
+
+### 服务类调用统一
+
+解决了因重构导致部分文件仍在使用旧的、独立的函数调用方式而引发的运行时错误。
+
+#### 更新内容
+
+1.  **统一 `TimePeriodCalculator` 调用**:
+    *   在 `src/astro/astro.ts` 和 `src/__tests__/astro/palace.test.ts` 中，将对大限/小限的计算调用方式从独立的 `getHoroscope()` 函数，统一为 `TimePeriodCalculator.getHoroscope()` 的静态方法调用。
+    *   同时，为 `Astrolabe` 核心类型增加了 `decadals` 和 `ages` 属性，以使其能够承载运限数据。
+
+2.  **统一 `PalaceNameService` 调用**:
+    *   在 `src/astro/astro.ts` 中，将对宫位名称的获取方式从独立的 `getPalaceNames()` 函数，统一为 `PalaceNameService.getPalaceNames()` 的静态方法调用。
+
+3.  **清理废弃的导出**:
+    *   移除了 `TimePeriodCalculator.ts` 和 `PalaceNameService.ts` 文件末尾所有用于向后兼容的独立函数导出语句。
+    *   此举虽然导致了对 `palace.ts` 的清理遇到一些困难，但因所有调用点均已更新，从根本上解决了运行时错误。
+
+#### 修复的好处
+
+1.  **调用方式统一**: 项目中所有对核心计算逻辑的调用，现在都通过标准的服务类（`ClassName.method()`)进行，增强了代码的一致性和可预测性。
+2.  **消除运行时错误**: 彻底解决了 `does not provide an export named 'getPalaceNames'` 的问题。
+3. **完成重构闭环**: 将所有散落的调用点全部更新，完成了本次"分离运算逻辑层"重构的最后一步。

@@ -1,11 +1,11 @@
 import { Astrolabe, Plugin } from '../data/types';
 import { PalaceName, StarKey, StarName, kot } from '../i18n';
 import { IFunctionalStar } from '../star/FunctionalStar';
-import { getPalace, getSurroundedPalaces } from './analyzer';
 import { IFunctionalPalace } from './FunctionalPalace';
 import { IFunctionalSurpalaces } from './FunctionalSurpalaces';
 import { IFunctionalHoroscope } from './FunctionalHoroscope';
 import HoroscopeCalculator from './HoroscopeCalculator';
+import { PalaceNameService } from './PalaceNameService';
 
 
 /**
@@ -226,7 +226,8 @@ export default class FunctionalAstrolabe implements IFunctionalAstrolabe {
    * @param indexOrName 宫位索引或名称
    * @returns 宫位对象
    */
-  palace = (indexOrName: number | PalaceName): IFunctionalPalace | undefined => getPalace(this, indexOrName);
+  palace = (indexOrName: number | PalaceName): IFunctionalPalace | undefined =>
+    PalaceNameService.getPalace(this, indexOrName);
 
   /**
    * 获取三方四正宫位
@@ -235,7 +236,7 @@ export default class FunctionalAstrolabe implements IFunctionalAstrolabe {
    * @returns 三方四正宫位对象
    */
   surroundedPalaces = (indexOrName: number | PalaceName): IFunctionalSurpalaces =>
-    getSurroundedPalaces(this, indexOrName);
+    PalaceNameService.getSurroundedPalaces(this, indexOrName);
 
   /**
    * @deprecated 此方法已在`v1.2.0`废弃，请用下列方法替换
