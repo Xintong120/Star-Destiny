@@ -282,7 +282,8 @@ export class HoroscopeAdapter {
           age,
           heavenlyStem: horoscopeInfo.yearly?.heavenlyStem || '',
           earthlyBranch: horoscopeInfo.yearly?.earthlyBranch || '',
-          palaceNames: yearlyPalaceNames, // 添加宫位名称
+          palaceNames: yearlyPalaceNames, // 添加流年宫位名称
+          yearlyDecStar: horoscopeInfo.yearly.yearlyDecStar, // 修正：从 yearly 属性中获取流年神煞数据
         },
         fullData: horoscopeInfo,
         yearIndex,
