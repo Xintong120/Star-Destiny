@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ZiWeiPage from '../../views/ZiWeiPage.vue'
 import HomePage from '../../components/HomePage.vue'
+import ZiWeiPage from '../../components/ZiWeiPage.vue'
 
 const routes = [
   {
@@ -10,9 +10,14 @@ const routes = [
   },
   {
     path: '/ziwei',
-    name: 'ZiWeiPage',
+    name: 'ZiWei',
     component: ZiWeiPage
   }
 ]
 
-export default routes 
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+export default router 

@@ -57,6 +57,9 @@
 
     <!-- 页脚 -->
     <AppFooter />
+
+    <!-- 排盘表单抽屉 -->
+    <ZiWeiForm />
   </div>
 </template>
 
@@ -65,13 +68,16 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted, onUnmounted } from 'vue';
 import NavBar from './NavBar.vue';
 import AppFooter from './Footer.vue';
+import ZiWeiForm from './ZiWeiForm.vue';
+import { useDrawerStore } from '../src/stores/drawerStore';
 
+const { openDrawer } = useDrawerStore();
 const router = useRouter();
 const stars = ref([false, false, false, false, false]);
 let twinkleInterval: number | null = null;
 
 const startAnalysis = () => {
-  router.push('/ziwei');
+  openDrawer();
 };
 
 const makeStarsTwinkle = () => {

@@ -1,13 +1,5 @@
 <template>
-  <div class="page-container">
-    <!-- 主内容区 - 显示命盘结果 -->
-    <div class="main-content">
-      <!-- 命盘图显示区域 - 条件渲染 -->
-      <div class="grid-container" v-if="astrolabe">
-        <zi-wei-grid :astrolabe="astrolabe" :person-name="name" ref="ziweiGrid" />
-      </div>
-    </div>
-
+  <div>
     <!-- 表单抽屉 -->
     <el-drawer v-model="isDrawerOpen" :with-header="false" size="400px">
       <!-- 表单组件，用于收集用户输入的命盘信息 -->
@@ -100,16 +92,20 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import html2canvas from 'html2canvas';
 import { astro } from 'iztro';
 import ZiWeiGrid from './ZiWeiGrid.vue';
 import { useDrawerStore } from '../src/stores/drawerStore';
+import { useAstrolabeStore } from '../src/stores/astrolabeStore';
 
 // 从 store 中获取抽屉状态和操作
 const { isDrawerOpen, closeDrawer: closeFormDrawer } = useDrawerStore();
+const astrolabeStore = useAstrolabeStore();
 
 // 定义组件向父组件发送的事件
 const emit = defineEmits(['submit']);
+const router = useRouter();
 
 // 响应式状态声明
 const type = ref('solar'); // 日期类型，默认为阳历
@@ -118,11 +114,6 @@ const timeIndex = ref(0); // 时辰索引
 const gender = ref('女'); // 性别，默认为女
 const name = ref(''); // 姓名，选填
 
-// 存储紫微命盘对象
-const astrolabe = ref(null);
-// 获取紫微命盘网格组件的引用，用于导出图片
-const ziweiGrid = ref(null);
-
 // 时辰选项数组
 const times = ['早子时(0-1)', '丑时(1-3)', '寅时(3-5)', '卯时(5-7)', '辰时(7-9)', '巳时(9-11)', '午时(11-13)', '未时(13-15)', '申时(15-17)', '酉时(17-19)', '戌时(19-21)', '亥时(21-23)', '晚子时(23-0)'];
 
@@ -130,57 +121,30 @@ const times = ['早子时(0-1)', '丑时(1-3)', '寅时(3-5)', '卯时(5-7)', '�
  * 提交表单数据并生成命盘
  */
 function submitForm() {
-  // 收集表单数据
-  const formData = {
-    type: type.value,
-    dateStr: dateStr.value,
-    timeIndex: timeIndex.value,
-    gender: gender.value,
-    name: name.value
-  };
-  
-  // 根据表单数据生成紫微命盘
-  generateAstrolabe(formData);
-  
-  // 向父组件发送事件，便于父组件了解状态变化
-  emit('submit', formData);
-  
-  // 关闭抽屉
-  closeFormDrawer();
-}
-
-/**
- * 生成紫微命盘
- * @param {Object} formData - 表单数据
- */
-function generateAstrolabe(formData) {
   try {
+    let astrolabeData = null;
     // 根据日期类型选择不同的生成方法
-    if (formData.type === 'solar') {
+    if (type.value === 'solar') {
       // 使用阳历生成命盘
-      astrolabe.value = astro.bySolar(formData.dateStr, formData.timeIndex, formData.gender);
+      astrolabeData = astro.bySolar(dateStr.value, timeIndex.value, gender.value);
     } else {
       // 使用农历生成命盘
-      astrolabe.value = astro.byLunar(formData.dateStr, formData.timeIndex, formData.gender);
+      astrolabeData = astro.byLunar(dateStr.value, timeIndex.value, gender.value);
     }
+
+    // 将命盘数据存入 Pinia store
+    astrolabeStore.setAstrolabe(astrolabeData, name.value);
+
+    // 关闭抽屉
+    closeFormDrawer();
+
+    // 跳转到排盘结果页
+    router.push('/ziwei');
   } catch (error) {
     console.error('生成命盘时出错:', error);
     // 可以在这里添加错误提示
   }
 }
-
-/**
- * 重置命盘数据
- */
-function resetAstrolabe() {
-  astrolabe.value = null;
-}
-
-// 导出方法供父组件调用
-defineExpose({
-  resetAstrolabe,
-  astrolabe
-});
 </script>
 
 <style scoped>
