@@ -13,7 +13,7 @@ import { Scope, StarType } from './general';
  */
 export type Star = {
   /** 星耀的唯一英文ID */
-  key?: StarKey;
+  key?: StarKey | string;
   /** 星耀名字 */
   name: StarName;
   /** 星耀类型（主星 | 吉星 | 煞星 | 杂耀 | 桃花星 | 解神 | 禄存 | 天马） */

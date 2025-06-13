@@ -46,24 +46,12 @@
     <div v-if="horoscopeStore.selectedYearIndex !== null" class="month-info">
       <h3>流月选择 ({{ selectedYearData.year }}年)</h3>
       
-      <!-- 调试状态显示 -->
-      <div class="debug-info">
-        <p>选择年份: {{ selectedYearData.year }}</p>
-        <p>月干支数组长度: {{ monthlyGanZhiList.length }}</p>
-      </div>
-      
       <!-- 当没有流月数据时显示加载提示 -->
       <div v-if="!monthlyGanZhiList.length" class="loading-months">
         <p>正在计算月干支数据...</p>
       </div>
-      
-      <!-- 流月干支网格 -->
+
       <div v-else class="month-grid">
-        <div class="debug-month-grid-info">
-          <p>月干支数组长度: {{ monthlyGanZhiList.length }}</p>
-          <p>第一个月信息: {{ monthlyGanZhiList[0] ? `${monthlyGanZhiList[0].name}(${monthlyGanZhiList[0].heavenlyStem || '-'}${monthlyGanZhiList[0].earthlyBranch || '-'})` : '无' }}</p>
-        </div>
-        
         <div 
           v-for="month in monthlyGanZhiList" 
           :key="`month-${month.index}`" 
@@ -74,21 +62,6 @@
           <div class="month-title">{{ month.name }}</div>
           <div class="month-value">
             {{ month.heavenlyStem && month.earthlyBranch ? month.heavenlyStem + month.earthlyBranch : '--' }}
-          </div>
-          <!-- 添加调试信息 -->
-          <div class="debug-month-info">
-            <small>干: {{ month.heavenlyStem || '-' }}</small>
-            <small>支: {{ month.earthlyBranch || '-' }}</small>
-          </div>
-          <!-- 添加宫位信息显示 -->
-          <div v-if="month.palaceNames && month.palaceNames.length > 0" class="month-palaces">
-            <div class="palace-title">宫位</div>
-            <div class="palace-value">{{ month.palaceNames[0] || '无' }}</div>
-          </div>
-          <!-- 添加星曜信息显示 -->
-          <div v-if="month.stars && Object.keys(month.stars).length > 0" class="month-stars">
-            <div class="star-title">星曜</div>
-            <div class="star-value">{{ Object.keys(month.stars).length }}颗</div>
           </div>
         </div>
       </div>
@@ -102,6 +75,129 @@
         class="history-item"
       >
         {{ item.comment }}
+      </div>
+    </div>
+
+    <!-- 命盘网格 -->
+    <div class="grid-container" :class="{ 'focused': focusedPalaceName }">
+      <div
+        v-for="(palace, index) in palaces"
+        :key="palace.name"
+        :class="['palace', `palace-${index}`]"
+        :style="{ gridArea: `palace-${index}` }"
+        @mouseover="focusOnPalace(palace.name)"
+        @mouseleave="focusOnPalace('')"
+      >
+        <div class="palace-name" :class="{ 'horoscope-life-palace': horoscopeLifePalaceIndex === index }">
+          <div class="heavenly-stem-earthly-branch">
+            {{ palace.heavenlyStem }}{{ palace.earthlyBranch }}
+          </div>
+          {{ getHoroscopeNames(index) }}
+        </div>
+        <div class="stars-grid">
+          <div class="stars-container major-stars">
+            <span
+              v-for="star in palace.majorStars"
+              :key="star.name"
+              class="star-name"
+              :class="[star.type, star.brightness, star.mutagen]"
+              @click.stop="handleStarClick(star)"
+            >
+              {{ star.name }}
+              <span v-if="star.brightness" class="brightness">{{ star.brightness }}</span>
+              <span
+                v-if="getStarMutagenType(star)"
+                class="sihua-badge"
+                :class="[getStarMutagenType(star).mutagen, getStarMutagenType(star).horoscopeType]"
+              >
+                {{ getStarMutagenType(star).mutagen }}
+              </span>
+            </span>
+          </div>
+          <div class="stars-container minor-stars">
+            <span
+              v-for="star in palace.minorStars"
+              :key="star.name"
+              class="star-name"
+              :class="[star.type, star.brightness, star.mutagen]"
+              @click.stop="handleStarClick(star)"
+            >
+              {{ star.name }}
+              <span
+                v-if="getStarMutagenType(star)"
+                class="sihua-badge"
+                :class="[getStarMutagenType(star).mutagen, getStarMutagenType(star).horoscopeType]"
+              >
+                {{ getStarMutagenType(star).mutagen }}
+              </span>
+            </span>
+          </div>
+          <div class="stars-container adjective-stars">
+            <span
+              v-for="star in palace.adjectiveStars"
+              :key="star.name"
+              class="star-name"
+              :class="[star.type]"
+              @click.stop="handleStarClick(star)"
+            >
+              {{ star.name }}
+            </span>
+          </div>
+        </div>
+        <div class="bottom-info">
+          <div class="horoscope-stars-left">
+            <span
+              v-for="star in getHoroscopeStars(index, 'decadal')"
+              :key="star.name"
+              class="star-name decadal"
+              @click.stop="handleStarClick(star)"
+            >
+              {{ star.name }}
+            </span>
+          </div>
+          <div class="horoscope-stars-right">
+            <span
+              v-for="star in getHoroscopeStars(index, 'yearly')"
+              :key="star.name"
+              class="star-name yearly"
+              @click.stop="handleStarClick(star)"
+            >
+              {{ star.name }}
+            </span>
+          </div>
+          <div class="age-info">{{ palace.ages[0] }} - {{ palace.ages[1] }}</div>
+          <div class="decadal-info">{{ palace.decadal.range[0] }}-{{ palace.decadal.range[1] }}</div>
+        </div>
+      </div>
+      <div class="center-info">
+        <div class="info-row">
+          <span class="label">姓名：</span>
+          <span class="value">{{ props.astrolabe.name }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">性别：</span>
+          <span class="value">{{ props.astrolabe.gender }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">阳历：</span>
+          <span class="value">{{ props.astrolabe.solarDate }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">农历：</span>
+          <span class="value">{{ props.astrolabe.lunarDate }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">五行局：</span>
+          <span class="value">{{ props.astrolabe.fiveElementsClass }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">命主：</span>
+          <span class="value">{{ props.astrolabe.soulMaster }}</span>
+        </div>
+        <div classs="info-row">
+          <span class="label">身主：</span>
+          <span class="value">{{ props.astrolabe.bodyMaster }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -551,6 +647,31 @@ onMounted(() => {
   
   console.log('=== 流月天干地支组件挂载完成 ===');
 });
+
+// 点击星耀，显示详细信息
+const handleStarClick = (star) => {
+  showStarNotification(star);
+};
+
+// 获取星耀的四化类型
+const getStarMutagenType = (star) => {
+  // 优先判断运限四化
+  const currentHoroscope = horoscopeStore.horoscopeHistory[horoscopeStore.horoscopeHistory.length - 1];
+
+  if (currentHoroscope) {
+    const mutagenStar = currentHoroscope.data?.mutagen?.find(m => m.name === star.name);
+    if (mutagenStar) {
+      return { mutagen: mutagenStar.mutagen, horoscopeType: currentHoroscope.type };
+    }
+  }
+
+  // 如果没有运限四化，再判断生年四化
+  if (star.mutagen) {
+    return { mutagen: star.mutagen, horoscopeType: 'native' };
+  }
+
+  return null;
+};
 </script>
 
 <style>

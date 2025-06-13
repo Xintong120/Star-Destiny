@@ -12,7 +12,7 @@
     "@element-plus/icons-vue": "^2.3.1",
     "element-plus": "^2.10.1",
     "html2canvas": "^1.4.1",
-    "iztro": "^2.5.0",
+    "iztro": "^2.5.1",
     "normalize.css": "^8.0.1",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.3.0",

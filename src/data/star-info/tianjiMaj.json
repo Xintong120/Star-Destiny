@@ -1,0 +1,26 @@
+{
+  "name": "天机",
+  "description": "请在此处填写关于天机的描述...",
+  "attributes": {
+    "element": "",
+    "yin_yang": "",
+    "palace_master": "",
+    "body_master": ""
+  },
+  "meanings": {
+    "personality": [],
+    "career": "",
+    "wealth": "",
+    "health": ""
+  },
+  "combinations": [],
+  "temple_brightness": {
+    "庙": "",
+    "旺": "",
+    "得地": "",
+    "利": "",
+    "平": "",
+    "不得地": "",
+    "陷": ""
+  }
+} 

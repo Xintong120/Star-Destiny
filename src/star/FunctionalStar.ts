@@ -85,14 +85,12 @@ export default class FunctionalStar implements IFunctionalStar {
   private _astrolabe?: IFunctionalAstrolabe;
 
   constructor(data: Star) {
-    this.key = data.key;
+    this.key = data.key || data.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     this.name = data.name;
     this.type = data.type;
     this.scope = data.scope;
     this.brightness = data.brightness;
     this.mutagen = data.mutagen;
-
-    return this;
   }
 
   oppositePalace = (): IFunctionalPalace | undefined => {
