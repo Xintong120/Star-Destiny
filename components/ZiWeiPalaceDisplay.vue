@@ -54,16 +54,20 @@
           <span class="star-name">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
-          <span class="sihua-badge" v-if="getStarMutagenType(star.name)" :data-type="getStarMutagenType(star.name)">
-            {{ getStarMutagenType(star.name) }}
+          <span class="sihua-badge" v-if="getStarMutagenType(star.name)" 
+                :class="getStarMutagenType(star.name)?.horoscopeType"
+                :data-type="getStarMutagenType(star.name)?.mutagen">
+            {{ getStarMutagenType(star.name)?.mutagen }}
           </span>
         </div>
         <div v-for="star in palaceData.minorStars" :key="star.name" class="star-item minor-star">
           <span class="star-name">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
-          <span class="sihua-badge" v-if="getStarMutagenType(star.name)" :data-type="getStarMutagenType(star.name)">
-            {{ getStarMutagenType(star.name) }}
+          <span class="sihua-badge" v-if="getStarMutagenType(star.name)" 
+                :class="getStarMutagenType(star.name)?.horoscopeType"
+                :data-type="getStarMutagenType(star.name)?.mutagen">
+            {{ getStarMutagenType(star.name)?.mutagen }}
           </span>
         </div>
       </div>
@@ -72,8 +76,10 @@
           <span class="star-name">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
-          <span class="sihua-badge" v-if="getStarMutagenType(star.name)" :data-type="getStarMutagenType(star.name)">
-            {{ getStarMutagenType(star.name) }}
+          <span class="sihua-badge" v-if="getStarMutagenType(star.name)" 
+                :class="getStarMutagenType(star.name)?.horoscopeType"
+                :data-type="getStarMutagenType(star.name)?.mutagen">
+            {{ getStarMutagenType(star.name)?.mutagen }}
           </span>
         </div>
       </div>
@@ -141,7 +147,7 @@ const props = defineProps<{
   palaceClasses: Record<string, boolean>;
   horoscopeStars: Array<{name: string, type?: string, horoscopeType?: string}>;
   yearlyDecorativeStars?: { jiangqian?: string; suiqian?: string };
-  getStarMutagenType: (starName: string) => string | null;
+  getStarMutagenType: (starName: string) => { mutagen: string, horoscopeType: string } | null;
 }>();
 
 defineEmits(['palace-click']);
@@ -410,6 +416,33 @@ const otherHoroscopeStars = computed(() => {
   padding: 0.5px;
 }
 
+/* 四化角标颜色：基于运限类型 */
+.sihua-badge.yearly { /* 流年四化 */
+  position: absolute;
+  right: 6px;
+  top: 100px;
+  font-size: 13px;
+  font-weight: thin;
+  padding: 1px 3px;
+  background-color: rgb(36, 138, 221);
+  color: white;
+  border-radius: 2px;
+  padding: 0.5px;
+}
+
+.sihua-badge.decadal { /* 大限四化 */
+  position: absolute;
+  right: 6px;
+  top: 80px;
+  font-size: 13px;
+  font-weight: thin;
+  padding: 1px 3px;
+  background-color: rgb(38, 166, 38);
+  color: white;
+  border-radius: 2px;
+  padding: 0.5px;
+}
+
 /* 右上角流曜（大限、流年）的父容器 */
 .top-right-stars-wrapper {
   position: absolute;
@@ -484,24 +517,9 @@ const otherHoroscopeStars = computed(() => {
   justify-content: center; /* 水平居中 */
 }
 
-/* 四化星小角标 (Badge) */
-.sihua-badge {
-  position: absolute;
-  right: -5px;
-  top: -5px;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 1px 3px;
-  background-color: gold;
-  color: #333;
-  z-index: 10;
-}
 
-/* 不同四化类型的颜色 */
-.sihua-badge[data-type="禄"] { background-color: #FFD700; }
-.sihua-badge[data-type="权"] { background-color: #FF4500; }
-.sihua-badge[data-type="科"] { background-color: #32CD32; }
-.sihua-badge[data-type="忌"] { background-color: #4B0082; color: white; }
+
+
 
 /* 博士十二神样式 */
 .decorative-star.boshi {

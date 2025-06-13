@@ -102,19 +102,6 @@ export class HoroscopeAdapter {
         break;
     }
     
-    console.log(`大限调试详情:
-    出生日期: ${astrolabe.solarDate}
-    出生年月日: ${birthYear}-${birthMonth}-${birthDay}
-    性别: ${astrolabe.gender}
-    五行局: ${astrolabe.fiveElementsClass}
-    起始年龄: ${startAge}
-    大限范围: ${decade.range[0]}-${decade.range[1]}
-    计算方法1(年份+起运年龄-2): ${targetYear1}
-    计算方法2(年份+起运年龄-1): ${targetYear2}
-    计算方法3(年份+起运年龄): ${targetYear3}
-    采用方法: ${methodDescription}，目标年份=${targetYear}
-    `);
-    
     // 使用年中日期（6月15日）以确保我们越过了立春，从而获得正确的年份干支
     const targetDate = new Date(targetYear, 5, 15);
     
@@ -128,7 +115,7 @@ export class HoroscopeAdapter {
     
     try {
       // 计算运限信息
-      const horoscopeInfo = HoroscopeCalculator.calculateHoroscope(astrolabe, targetDate);
+      const horoscopeInfo: any = HoroscopeCalculator.calculateHoroscope(astrolabe, targetDate);
       
       // === 新增：计算大限十二宫名称 ===
       const decadalLifePalaceIndex = horoscopeInfo.decadal.index;
@@ -164,20 +151,13 @@ export class HoroscopeAdapter {
           age: startAge, // 使用起始年龄
           startYear: targetYear, // 添加起始年份信息
           palaceNames: decadalPalaceNames, // 添加大限宫位名称
+          mutagen: HoroscopeCalculator.getAccurateMutagens(decade.heavenlyStem), // 修正：使用我们自己的精确方法
         },
         fullData: horoscopeInfo,
         decadeIndex,
         comment: `${decade.range[0]}-${decade.range[1]}岁 ${decade.heavenlyStem}${decade.earthlyBranch}运 (${targetYear}年起)`,
         lifePalaceIndex: decadalLifePalaceIndex // 使用大限命宫索引
       };
-      
-      // 打印详细的大限命宫索引信息
-      console.log(`大限命宫索引详情:
-        大限范围: ${decade.range[0]}-${decade.range[1]}岁
-        大限天干地支: ${decade.heavenlyStem}${decade.earthlyBranch}
-        大限命宫索引(horoscopeInfo.decadal.index): ${decadalLifePalaceIndex}
-        大限命宫宫位名称: ${horoscopeInfo.decadal.palaceNames?.[decadalLifePalaceIndex] || '未知'}
-      `);
       
       // 缓存结果
       this.cache.set(cacheKey, result);
@@ -207,40 +187,21 @@ export class HoroscopeAdapter {
     // 解析出生日期
     const [birthYear, birthMonth, birthDay] = astrolabe.solarDate.split('-').map(Number);
     
-    console.log(`流年调试:
-    出生日期: ${astrolabe.solarDate}
-    目标年份: ${year}
-    目标日期: ${targetDate.toISOString()}
-    `);
-    
     // 生成缓存键
     const cacheKey = this.getCacheKey('yearly', astrolabe, targetDate);
     
     // 检查缓存
     if (this.cache.has(cacheKey)) {
-      console.log('流年调试: 使用缓存数据');
       return this.cache.get(cacheKey);
     }
     
     try {
       // 计算运限信息
-      console.log(`流年调试: 计算运限信息, 命盘日期=${astrolabe.solarDate}`);
-      const horoscopeInfo = HoroscopeCalculator.calculateHoroscope(astrolabe, targetDate);
+      const horoscopeInfo: any = HoroscopeCalculator.calculateHoroscope(astrolabe, targetDate);
       
       // 在中国传统计算中，出生年即为1岁
       // 因此虚岁 = 当前年 - 出生年 + 1
       const age = year - birthYear + 1;
-      console.log(`流年调试: 出生年=${birthYear}, 虚岁=${age}`);
-      
-      // 检查流月数据
-      if (horoscopeInfo.monthly) {
-        console.log(`流年调试: 流月数据类型=${typeof horoscopeInfo.monthly}, 是数组=${Array.isArray(horoscopeInfo.monthly)}`);
-        if (Array.isArray(horoscopeInfo.monthly)) {
-          console.log(`流年调试: 流月数据长度=${horoscopeInfo.monthly.length}`);
-        }
-      } else {
-        console.log('流年调试: 未获取到流月数据');
-      }
       
       // === 新增：计算流年十二宫名称 ===
       const palaceNamesBase = ['命宫', '兄弟宫', '夫妻宫', '子女宫', '财帛宫', '疾厄宫', '迁移宫', '仆役宫', '官禄宫', '田宅宫', '福德宫', '父母宫'];
@@ -266,29 +227,24 @@ export class HoroscopeAdapter {
         yearlyPalaceNames[palaceIndex] = palaceNamesBase[i];
       }
       
-      console.log(`流年宫位计算:
-        流年地支: ${yearlyEarthlyBranch}
-        流年命宫索引: ${yearlyLifePalaceIndex}
-        排列方向: ${isClockwise ? '顺时针' : '逆时针'}
-        宫位名称:`, yearlyPalaceNames
-      );
       // === 计算结束 ===
       
       // 格式化结果
       const result: HoroscopeHistoryItem = {
         type: 'yearly',
         data: {
-          year,
+          heavenlyStem: horoscopeInfo.yearly?.heavenlyStem,
+          earthlyBranch: horoscopeInfo.yearly?.earthlyBranch,
           age,
-          heavenlyStem: horoscopeInfo.yearly?.heavenlyStem || '',
-          earthlyBranch: horoscopeInfo.yearly?.earthlyBranch || '',
-          palaceNames: yearlyPalaceNames, // 添加流年宫位名称
-          yearlyDecStar: horoscopeInfo.yearly.yearlyDecStar, // 修正：从 yearly 属性中获取流年神煞数据
+          palaceNames: yearlyPalaceNames,
+          jiangqian12: horoscopeInfo.yearly?.jiangqian12,
+          suiqian12: horoscopeInfo.yearly?.suiqian12,
+          mutagen: HoroscopeCalculator.getAccurateMutagens(horoscopeInfo.yearly?.heavenlyStem || ''), // 修正：使用我们自己的精确方法
         },
         fullData: horoscopeInfo,
         yearIndex,
-        comment: `${year}年 ${age}岁 ${horoscopeInfo.yearly?.heavenlyStem || ''}${horoscopeInfo.yearly?.earthlyBranch || ''}年`,
-        lifePalaceIndex: yearlyLifePalaceIndex, // 修正为流年命宫索引
+        comment: `${year}年 ${horoscopeInfo.yearly?.heavenlyStem}${horoscopeInfo.yearly?.earthlyBranch} (${age}岁)`,
+        lifePalaceIndex: yearlyLifePalaceIndex,
       };
       
       // 缓存结果
@@ -318,13 +274,6 @@ export class HoroscopeAdapter {
     
     // 解析出生日期
     const [birthYear, birthMonth, birthDay] = astrolabe.solarDate.split('-').map(Number);
-    
-    console.log(`流月调试:
-    出生日期: ${astrolabe.solarDate}
-    目标年份: ${year}
-    目标月份: ${monthIndex + 1}
-    目标日期: ${targetDate.toISOString()}
-    `);
     
     // 生成缓存键
     const cacheKey = this.getCacheKey('monthly', astrolabe, targetDate);

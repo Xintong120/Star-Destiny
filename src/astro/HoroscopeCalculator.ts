@@ -16,6 +16,36 @@ import { PalaceNameService } from './PalaceNameService';
  */
 export default class HoroscopeCalculator {
   /**
+   * 根据天干获取正确的四化星
+   * @param heavenlyStem 天干
+   * @returns 四化星数组 [禄, 权, 科, 忌]
+   */
+  static getAccurateMutagens(heavenlyStem: string): [string, string, string, string] | undefined {
+    const mutagensMap: Record<string, [string, string, string, string]> = {
+      '甲': ['廉贞', '破军', '武曲', '太阳'],
+      '乙': ['天机', '天梁', '紫微', '太阴'],
+      '丙': ['天同', '天机', '文昌', '廉贞'],
+      '丁': ['太阴', '天同', '天机', '巨门'],
+      '戊': ['贪狼', '太阴', '右弼', '天机'],
+      '己': ['武曲', '贪狼', '天梁', '文曲'],
+      '庚': ['太阳', '武曲', '太阴', '天同'],
+      '辛': ['巨门', '太阳', '文曲', '文昌'],
+      '壬': ['天梁', '紫微', '左辅', '武曲'],
+      '癸': ['破军', '巨门', '太阴', '贪狼'],
+    };
+
+    // 支持中文和拼音天干的转换
+    const heavenlyStemMap: Record<string, string> = {
+      'jia': '甲', 'yi': '乙', 'bing': '丙', 'ding': '丁', 'wu': '戊',
+      'ji': '己', 'geng': '庚', 'xin': '辛', 'ren': '壬', 'gui': '癸'
+    };
+    
+    const chineseStem = heavenlyStemMap[heavenlyStem.toLowerCase()] || heavenlyStem;
+
+    return mutagensMap[chineseStem];
+  }
+
+  /**
    * 获取运限数据
    * 根据星盘对象和目标日期计算运限信息
    *

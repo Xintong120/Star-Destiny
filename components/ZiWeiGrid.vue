@@ -680,6 +680,13 @@ function handleHoroscopeUpdate(horoscopeData: any) {
 
     console.log(`处理运限项: 类型=${type}, 命宫索引=${lifePalaceIndex}`);
 
+    // 新增：打印四化星数据以供调试
+    if (data.mutagen) {
+      console.log(`运限 ${type} 的四化星:`, data.mutagen);
+    } else {
+      console.log(`运限 ${type} 未提供四化星数据。`);
+    }
+
     // 保存宫位名称 (如果存在)
     if (data.palaceNames && Array.isArray(data.palaceNames)) {
       console.log(`保存 ${type} 宫位名称:`, data.palaceNames);
@@ -755,89 +762,41 @@ function getHoroscopeNames(palaceIndex: number): Array<{ name: string, type: str
 }
 
 // 获取星曜的四化类型（禄、权、科、忌）
-function getStarMutagenType(starName: string): string | null {
-  // 如果没有选择任何运限，则只显示本命四化
-  if (!currentHoroscope.value || currentHoroscope.value.length === 0) {
-    const mutagens = (props.astrolabe as any).mutagen;
-    if (mutagens) {
-      if (mutagens[0] === starName) return '禄';
-      if (mutagens[1] === starName) return '权';
-      if (mutagens[2] === starName) return '科';
-      if (mutagens[3] === starName) return '忌';
-    }
-    return null;
-  }
-  
-  // 如果选择了运限，则只显示运限四化
-  try {
-    for (const horoscopeItem of currentHoroscope.value) {
-      if (horoscopeItem && horoscopeItem.data) {
-        // 大限四化优先
-        if (horoscopeItem.type === 'decadal') {
-          let heavenlyStem = '';
-          if (horoscopeItem.data.originalHeavenlyStem) {
-            heavenlyStem = horoscopeItem.data.originalHeavenlyStem;
-          } else if (horoscopeItem.data.heavenlyStem) {
-            heavenlyStem = horoscopeItem.data.heavenlyStem;
-          } else {
-            continue; // 如果没有天干信息，则跳过
-          }
-          
-          let mutagenStars: string[] = [];
-          switch(heavenlyStem) {
-            case '甲': mutagenStars = ['廉贞', '破军', '武曲', '太阳']; break;
-            case '乙': mutagenStars = ['天机', '天梁', '紫微', '太阴']; break;
-            case '丙': mutagenStars = ['天同', '天机', '文昌', '廉贞']; break;
-            case '丁': mutagenStars = ['太阴', '天同', '天机', '巨门']; break;
-            case '戊': mutagenStars = ['贪狼', '太阴', '右弼', '天机']; break;
-            case '己': mutagenStars = ['武曲', '贪狼', '天梁', '文曲']; break;
-            case '庚': mutagenStars = ['太阳', '武曲', '太阴', '天同']; break;
-            case '辛': mutagenStars = ['巨门', '太阳', '文曲', '文昌']; break;
-            case '壬': mutagenStars = ['天梁', '紫微', '左辅', '武曲']; break;
-            case '癸': mutagenStars = ['破军', '巨门', '太阴', '贪狼']; break;
-          }
-          
-          const mutagenTypes = ['禄', '权', '科', '忌'];
-          const starIndex = mutagenStars.indexOf(starName);
-          if (starIndex !== -1) {
-            return mutagenTypes[starIndex]; // 找到大限四化，立即返回
-          }
-        }
+const getStarMutagenType = (starName: string): { mutagen: string, horoscopeType: string } | null => {
+  if (currentHoroscope.value && currentHoroscope.value.length > 0) {
+    const mutagenTypes = ['禄', '权', '科', '忌'];
 
-        // 这里可以添加对流年、流月等其他运限四化的处理
-        if (horoscopeItem.type === 'yearly') {
-          const heavenlyStem = horoscopeItem.data.heavenlyStem;
-          if (!heavenlyStem) continue;
-
-          let mutagenStars: string[] = [];
-          switch(heavenlyStem) {
-            case '甲': mutagenStars = ['廉贞', '破军', '武曲', '太阳']; break;
-            case '乙': mutagenStars = ['天机', '天梁', '紫微', '太阴']; break;
-            case '丙': mutagenStars = ['天同', '天机', '文昌', '廉贞']; break;
-            case '丁': mutagenStars = ['太阴', '天同', '天机', '巨门']; break;
-            case '戊': mutagenStars = ['贪狼', '太阴', '右弼', '天机']; break;
-            case '己': mutagenStars = ['武曲', '贪狼', '天梁', '文曲']; break;
-            case '庚': mutagenStars = ['太阳', '武曲', '太阴', '天同']; break;
-            case '辛': mutagenStars = ['巨门', '太阳', '文曲', '文昌']; break;
-            case '壬': mutagenStars = ['天梁', '紫微', '左辅', '武曲']; break;
-            case '癸': mutagenStars = ['破军', '巨门', '太阴', '贪狼']; break;
-          }
-          
-          const mutagenTypes = ['禄', '权', '科', '忌'];
-          const starIndex = mutagenStars.indexOf(starName);
-          if (starIndex !== -1) {
-            return mutagenTypes[starIndex]; // 找到流年四化，立即返回
-          }
-        }
+    // 优先检查流年四化
+    const yearlyHoroscope = currentHoroscope.value.find(h => h.type === 'yearly');
+    if (yearlyHoroscope && yearlyHoroscope.data?.mutagen && Array.isArray(yearlyHoroscope.data.mutagen)) {
+      const starIndex = yearlyHoroscope.data.mutagen.indexOf(starName);
+      if (starIndex !== -1) {
+        return { mutagen: mutagenTypes[starIndex], horoscopeType: 'yearly' };
       }
     }
-  } catch (error) {
-    console.error('获取星曜四化类型出错:', error);
+
+    // 然后检查大限四化
+    const decadalHoroscope = currentHoroscope.value.find(h => h.type === 'decadal');
+    if (decadalHoroscope && decadalHoroscope.data?.mutagen && Array.isArray(decadalHoroscope.data.mutagen)) {
+      const starIndex = decadalHoroscope.data.mutagen.indexOf(starName);
+      if (starIndex !== -1) {
+        return { mutagen: mutagenTypes[starIndex], horoscopeType: 'decadal' };
+      }
+    }
   }
-  
-  // 如果在所有运限中都没有找到该星的四化，则返回null
+
+  // 默认返回生年四化
+  const nativeMutagens = (props.astrolabe as any)?.mutagen;
+  if (nativeMutagens && Array.isArray(nativeMutagens)) {
+    const mutagenTypes = ['禄', '权', '科', '忌'];
+    const starIndex = nativeMutagens.indexOf(starName);
+    if (starIndex !== -1) {
+      return { mutagen: mutagenTypes[starIndex], horoscopeType: 'native' };
+    }
+  }
+
   return null;
-}
+};
 
 // 获取宫位对应的运限四化星
 function getHoroscopeMutagen(palaceIndex: number): string | null {
