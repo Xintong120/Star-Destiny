@@ -9,7 +9,7 @@
     </div>
 
     <!-- 表单抽屉 -->
-    <el-drawer v-model="drawer" :with-header="false" size="400px">
+    <el-drawer v-model="isDrawerOpen" :with-header="false" size="400px">
       <!-- 表单组件，用于收集用户输入的命盘信息 -->
       <div class="form-content">
         <form @submit.prevent="submitForm">
@@ -103,9 +103,10 @@ import { ref, onMounted } from 'vue';
 import html2canvas from 'html2canvas';
 import { astro } from 'iztro';
 import ZiWeiGrid from './ZiWeiGrid.vue';
+import { useDrawerStore } from '../src/stores/drawerStore';
 
-// 抽屉显示状态
-const drawer = ref(false);
+// 从 store 中获取抽屉状态和操作
+const { isDrawerOpen, closeDrawer: closeFormDrawer } = useDrawerStore();
 
 // 定义组件向父组件发送的事件
 const emit = defineEmits(['submit']);
@@ -145,7 +146,7 @@ function submitForm() {
   emit('submit', formData);
   
   // 关闭抽屉
-  drawer.value = false;
+  closeFormDrawer();
 }
 
 /**
@@ -169,38 +170,14 @@ function generateAstrolabe(formData) {
 }
 
 /**
- * 打开抽屉方法，可以被父组件调用
- */
-function openDrawer() {
-  drawer.value = true;
-}
-
-/**
- * 关闭抽屉方法，可以被父组件调用
- */
-function closeDrawer() {
-  drawer.value = false;
-}
-
-/**
  * 重置命盘数据
  */
 function resetAstrolabe() {
   astrolabe.value = null;
 }
 
-// 组件挂载时自动打开抽屉
-onMounted(() => {
-  // 页面加载后稍微延迟一下再打开抽屉，体验更好
-  setTimeout(() => {
-    drawer.value = true;
-  }, 300);
-});
-
 // 导出方法供父组件调用
 defineExpose({
-  openDrawer,
-  closeDrawer,
   resetAstrolabe,
   astrolabe
 });

@@ -25,9 +25,9 @@
         <h2 class="site-name">命宫在线</h2>
       </div>
       <div class="nav-links">
-        <router-link to="/ziwei" class="nav-link">排盘</router-link>
-        <span>更新日志</span>
-        <span>意见反馈</span>
+        <span @click="openFormDrawer" class="nav-link">排盘</span>
+        <span class="nav-link">更新日志</span>
+        <span class="nav-link">意见反馈</span>
       </div>
     </div>
     <div class="right-actions">
@@ -38,6 +38,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useDrawerStore } from '../src/stores/drawerStore';
+
+const { openDrawer: openFormDrawer } = useDrawerStore();
 
 onMounted(() => {
   // 为Logo中的星星添加鼠标悬停闪烁效果
@@ -112,13 +115,13 @@ onMounted(() => {
   margin-left: 30px;
 }
 
-.nav-links span {
+.nav-links .nav-link {
   cursor: pointer;
   color: #66605A;
   transition: color 0.3s ease;
 }
 
-.nav-links span:hover {
+.nav-links .nav-link:hover {
   color: #FED572;
 }
 
