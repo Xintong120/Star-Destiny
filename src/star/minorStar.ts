@@ -38,6 +38,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
 
   stars[zuoIndex].push(
     new FunctionalStar({
+      key: 'zuofuMin',
       name: t('zuofuMin'),
       type: 'soft',
       scope: 'origin',
@@ -47,6 +48,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[youIndex].push(
     new FunctionalStar({
+      key: 'youbiMin',
       name: t('youbiMin'),
       type: 'soft',
       scope: 'origin',
@@ -56,6 +58,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[changIndex].push(
     new FunctionalStar({
+      key: 'wenchangMin',
       name: t('wenchangMin'),
       type: 'soft',
       scope: 'origin',
@@ -65,6 +68,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[quIndex].push(
     new FunctionalStar({
+      key: 'wenquMin',
       name: t('wenquMin'),
       type: 'soft',
       scope: 'origin',
@@ -74,6 +78,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[kuiIndex].push(
     new FunctionalStar({
+      key: 'tiankuiMin',
       name: t('tiankuiMin'),
       type: 'soft',
       scope: 'origin',
@@ -82,6 +87,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[yueIndex].push(
     new FunctionalStar({
+      key: 'tianyueMin',
       name: t('tianyueMin'),
       type: 'soft',
       scope: 'origin',
@@ -90,6 +96,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[luIndex].push(
     new FunctionalStar({
+      key: 'lucunMin',
       name: t('lucunMin'),
       type: 'lucun',
       scope: 'origin',
@@ -98,6 +105,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[maIndex].push(
     new FunctionalStar({
+      key: 'tianmaMin',
       name: t('tianmaMin'),
       type: 'tianma',
       scope: 'origin',
@@ -106,6 +114,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[kongIndex].push(
     new FunctionalStar({
+      key: 'dikongMin',
       name: t('dikongMin'),
       type: 'tough',
       scope: 'origin',
@@ -114,6 +123,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[jieIndex].push(
     new FunctionalStar({
+      key: 'dijieMin',
       name: t('dijieMin'),
       type: 'tough',
       scope: 'origin',
@@ -122,6 +132,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[huoIndex].push(
     new FunctionalStar({
+      key: 'huoxingMin',
       name: t('huoxingMin'),
       type: 'tough',
       scope: 'origin',
@@ -130,6 +141,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[lingIndex].push(
     new FunctionalStar({
+      key: 'lingxingMin',
       name: t('lingxingMin'),
       type: 'tough',
       scope: 'origin',
@@ -138,6 +150,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[yangIndex].push(
     new FunctionalStar({
+      key: 'qingyangMin',
       name: t('qingyangMin'),
       type: 'tough',
       scope: 'origin',
@@ -146,6 +159,7 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   );
   stars[tuoIndex].push(
     new FunctionalStar({
+      key: 'tuoluoMin',
       name: t('tuoluoMin'),
       type: 'tough',
       scope: 'origin',

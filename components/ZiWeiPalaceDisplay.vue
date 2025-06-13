@@ -51,7 +51,7 @@
     <div class="star-container" v-if="palaceData && (palaceData.majorStars.length || palaceData.minorStars.length || palaceData.adjectiveStars.length)">
       <div class="main-minor-stars">
         <div v-for="star in palaceData.majorStars" :key="star.name" class="star-item major-star">
-          <span class="star-name">{{ star.name }}</span>
+          <span class="star-name" @click.stop="showStarInfo(star)">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
           <span class="sihua-badge" v-if="getStarMutagenType(star.name)" 
@@ -61,7 +61,7 @@
           </span>
         </div>
         <div v-for="star in palaceData.minorStars" :key="star.name" class="star-item minor-star">
-          <span class="star-name">{{ star.name }}</span>
+          <span class="star-name" @click.stop="showStarInfo(star)">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
           <span class="sihua-badge" v-if="getStarMutagenType(star.name)" 
@@ -73,7 +73,7 @@
       </div>
       <div class="adjective-stars-container" :class="{ 'two-rows': palaceData.adjectiveStars.length > 5 }">
         <div v-for="star in palaceData.adjectiveStars" :key="star.name" class="star-item adjective-star">
-          <span class="star-name">{{ star.name }}</span>
+          <span class="star-name" @click.stop="showStarInfo(star)">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
           <span class="sihua-badge" v-if="getStarMutagenType(star.name)" 
@@ -136,9 +136,11 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue';
 import type { IFunctionalAstrolabe } from '../src/astro/FunctionalAstrolabe';
+import { showStarNotification } from '@/utils/starInfo';
 
 // 从 IFunctionalAstrolabe 推断出单个宫位的确切类型
 type PalaceData = IFunctionalAstrolabe['palaces'][number];
+type Star = PalaceData['majorStars'][number];
 
 const props = defineProps<{
   palaceData?: PalaceData;
@@ -151,6 +153,10 @@ const props = defineProps<{
 }>();
 
 defineEmits(['palace-click']);
+
+const showStarInfo = (star: Star) => {
+  showStarNotification(star);
+};
 
 const yearlyPalaceName = computed(() => {
   return props.horoscopeNames?.find(h => h.type === 'yearly')?.name;

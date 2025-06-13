@@ -10,6 +10,7 @@ import { Brightness, BrightnessKey, kot, Mutagen, MutagenKey } from '../i18n';
  * 文档地址：https://docs.iztro.com/posts/star.html#functionalstar
  */
 export interface IFunctionalStar extends Star {
+  key?: Star['key'];
   /**
    * 获取星耀所在宫位
    *
@@ -74,6 +75,7 @@ export interface IFunctionalStar extends Star {
  * 文档地址：https://docs.iztro.com/posts/star.html
  */
 export default class FunctionalStar implements IFunctionalStar {
+  key?: Star['key'];
   name;
   type;
   scope;
@@ -83,6 +85,7 @@ export default class FunctionalStar implements IFunctionalStar {
   private _astrolabe?: IFunctionalAstrolabe;
 
   constructor(data: Star) {
+    this.key = data.key;
     this.name = data.name;
     this.type = data.type;
     this.scope = data.scope;

@@ -58,6 +58,7 @@ export const getMajorStar = (param: AstrolabeParam) => {
     if (s !== '') {
       stars[fixIndex(ziweiIndex - i)].push(
         new FunctionalStar({
+          key: s,
           name: t(s),
           type: 'major',
           scope: 'origin',
@@ -72,6 +73,7 @@ export const getMajorStar = (param: AstrolabeParam) => {
     if (s !== '') {
       stars[fixIndex(tianfuIndex + i)].push(
         new FunctionalStar({
+          key: s,
           name: t(s),
           type: 'major',
           scope: 'origin',

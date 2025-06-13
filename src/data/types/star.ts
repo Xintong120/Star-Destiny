@@ -1,4 +1,4 @@
-import { Brightness, Mutagen, StarName } from '../../i18n';
+import { Brightness, Mutagen, StarName, StarKey } from '../../i18n';
 import { Scope, StarType } from './general';
 
 /**
@@ -12,6 +12,8 @@ import { Scope, StarType } from './general';
  * - mutagen 四化
  */
 export type Star = {
+  /** 星耀的唯一英文ID */
+  key?: StarKey;
   /** 星耀名字 */
   name: StarName;
   /** 星耀类型（主星 | 吉星 | 煞星 | 杂耀 | 桃花星 | 解神 | 禄存 | 天马） */
