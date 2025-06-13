@@ -237,8 +237,7 @@ export class HoroscopeAdapter {
           earthlyBranch: horoscopeInfo.yearly?.earthlyBranch,
           age,
           palaceNames: yearlyPalaceNames,
-          jiangqian12: horoscopeInfo.yearly?.jiangqian12,
-          suiqian12: horoscopeInfo.yearly?.suiqian12,
+          yearlyDecStar: horoscopeInfo.yearly?.yearlyDecStar,
           mutagen: HoroscopeCalculator.getAccurateMutagens(horoscopeInfo.yearly?.heavenlyStem || ''), // 修正：使用我们自己的精确方法
         },
         fullData: horoscopeInfo,

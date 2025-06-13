@@ -779,7 +779,7 @@ const getStarMutagenType = (starName: string): { mutagen: string, horoscopeType:
     const decadalHoroscope = currentHoroscope.value.find(h => h.type === 'decadal');
     if (decadalHoroscope && decadalHoroscope.data?.mutagen && Array.isArray(decadalHoroscope.data.mutagen)) {
       const starIndex = decadalHoroscope.data.mutagen.indexOf(starName);
-      if (starIndex !== -1) {
+          if (starIndex !== -1) {
         return { mutagen: mutagenTypes[starIndex], horoscopeType: 'decadal' };
       }
     }
@@ -788,13 +788,13 @@ const getStarMutagenType = (starName: string): { mutagen: string, horoscopeType:
   // 默认返回生年四化
   const nativeMutagens = (props.astrolabe as any)?.mutagen;
   if (nativeMutagens && Array.isArray(nativeMutagens)) {
-    const mutagenTypes = ['禄', '权', '科', '忌'];
+          const mutagenTypes = ['禄', '权', '科', '忌'];
     const starIndex = nativeMutagens.indexOf(starName);
-    if (starIndex !== -1) {
+          if (starIndex !== -1) {
       return { mutagen: mutagenTypes[starIndex], horoscopeType: 'native' };
-    }
+          }
   }
-
+  
   return null;
 };
 

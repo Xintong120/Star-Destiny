@@ -524,8 +524,11 @@ const otherHoroscopeStars = computed(() => {
 /* 博士十二神样式 */
 .decorative-star.boshi {
   position: absolute;
-  top: 190px;
-  right: 180px;
+  top: 195px;
+  right: 184px;
+  color: black;
+  font-size: 13px;
+  font-weight: thin;
 }
 
 /* 流年神煞容器 (将前, 岁前) */
@@ -542,36 +545,10 @@ const otherHoroscopeStars = computed(() => {
 .decorative-star.jiangqian,
 .decorative-star.suiqian {
   font-size: 13px;
-  padding: 1px 4px;
-  border-radius: 3px;
-  border: 1px solid;
-  font-weight: bold;
-}
-
-.decorative-star.jiangqian {
+  font-weight: thin;
   color: black; 
-  background-color: white;
-  border-color: #9C27B0;
 }
 
-.decorative-star.suiqian {
-  color: black;
-  background-color: white;
-  border-color: #009688;
-}
 
-/*
- * 统一神煞样式 (博士, 将前, 岁前)
- * 黑字, 透明背景, 无边框, 细字体
- */
-.decorative-star.boshi,
-.decorative-star.jiangqian,
-.decorative-star.suiqian {
-  font-size: 13px;
-  font-weight: 300; /* 'thin' is non-standard, using 300 for thinz */
-  color: black;
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
+
 </style> 
