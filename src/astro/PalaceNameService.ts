@@ -99,9 +99,19 @@ export class PalaceNameService {
    *
    * @param startIndex 起始宫位的索引
    * @param isClockwise 是否顺时针。默认为 false
+   * @param type 运限类型
    * @returns {PalaceName[]} 运限十二宫名称数组
    */
-  public static getHoroscopePalaceNames(startIndex: number, isClockwise: boolean = false): PalaceName[] {
+  public static getHoroscopePalaceNames(
+    startIndex: number,
+    isClockwise: boolean = false,
+    type?: 'decadal' | 'age' | 'yearly' | 'monthly' | 'daily' | 'hourly',
+  ): PalaceName[] {
+    // 如果是流月，不显示十二宫名称，只在命宫显示"流月命宫"
+    if (type === 'monthly') {
+      return [];
+    }
+
     const palaceNames = this.getPalaceNames();
     const result: PalaceName[] = [];
 

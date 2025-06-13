@@ -463,6 +463,8 @@ const correctedYearlyPalaceNames = computed(() => {
     return [];
   }
 
+  // 1. Create a map from the original palace name to its index.
+  // This captures the unique physical layout of the current natal chart.
   const originalPalaceNameToIndex: Record<string, number> = {};
   const originalIndexToPalaceName: Record<number, string> = {};
   palaces.value.forEach((p, i) => {
@@ -471,30 +473,32 @@ const correctedYearlyPalaceNames = computed(() => {
     originalIndexToPalaceName[i] = p.name;
   });
 
-  // 流年固定顺时针，在图表上宫位索引是增加的。
-  // 但我们的算法中，顺时针旋转对应 direction = -1
-  const direction = -1;
+  // 2. Yearly palaces are always ShunXing (clockwise on chart, index increase).
+  const isShunXing = true;
 
-  const newNames = new Array(12).fill('');
+  const result = new Array<string>(12);
+  const originalLifePalaceIndex = originalPalaceNameToIndex['命'];
 
-  const standardPalaceOrder = [
-    '命', '兄弟', '夫妻', '子女', '财帛', '疾厄',
-    '迁移', '仆役', '官禄', '田宅', '福德', '父母'
-  ];
-
-  for (let i = 0; i < 12; i++) {
-    const distance = (i - lifePalaceIdx) * direction;
-    let normalizedDistance = (distance % 12 + 12) % 12;
-    
-    const palaceNameKey = standardPalaceOrder[normalizedDistance];
-    
-    const originalIndexOfTargetPalace = originalPalaceNameToIndex[palaceNameKey];
-
-    const finalName = originalIndexToPalaceName[originalIndexOfTargetPalace];
-    newNames[i] = finalName;
+  if (originalLifePalaceIndex === undefined) {
+    console.error("Could not find natal Life Palace ('命宫') index.");
+    return [];
   }
 
-  return newNames;
+  for (let i = 0; i < 12; i++) { // i is the physical palace index
+    // 3. Calculate the "distance" from the current physical palace (i) to the yearly life palace.
+    const distance = isShunXing
+      ? (i - lifePalaceIdx + 12) % 12
+      : (lifePalaceIdx - i + 12) % 12;
+
+    // 4. Find which original palace name corresponds to this distance from the original life palace.
+    const targetOriginalIndex = isShunXing
+      ? (originalLifePalaceIndex + distance + 12) % 12
+      : (originalLifePalaceIndex - distance + 12) % 12;
+
+    result[i] = originalIndexToPalaceName[targetOriginalIndex] || '未知';
+  }
+
+  return result;
 });
 
 // 新增：用于存储所有层级的命宫索引和类型
@@ -705,124 +709,45 @@ function handleHoroscopeUpdate(horoscopeData: any) {
 
 // 新增：获取宫位的所有运限名称
 function getHoroscopeNames(palaceIndex: number): Array<{ name: string, type: string }> {
-  const names: Array<{ name: string, type: string }> = [];
-
-  const horoscopePalace = getHoroscopePalaceName(palaceIndex);
-
-  if (horoscopePalace) {
-    names.push({ 
-      name: horoscopePalace.name.replace('宫', ''), 
-      type: horoscopePalace.type 
-    });
-  }
-
-  return names;
-}
-
-// 获取运限宫位名称（返回数组，包含类型和值）
-function getHoroscopePalaceNames(palaceIndex: number): Array<{type: string, value: string}> {
   try {
-    // 如果没有运限信息，返回空数组
-    if (!currentHoroscopeType.value) {
-      return [];
-    }
-    
-    // 创建一个数组，存储所有需要显示的宫位名称
-    const palaceNames: Array<{type: string, value: string}> = [];
-    
-    // 遍历所有已保存的运限类型
-    for (const [type, names] of Object.entries(horoscopePalaceNamesByType.value)) {
-      // 如果该运限类型有宫位名称数据
-      if (names && names.length > 0) {
-        // 获取该宫位在地支顺序中的索引
-        // palaceDisplayIndex[i] 表示第i个格子对应palaces数组的哪个下标
-        // 我们需要找到当前宫位(palaceIndex)在palaceDisplayIndex中的位置
-        const displayIndex = palaceDisplayIndex.indexOf(palaceIndex);
-        
-        // 如果找到了该宫位的显示索引
-        if (displayIndex !== -1) {
-          // 根据显示索引获取对应的运限宫位名称
-          // 注意：地支顺序是寅卯辰巳午未申酉戌亥子丑，对应的索引是0,1,2,3,4,5,6,7,8,9,10,11
-          // 而iztro返回的宫位名称顺序可能不同，我们需要根据不同的运限类型进行调整
-          let adjustedIndex;
-          
-          // 根据运限类型和地支索引计算宫位索引
-          switch (type) {
-            case 'decadal':
-              // 大限宫位顺序: 官禄,仆役,迁移,疾厄,财帛,子女,夫妻,兄弟,命宫,父母,福德,田宅
-              // 对应地支索引: 寅卯辰巳午未申酉戌亥子丑 (0-11)
-              // 命宫在索引8的位置，对应地支戌(8)
-              adjustedIndex = (displayIndex + 8) % 12;
-              break;
-            case 'yearly':
-              // 流年宫位顺序: 田宅,官禄,仆役,迁移,疾厄,财帛,子女,夫妻,兄弟,命宫,父母,福德
-              // 命宫在索引9的位置，对应地支亥(9)
-              adjustedIndex = (displayIndex + 9) % 12;
-              break;
-            case 'monthly':
-              // 流月宫位顺序: 兄弟,命宫,父母,福德,田宅,官禄,仆役,迁移,疾厄,财帛,子女,夫妻
-              // 命宫在索引1的位置，对应地支卯(1)
-              adjustedIndex = (displayIndex + 1) % 12;
-              break;
-            case 'daily':
-            case 'hourly':
-              // 流日/流时宫位顺序: 仆役,迁移,疾厄,财帛,子女,夫妻,兄弟,命宫,父母,福德,田宅,官禄
-              // 命宫在索引7的位置，对应地支酉(7)
-              adjustedIndex = (displayIndex + 7) % 12;
-              break;
-            default:
-              adjustedIndex = displayIndex;
-          }
-          
-          // 确保索引在有效范围内
-          adjustedIndex = (adjustedIndex + 12) % 12;
-          
-          // 获取该索引对应的宫位名称
-          const palaceName = names[adjustedIndex];
-          
-          if (palaceName) {
-            // 根据运限类型添加前缀
-            let prefix = '';
-            switch (type) {
-              case 'decadal':
-                prefix = '大';
-                break;
-              case 'yearly':
-                prefix = '年';
-                break;
-              case 'monthly':
-                prefix = '月';
-                break;
-              case 'daily':
-                prefix = '日';
-                break;
-              case 'hourly':
-                prefix = '时';
-                break;
-              default:
-                prefix = '';
-            }
-            
-            // 简化宫位名称（去掉"宫"字）
-            const simpleName = palaceName.replace('宫', '');
-            
-            // 跳过特定的运限宫位名称
-            // 年迁移、月仆役、日仆役、时仆役
-            if ((type === 'yearly' && simpleName === '迁移') ||
-                (type === 'monthly' && simpleName === '仆役') ||
-                (type === 'daily' && simpleName === '仆役') ||
-                (type === 'hourly' && simpleName === '仆役')) {
-              continue;
-            }
-            
-            // 添加到结果数组
-            palaceNames.push({ type, value: prefix + simpleName });
-          }
+    const palaceNamesResult: Array<{ name: string, type: string }> = [];
+
+    // 大限宫位名称
+    if (showDecadalScope.value && correctedDecadalPalaceNames.value.length === 12) {
+      const isLifePalace = palaceIndex === correctedDecadalLifePalaceIndex.value;
+      if (isLifePalace) {
+        palaceNamesResult.push({ type: 'decadal', name: '大限命宫' });
+      } else {
+        const decadalName = correctedDecadalPalaceNames.value[palaceIndex];
+        if (decadalName) {
+          const simpleName = decadalName.replace('宫', '');
+          palaceNamesResult.push({ type: 'decadal', name: `大${simpleName}` });
         }
       }
     }
     
-    return palaceNames;
+    // 流年宫位名称
+    if (showYearlyScope.value && correctedYearlyPalaceNames.value.length === 12) {
+      const isLifePalace = palaceIndex === correctedYearlyLifePalaceIndex.value;
+      if (isLifePalace) {
+        palaceNamesResult.push({ type: 'yearly', name: '流年命宫' });
+      } else {
+        const yearlyName = correctedYearlyPalaceNames.value[palaceIndex];
+        if (yearlyName) {
+          const simpleName = yearlyName.replace('宫', '');
+          // 在紫微斗数中，流年宫位通常简称为"流X"，例如流年财帛宫简称为"流财"
+          palaceNamesResult.push({ type: 'yearly', name: `流${simpleName}` });
+        }
+      }
+    }
+
+    // 流月命宫
+    const monthlyHoroscopeItem = currentHoroscope.value.find(item => item.type === 'monthly');
+    if (monthlyHoroscopeItem && palaceIndex === monthlyHoroscopeItem.lifePalaceIndex) {
+      palaceNamesResult.push({ type: 'monthly', name: '流月命宫' });
+    }
+
+    return palaceNamesResult;
   } catch (error) {
     console.error('获取运限宫位名称出错:', error);
     return [];
@@ -1398,7 +1323,11 @@ function getYearlyDecorativeStars(palaceIndex: number): { jiangqian?: string; su
 }
 
 const currentHoroscopeType = computed(() => {
-  return currentHoroscope.value.length > 0 ? currentHoroscope.value[0].type : '';
+  if (currentHoroscope.value.length === 0) {
+    return '';
+  }
+  // The last item in the array is the most specific/current horoscope type.
+  return currentHoroscope.value[currentHoroscope.value.length - 1].type;
 });
 </script>
 

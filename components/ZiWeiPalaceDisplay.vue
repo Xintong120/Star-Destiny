@@ -11,12 +11,12 @@
     <div class="palace-name">
       <!-- 1. 流年宫位名称 (如果存在) -->
       <div v-if="yearlyPalaceName" class="yearly-palace-name-display">
-        流年{{ yearlyPalaceName }}
+        {{ yearlyPalaceName }}
       </div>
 
       <!-- 2. 大限宫位名称 (如果存在) -->
       <div v-if="decadalPalaceName" class="decadal-palace-name-display">
-        大限{{ decadalPalaceName }}
+        {{ decadalPalaceName }}
       </div>
 
       <!-- 3. 本命宫位名称 -->
@@ -284,7 +284,7 @@ const otherHoroscopeStars = computed(() => {
 .palace-name {
   position: absolute;
   bottom: 4px;
-  right: 60px;
+  right: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -309,17 +309,23 @@ const otherHoroscopeStars = computed(() => {
   color: red;
 }
 
-/* 其他运限宫位名称 (如流年) 的通用样式 */
+/* 其他运限宫位名称 (如流月) 的通用样式 */
 .horoscope-palace-name {
-  display: inline-block;
-  margin-left: 4px;
-  font-size: 11px;
-  padding: 1px 3px;
+  position: absolute;
+  bottom: 0;
+  left: -65px;
+  font-size: 14px;
+  padding: 1px 4px;
   border-radius: 3px;
   border-style: dashed;
   border-width: 1px;
   font-weight: bold;
-  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* 为不同运限类型设置颜色 */
+.horoscope-palace-name.monthly {
+  background-color: white;
 }
 
 /* 宫位天干地支样式 */
@@ -523,11 +529,6 @@ const otherHoroscopeStars = computed(() => {
 .sihua-badge[data-type="科"] { background-color: #32CD32; }
 .sihua-badge[data-type="忌"] { background-color: #4B0082; color: white; }
 
-/* 运限命宫的特殊高亮 */
-.palace.horoscope-life-palace {
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
-}
 
 /* 不同运限命宫的边框颜色 */
 .palace.horoscope-life-palace.decadal { border: 2px dashed #673AB7; }
