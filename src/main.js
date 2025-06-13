@@ -1,8 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import routes from './router/index.js'
+import router from './router/index.js'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
@@ -12,11 +11,6 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import "normalize.css";
 import "./assets/styles.scss";
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
 
 const pinia = createPinia()
 // 使用持久化插件
