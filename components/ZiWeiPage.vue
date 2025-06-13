@@ -10,6 +10,7 @@
       </div>
     </div>
     <AppFooter />
+    <ZiWeiForm />
   </div>
 </template>
 
@@ -19,6 +20,7 @@ import { useAstrolabeStore } from '../src/stores/astrolabeStore';
 import NavBar from './NavBar.vue';
 import AppFooter from './Footer.vue';
 import ZiWeiGrid from './ZiWeiGrid.vue';
+import ZiWeiForm from './ZiWeiForm.vue';
 
 const store = useAstrolabeStore();
 const astrolabe = computed(() => store.astrolabe);
