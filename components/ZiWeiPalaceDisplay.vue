@@ -5,7 +5,7 @@
     @click="$emit('palace-click')"
   >
     <!-- 宫位序号 -->
-    <div class="palace-index">{{ displayIndex }}</div>
+    <!-- <div class="palace-index">{{ displayIndex }}</div> -->
 
     <!-- 本命与大限宫位名称 -->
     <div class="palace-name">
@@ -210,9 +210,9 @@ const otherHoroscopeStars = computed(() => {
   position: absolute;
   top: 130px;
   right: 4px;
-  font-size: 12px;
+  font-size: 14px;
   color: red;
-  font-weight: bold;
+  font-weight: thin;
   background-color: white;
   border: 1px solid red;
   padding: 1px 4px;
@@ -226,11 +226,11 @@ const otherHoroscopeStars = computed(() => {
   flex-direction: column;
   gap: 2px;
   font-size: 12px;
-  color: #9C27B0;
-  background-color: #F3E5F5;
+  color: black;
+  background-color: white;
   padding: 1px 1px;
   border-radius: 3px;
-  border: 1px solid #CE93D8;
+  border: 2px solid #CE93D8;
   position: absolute;
   bottom: 45px;
   right: 5px;
@@ -253,32 +253,17 @@ const otherHoroscopeStars = computed(() => {
   min-width: 20px;
 }
 
-/* 博士十二神样式 */
-.decorative-star.boshi {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 12px;
-  color: #FF5722;
-  background-color: #FBE9E7;
-  padding: 1px 3px;
-  border-radius: 3px;
-  border: 1px solid #FFAB91;
-  margin-top: 2px;
-  top: 190px;
-  right: 180px;
-}
+
 
 /* 宫位左上角序号样式 */
-.palace-index {
+ .palace-index {
   position: absolute;
   top: 2px;
   left: 4px;
   font-size: 10px;
   color: red;
   font-weight: bold;
-}
+} 
 
 /* 宫位名称容器 (本命, 大限, 流年等) */
 .palace-name {
@@ -288,25 +273,28 @@ const otherHoroscopeStars = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 /* 流年宫位名称样式 */
 .yearly-palace-name-display {
-  color: blue;
+  color: rgb(36, 138, 221);
   font-size: 16px;
+  font-weight: thin;
 }
 
 /* 大限宫位名称样式 */
 .decadal-palace-name-display {
-  color: green;
-  font-size: 16px;
+  color: rgb(38, 166, 38);
+  font-size: 17px;
+  font-weight: thin;
 }
 
 /* 本命宫位名称样式 */
 .native-palace-name {
   font-size: 18px;
-  color: red;
+  color: rgb(255, 23, 23);
+  font-weight: thin;
 }
 
 /* 其他运限宫位名称 (如流月) 的通用样式 */
@@ -319,14 +307,10 @@ const otherHoroscopeStars = computed(() => {
   border-radius: 3px;
   border-style: dashed;
   border-width: 1px;
-  font-weight: bold;
+  font-weight: thin;
   white-space: nowrap;
 }
 
-/* 为不同运限类型设置颜色 */
-.horoscope-palace-name.monthly {
-  background-color: white;
-}
 
 /* 宫位天干地支样式 */
 .palace-hb {
@@ -388,21 +372,23 @@ const otherHoroscopeStars = computed(() => {
 /* 主星样式 */
 .major-star {
   color: #d32f2f;
-  font-weight: bold;
+  font-weight: thin;
   font-size: 17px;
 }
 
 /* 辅星样式 */
 .minor-star {
-  color: #1976d2;
+  color: black;
   font-size: 15px;
+  font-weight: thin;
 }
 
 /* 杂曜样式 */
 .adjective-star {
-  color: #388e3c;
+  color: grey;
   font-size: 14px;
   margin: 0 1px;
+  font-weight: thin;
 }
 
 /* 星名 (垂直排列) */
@@ -414,17 +400,17 @@ const otherHoroscopeStars = computed(() => {
 
 /* 星曜亮度 (如庙, 旺, 陷) */
 .star-state {
-  font-size: 10px;
+  font-size: 13px;
 }
 
 /* 星曜的生年四化 (如禄, 权, 科, 忌) */
 .star-mutagen {
-  font-size: 10px;
-  font-weight: bold;
+  font-size: 13px;
+  font-weight: thin;
   color: white;
   background-color: red;
   border-radius: 2px;
-  padding: 2px;
+  border: 1px 1px;
 }
 
 /* 右上角流曜（大限、流年）的父容器 */
@@ -468,46 +454,40 @@ const otherHoroscopeStars = computed(() => {
 
 /* 单个运限星曜样式 */
 .horoscope-star {
-  font-size: 12px;
-  padding: 2px 4px;
+  font-size: 15px;
+  padding: 2px 2px;
   border-radius: 3px;
   margin-right: 2px;
+ font-weight: thin;
 }
 
 /* 流年流曜样式 */
 .horoscope-star.yearly {
-  color: #ffffff;
-  background-color: #2196F3; /* Blue */
+  color: rgb(36, 138, 221);
+  background-color:white;
   border: 1px solid #1976D2; /* Darker Blue */
   writing-mode: vertical-rl;
   text-orientation: upright;
-  padding: 8px 4px;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* 流月流曜样式 */
-.horoscope-star.monthly {
-  color: #ffffff;
-  background-color: #2196F3;
-  border: 1px solid #1976D2;
+/* 大限流曜 (运曜) 样式 */
+.horoscope-star.decadal {
+  color: rgb(38, 166, 38);
+  background-color:white;
+  border: 1px solid #388E3C; /* Darker Green */
+  writing-mode: vertical-rl; /* 垂直排列 */
+  text-orientation: upright; /* 文字方向保持正向 */
+  line-height: 1; /* 调整行高 */
+  display: flex; /* 使用flex布局来居中 */
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
 }
 
-/* 流日流曜样式 */
-.horoscope-star.daily {
-  color: #ffffff;
-  background-color: #4CAF50;
-  border: 1px solid #388E3C;
-}
 
-/* 流时流曜样式 */
-.horoscope-star.hourly {
-  color: #ffffff;
-  background-color: #9C27B0;
-  border: 1px solid #7B1FA2;
-}
 
 /* 四化星小角标 (Badge) */
 .sihua-badge {
@@ -517,7 +497,6 @@ const otherHoroscopeStars = computed(() => {
   font-size: 10px;
   font-weight: bold;
   padding: 1px 3px;
-  border-radius: 50%;
   background-color: gold;
   color: #333;
   z-index: 10;
@@ -529,33 +508,26 @@ const otherHoroscopeStars = computed(() => {
 .sihua-badge[data-type="科"] { background-color: #32CD32; }
 .sihua-badge[data-type="忌"] { background-color: #4B0082; color: white; }
 
-
-/* 不同运限命宫的边框颜色 */
-.palace.horoscope-life-palace.decadal { border: 2px dashed #673AB7; }
-.palace.horoscope-life-palace.yearly { border: 2px dashed #F44336; }
-.palace.horoscope-life-palace.monthly { border: 2px dashed #2196F3; }
-.palace.horoscope-life-palace.daily { border: 2px dashed #4CAF50; }
-.palace.horoscope-life-palace.hourly { border: 2px dashed #9C27B0; }
-
-/* 大限流曜 (运曜) 样式 */
-.horoscope-star.decadal {
-  color: #ffffff;
-  background-color: #4CAF50; /* Green */
-  border: 1px solid #388E3C; /* Darker Green */
-  writing-mode: vertical-rl; /* 垂直排列 */
-  text-orientation: upright; /* 文字方向保持正向 */
-  padding: 8px 4px; /* 调整内边距以适应垂直文本 */
-  line-height: 1; /* 调整行高 */
-  display: flex; /* 使用flex布局来居中 */
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中 */
+/* 博士十二神样式 */
+.decorative-star.boshi {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: black;
+  background-color: white;
+  margin-top: 2px;
+  top: 195px;
+  right: 190px;
 }
+
 
 /* 流年神煞容器 (将前, 岁前) */
 .yearly-decorative-stars-container {
   position: absolute;
-  bottom: 30px; /* 位于底部其他流曜(月/日)的上方 */
-  left: 10px;
+  bottom: 27px; /* 位于底部其他流曜(月/日)的上方 */
+  right: 190px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -564,22 +536,19 @@ const otherHoroscopeStars = computed(() => {
 
 .decorative-star.jiangqian,
 .decorative-star.suiqian {
-  font-size: 12px;
-  padding: 1px 4px;
-  border-radius: 3px;
-  border: 1px solid;
-  font-weight: bold;
+  font-size: 13px;
+  font-weight: thin;
 }
 
 .decorative-star.jiangqian {
-  color: #4A148C; /* 紫色 */
-  background-color: #E1BEE7;
-  border-color: #9C27B0;
+  color: black; 
+  background-color: white;
+  font-weight: thin;
 }
 
 .decorative-star.suiqian {
-  color: #004D40; /* 青色 */
-  background-color: #B2DFDB;
-  border-color: #009688;
+  color: black;
+  background-color: white;
+  font-weight: thin;
 }
 </style> 
