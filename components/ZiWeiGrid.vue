@@ -1740,85 +1740,39 @@ const currentHoroscopeType = computed(() => {
   border: 1px solid #7B1FA2;
 }
 
-/* 四化标识样式 */
-.sihua-badge {
-  position: absolute;
-  right: -5px;
-  top: -5px;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 1px 3px;
-  border-radius: 50%;
-  background-color: gold;
-  color: #333;
-  z-index: 10;
-}
 
-/* 四化颜色 */
-.sihua-badge[data-type="禄"] {
-  background-color: #FFD700; /* 金色 */
-}
-
-.sihua-badge[data-type="权"] {
-  background-color: #FF4500; /* 红色 */
-}
-
-.sihua-badge[data-type="科"] {
-  background-color: #32CD32; /* 绿色 */
-}
-
-.sihua-badge[data-type="忌"] {
-  background-color: #4B0082; /* 紫色 */
-  color: white;
-}
-
-
-
-/* 运限命宫宫位样式 */
-.palace.horoscope-life-palace {
-  background-color: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* 不同运限类型的命宫宫位样式 */
-.palace.horoscope-life-palace.decadal {
-  border: 2px dashed #673AB7;
-}
-
-.palace.horoscope-life-palace.yearly {
-  border: 2px dashed #F44336;
-}
-
-.palace.horoscope-life-palace.monthly {
-  border: 2px dashed #2196F3;
-}
-
-.palace.horoscope-life-palace.daily {
-  border: 2px dashed #4CAF50;
-}
-
-.palace.horoscope-life-palace.hourly {
-  border: 2px dashed #9C27B0;
-}
 
 /* 控制按钮样式 */
 .control-buttons {
   display: flex;
   justify-content: center;
-  margin-top: 10px;
+  margin-top: -10px; /* 负边距将按钮向上移动 */
+  gap: 12px;
+  position: relative; /* 添加相对定位以确保 z-index 生效 */
+  z-index: 2; /* 确保按钮在信息网格之上，防止被遮挡 */
 }
 
 .toggle-button {
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 8px 18px; /* 微调内边距 */
+  font-size: 14px; /* 调整字体大小 */
+  font-weight: 500; /* 字体稍微加粗 */
   color: white;
-  background-color: #673AB7;
+  background-color: #72AEC5; /* 基准颜色不变 */
   border: none;
-  border-radius: 4px;
+  border-radius: 6px; /* 增加圆角 */
   cursor: pointer;
+  transition: all 0.2s ease-in-out; /* 平滑过渡效果 */
+  box-shadow: 0 2px 5px rgba(114, 174, 197, 0.3); /* 使用主色的半透明阴影，增加立体感 */
 }
 
 .toggle-button:hover {
-  background-color: #512DA8;
+  /* background-color保持不变 */
+  transform: translateY(-2px); /* 悬停时按钮轻微上浮 */
+  box-shadow: 0 4px 10px rgba(114, 174, 197, 0.5); /* 悬停时阴影加深 */
+}
+
+.toggle-button:active {
+  transform: translateY(0); /* 点击时恢复位置 */
+  box-shadow: 0 1px 3px rgba(114, 174, 197, 0.2); /* 点击时阴影变浅，模拟按压效果 */
 }
 </style>
