@@ -253,8 +253,6 @@ const otherHoroscopeStars = computed(() => {
   min-width: 20px;
 }
 
-
-
 /* 宫位左上角序号样式 */
  .palace-index {
   position: absolute;
@@ -310,7 +308,6 @@ const otherHoroscopeStars = computed(() => {
   font-weight: thin;
   white-space: nowrap;
 }
-
 
 /* 宫位天干地支样式 */
 .palace-hb {
@@ -410,7 +407,7 @@ const otherHoroscopeStars = computed(() => {
   color: white;
   background-color: red;
   border-radius: 2px;
-  border: 1px 1px;
+  padding: 0.5px;
 }
 
 /* 右上角流曜（大限、流年）的父容器 */
@@ -464,7 +461,7 @@ const otherHoroscopeStars = computed(() => {
 /* 流年流曜样式 */
 .horoscope-star.yearly {
   color: rgb(36, 138, 221);
-  background-color:white;
+  background-color: white;
   border: 1px solid #1976D2; /* Darker Blue */
   writing-mode: vertical-rl;
   text-orientation: upright;
@@ -486,8 +483,6 @@ const otherHoroscopeStars = computed(() => {
   align-items: center; /* 垂直居中 */
   justify-content: center; /* 水平居中 */
 }
-
-
 
 /* 四化星小角标 (Badge) */
 .sihua-badge {
@@ -511,23 +506,15 @@ const otherHoroscopeStars = computed(() => {
 /* 博士十二神样式 */
 .decorative-star.boshi {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 13px;
-  color: black;
-  background-color: white;
-  margin-top: 2px;
-  top: 195px;
-  right: 190px;
+  top: 190px;
+  right: 180px;
 }
-
 
 /* 流年神煞容器 (将前, 岁前) */
 .yearly-decorative-stars-container {
   position: absolute;
-  bottom: 27px; /* 位于底部其他流曜(月/日)的上方 */
-  right: 190px;
+  bottom: 30px; /* 位于底部其他流曜(月/日)的上方 */
+  left: 12px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -537,18 +524,36 @@ const otherHoroscopeStars = computed(() => {
 .decorative-star.jiangqian,
 .decorative-star.suiqian {
   font-size: 13px;
-  font-weight: thin;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid;
+  font-weight: bold;
 }
 
 .decorative-star.jiangqian {
   color: black; 
   background-color: white;
-  font-weight: thin;
+  border-color: #9C27B0;
 }
 
 .decorative-star.suiqian {
   color: black;
   background-color: white;
-  font-weight: thin;
+  border-color: #009688;
+}
+
+/*
+ * 统一神煞样式 (博士, 将前, 岁前)
+ * 黑字, 透明背景, 无边框, 细字体
+ */
+.decorative-star.boshi,
+.decorative-star.jiangqian,
+.decorative-star.suiqian {
+  font-size: 13px;
+  font-weight: 300; /* 'thin' is non-standard, using 300 for thinz */
+  color: black;
+  background-color: transparent;
+  border: none;
+  padding: 0;
 }
 </style> 
