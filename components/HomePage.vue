@@ -137,12 +137,14 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1rem; /* 使用 rem 单位 */
 }
 
 .beidou-constellation {
-  width: 80%;
+  width: 90%; /* 稍微增大宽度占比 */
   max-width: 500px;
-  height: 400px;
+  /* height: 400px; 移除固定高度，让SVG保持其宽高比 */
+  aspect-ratio: 500 / 400; /* 保持宽高比 */
   position: relative;
   display: flex;
   justify-content: center;
@@ -173,6 +175,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 1rem; /* 使用 rem 单位 */
 }
 
 .title-section {
@@ -180,9 +183,10 @@ onUnmounted(() => {
 }
 
 .main-title {
-  font-size: 70px;
+  /* 使用 clamp() 实现响应式字体 */
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   line-height: 1.2;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem; /* 20px -> 1.25rem */
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -198,10 +202,11 @@ onUnmounted(() => {
 }
 
 .description {
-  font-size: 22px;
+  /* 使用 clamp() 实现响应式字体 */
+  font-size: clamp(1rem, 2.5vw, 1.375rem); /* 22px -> 1.375rem as max */
   color: #66605A;
   /* 深灰色文字，接近黑色 */
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem; /* 20px -> 1.25rem */
   line-height: 1.5;
   letter-spacing: 1px;
 }
@@ -210,8 +215,9 @@ onUnmounted(() => {
   background-color: #72AEC5;
   /* 蓝色按钮 */
   border-color: #72AEC5;
-  font-size: 18px;
-  padding: 20px 36px;
+  /* 使用 clamp() 实现响应式字体和内边距 */
+  font-size: clamp(1rem, 2.5vw, 1.125rem); /* 18px -> 1.125rem */
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1.5rem, 4vw, 2.25rem);
   border-radius: 10px;
   margin-top: 0px;
 }
@@ -236,6 +242,44 @@ onUnmounted(() => {
 
   100% {
     filter: drop-shadow(0 0 5px #FED572);
+  }
+}
+
+/* 媒体查询，用于响应式布局 */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column; /* 在小屏幕上垂直堆叠 */
+    text-align: center; /* 居中文本 */
+    margin-top: 2rem;
+  }
+
+  .left-image {
+    order: 2; /* 将图片区域放在内容下面 */
+    margin-top: 2rem;
+  }
+
+  .right-content {
+    order: 1; /* 将内容区域放在图片上面 */
+    align-items: center; /* 水平居中 */
+  }
+
+  .beidou-constellation {
+    width: 80%;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .description {
+    font-size: clamp(0.9rem, 4vw, 1rem);
+  }
+
+  .start-btn {
+    padding: clamp(0.6rem, 3vw, 1rem) clamp(1.2rem, 5vw, 1.8rem);
   }
 }
 </style>

@@ -197,45 +197,45 @@ function submitForm() {
 
 
 .form-content {
-  padding: 20px;
+  padding: 1.25rem;
 }
 
 form {
   background-color: #fff;
-  border-radius: 10px;
-  padding: 30px;
+  border-radius: 0.625rem;
+  padding: 1.875rem;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
 }
 
 .form-item {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .form-label {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
 }
 
 .required {
   color: #ff4d4f;
-  margin-right: 4px;
+  margin-right: 0.25rem;
 }
 
 .info-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
   background-color: #e0e0e0;
   color: #666;
-  font-size: 12px;
-  margin-left: 6px;
+  font-size: 0.75rem;
+  margin-left: 0.375rem;
   cursor: pointer;
 }
 
@@ -245,14 +245,14 @@ form {
 
 .date-type-selector {
   display: flex;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   overflow: hidden;
   border: 1px solid #d9d9d9;
 }
 
 .date-type-btn {
   flex: 1;
-  padding: 8px 0;
+  padding: 0.5rem 0;
   text-align: center;
   background: #f5f5f5;
   border: none;
@@ -268,10 +268,10 @@ form {
 .date-input,
 .name-input {
   width: 100%;
-  padding: 10px;
+  padding: 0.625rem;
   border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
 }
 
 .time-selector {
@@ -280,27 +280,27 @@ form {
 
 .time-select {
   width: 100%;
-  padding: 10px;
+  padding: 0.625rem;
   border: 1px solid #d9d9d9;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   appearance: none;
   background-color: white;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .select-arrow {
   position: absolute;
-  right: 10px;
+  right: 0.625rem;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #999;
   pointer-events: none;
 }
 
 .gender-selector {
   display: flex;
-  gap: 20px;
+  gap: 1.25rem;
 }
 
 .gender-option {
@@ -310,21 +310,21 @@ form {
 }
 
 .gender-option input {
-  margin-right: 8px;
+  margin-right: 0.5rem;
 }
 
 .submit-area {
-  margin-top: 30px;
+  margin-top: 1.875rem;
 }
 
 .drawer-submit-btn {
   width: 100%;
-  padding: 12px;
+  padding: 0.75rem;
   background-color: #72AEC5;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  border-radius: 0.375rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -337,9 +337,9 @@ form {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
-  gap: 8px;
-  font-size: 12px;
+  margin-top: 1.25rem;
+  gap: 0.5rem;
+  font-size: 0.75rem;
   color: #999;
 }
 
@@ -347,9 +347,9 @@ form {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px 6px;
+  padding: 0.125rem 0.375rem;
   background-color: #f5f5f5;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   border: 1px solid #ddd;
 }
 

@@ -905,7 +905,7 @@ function updateHoroscopeSurroundedPalaces(surroundedPalaces: any) {
     }
     
     // 去重
-    const uniqueIndices = [...new Set(indices)];
+    const uniqueIndices = Array.from(new Set(indices));
     horoscopeSurroundedPalaceIndices.value = uniqueIndices;
     
     console.log('运限三方四正索引计算结果:', uniqueIndices);
@@ -1295,23 +1295,29 @@ const currentHoroscopeType = computed(() => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 2px;
-  width: 900px;
-  height: 900px;
+  gap: 0.125rem; /* 2px -> 0.125rem */
+  width: 50rem; /* 900px -> 90vmin for responsiveness */
+  height: 50rem; /* 900px -> 90vmin for responsiveness */
   position: relative;
-  left: 175px;/* 放在右侧，不与horoscope重叠 */
+  top:-85px;
+  left:150px;
+
+  margin: 1rem auto; /* Center the grid instead of fixed positioning */
+  flex-shrink: 0; /* Prevent grid from shrinking in flex container */
 }
 
 .palace {
   border: 1px solid #ccc;
   background: #FFFFFB;
   opacity: 0.9;
-  font-size: 12px;
-  padding: 2px;
-  min-height: 80px;
-  position: relative;
-  cursor: pointer; /* 添加鼠标指针样式 */
-  transition: all 0.3s ease; /* 添加过渡效果 */
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #888;
+  font-size: 1rem; /* 16px -> 1rem */
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem; /* Add some padding */
+  box-sizing: border-box; /* Ensure padding is included in size */
 }
 
 /* 选中宫位样式 - 灰色背景 */
@@ -1423,14 +1429,14 @@ const currentHoroscopeType = computed(() => {
 .info-header {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 0.625rem; /* 10px -> 0.625rem */
   border-bottom: 1px solid #eee;
   background-color: rgba(255, 235, 238, 0.3);
 }
 
 .gender-icon {
-  font-size: 20px;
-  margin-right: 10px;
+  font-size: 1.25rem; /* 20px -> 1.25rem */
+  margin-right: 0.625rem; /* 10px -> 0.625rem */
 }
 
 .gender-icon.male {
@@ -1443,18 +1449,18 @@ const currentHoroscopeType = computed(() => {
 
 .person-name {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 1.125rem; /* 18px -> 1.125rem */
 }
 
 /* 信息行 */
 .info-row {
   display: flex;
-  padding: 8px 15px;
+  padding: 0.5rem 0.9375rem; /* 8px 15px -> 0.5rem 0.9375rem */
   border-bottom: 1px solid #eee;
 }
 
 .info-label {
-  min-width: 100px;
+  min-width: 6.25rem; /* 100px -> 6.25rem */
   color: #666;
 }
 
@@ -1467,17 +1473,19 @@ const currentHoroscopeType = computed(() => {
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 5px;
-  padding: 10px;
+  grid-gap: 0.3125rem; /* 5px -> 0.3125rem */
+  padding: 0.625rem; /* 10px -> 0.625rem */
+  flex: 1; /* Allow grid to take remaining space */
 }
 
 .info-cell {
   display: flex;
-  padding: 8px;
+  padding: 0.25rem; /* 8px -> 0.5rem, reduced for smaller area */
+  font-size: 0.875rem; /* Reduce font size slightly for grid */
 }
 
 .info-cell .info-label {
-  min-width: 60px;
+  min-width: 3.75rem; /* 60px -> 3.75rem */
   color: #666;
 }
 
@@ -1500,17 +1508,17 @@ const currentHoroscopeType = computed(() => {
   position: absolute;
   top: 2px;
   left: 4px;
-  font-size: 10px;
+  font-size: 0.625rem; /* 10px -> 0.625rem */
   color: red;
   font-weight: bold;
 }
 
 .palace-name {
-  font-size: 18px;
+  font-size: 1.125rem; /* 18px -> 1.125rem */
   color: red;
   position: absolute;
-  bottom:4px;
-  right:100px;
+  bottom: 0.25rem; /* 4px -> 0.25rem */
+  right: 6.25rem; /* 100px -> 6.25rem */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1518,8 +1526,8 @@ const currentHoroscopeType = computed(() => {
 
 .decadal-palace-name {
   display: inline-block;
-  margin-left: 4px;
-  font-size: 11px;
+  margin-left: 0.25rem; /* 4px -> 0.25rem */
+  font-size: 0.6875rem; /* 11px -> 0.6875rem */
   color: #673AB7; /* 紫色，与大限边框颜色相同 */
   background-color: rgba(103, 58, 183, 0.1); /* 淡紫色背景 */
   padding: 1px 3px;
@@ -1530,12 +1538,12 @@ const currentHoroscopeType = computed(() => {
 }
 
 .palace-hb {
-  font-size: 18px;
+  font-size: 1.125rem; /* 18px -> 1.125rem */
   color: black;
-  margin-bottom: 2px;
+  margin-bottom: 0.125rem; /* 2px -> 0.125rem */
   position: absolute;
-  bottom: 4px;
-  right: 4px;
+  bottom: 0.25rem; /* 4px -> 0.25rem */
+  right: 0.25rem; /* 4px -> 0.25rem */
   /* 右下角位置 */
   writing-mode: vertical-rl;
   /* 实现竖向显示文本 */
@@ -1545,9 +1553,9 @@ const currentHoroscopeType = computed(() => {
 
 .star-container {
   position: absolute;
-  top: 20px;
-  left: 5px;
-  right: 5px;
+  top: 1.25rem; /* 20px -> 1.25rem */
+  left: 0.3125rem; /* 5px -> 0.3125rem */
+  right: 0.3125rem; /* 5px -> 0.3125rem */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1577,7 +1585,7 @@ const currentHoroscopeType = computed(() => {
 
 /* 两行杂曜的情况 */
 .adjective-stars-container.two-rows {
-  top: -10px; /* 向上移动一点 */
+  top: -0.625rem; /* -10px -> -0.625rem */
 }
 
 .star-item {
@@ -1591,34 +1599,34 @@ const currentHoroscopeType = computed(() => {
 .major-star {
   color: #d32f2f; /* 红色 */
   font-weight: bold;
-  font-size: 17px;
+  font-size: 1.0625rem; /* 17px -> 1.0625rem */
 }
 
 /* 辅星样式 */
 .minor-star {
   color: #1976d2; /* 蓝色 */
-  font-size: 15px;
+  font-size: 0.9375rem; /* 15px -> 0.9375rem */
 }
 
 /* 杂曜样式 */
 .adjective-star {
   color: #388e3c; /* 绿色 */
-  font-size: 14px;
+  font-size: 0.875rem; /* 14px -> 0.875rem */
   margin: 0 1px; /* 添加一点左右间距 */
 }
 
 .star-name {
   writing-mode: vertical-rl; /* 竖直方向显示，从右到左 */
   text-orientation: upright; /* 字符保持正向 */
-  height: 40px; /* 控制高度 */
+  height: 2.5rem; /* 40px -> 2.5rem */
 }
 
 .star-state {
-  font-size: 10px;
+  font-size: 0.625rem; /* 10px -> 0.625rem */
 }
 
 .star-mutagen {
-  font-size: 10px;
+  font-size: 0.625rem; /* 10px -> 0.625rem */
   font-weight: bold;
   color: white;
   background-color: red;
@@ -1640,16 +1648,16 @@ const currentHoroscopeType = computed(() => {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 400px;
+  height: 25rem; /* 400px -> 25rem */
   background-color: #f9f9f9;
   border: 1px solid #eee;
-  border-radius: 8px;
+  border-radius: 0.5rem; /* 8px -> 0.5rem */
 }
 
 .loading-message {
-  font-size: 18px;
+  font-size: 1.125rem; /* 18px -> 1.125rem */
   color: #72AEC5;
-  padding: 20px;
+  padding: 1.25rem; /* 20px -> 1.25rem */
   text-align: center;
   animation: pulse 1.5s infinite;
 }
@@ -1664,16 +1672,20 @@ const currentHoroscopeType = computed(() => {
 .ziwei-content {
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 600px; /* 确保有足够的高度 */
-  top:-55px;
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+  justify-content: center; /* Center items */
+  align-items: flex-start;
+  gap: 2rem;
+  /* min-height: 600px; */ /* 确保有足够的高度 */
+  /* top:-55px; */ /* Removed fixed positioning */
 }
 
 /* 运限星曜样式 */
 .horoscope-stars-container {
   position: absolute;
-  bottom: 30px;
-  left: 5px;
+  bottom: 1.875rem; /* 30px -> 1.875rem */
+  left: 0.3125rem; /* 5px -> 0.3125rem */
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1681,7 +1693,7 @@ const currentHoroscopeType = computed(() => {
 }
 
 .horoscope-mutagen {
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px -> 0.75rem */
   font-weight: bold;
   padding: 2px 4px;
   border-radius: 3px;
@@ -1689,7 +1701,7 @@ const currentHoroscopeType = computed(() => {
 }
 
 .horoscope-star {
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px -> 0.75rem */
   padding: 2px 4px;
   border-radius: 3px;
   margin-right: 2px;
@@ -1746,20 +1758,20 @@ const currentHoroscopeType = computed(() => {
 .control-buttons {
   display: flex;
   justify-content: center;
-  margin-top: -10px; /* 负边距将按钮向上移动 */
-  gap: 12px;
+  margin-top: -0.625rem; /* -10px -> -0.625rem */
+  gap: 0.75rem; /* 12px -> 0.75rem */
   position: relative; /* 添加相对定位以确保 z-index 生效 */
   z-index: 2; /* 确保按钮在信息网格之上，防止被遮挡 */
 }
 
 .toggle-button {
-  padding: 8px 18px; /* 微调内边距 */
-  font-size: 14px; /* 调整字体大小 */
+  padding: 0.5rem 1.125rem; /* 8px 18px -> 0.5rem 1.125rem */
+  font-size: 0.875rem; /* 14px -> 0.875rem */
   font-weight: 500; /* 字体稍微加粗 */
   color: white;
   background-color: #72AEC5; /* 基准颜色不变 */
   border: none;
-  border-radius: 6px; /* 增加圆角 */
+  border-radius: 0.375rem; /* 6px -> 0.375rem */
   cursor: pointer;
   transition: all 0.2s ease-in-out; /* 平滑过渡效果 */
   box-shadow: 0 2px 5px rgba(114, 174, 197, 0.3); /* 使用主色的半透明阴影，增加立体感 */

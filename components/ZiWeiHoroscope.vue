@@ -23,7 +23,7 @@
                    'is-current': isCurrentDecade((safeAllDecades as Decade[])[i-1])
                  }"
                  @click="selectDecade(i-1)">
-              <div class="row-age">{{ (safeAllDecades as Decade[])[i-1].range[0] }}-{{ (safeAllDecades as Decade[])[i-1].range[1] }}岁</div>
+              <div class="row-age">{{ (safeAllDecades as Decade[])[i-1].range[0] }}-{{ (safeAllDecades as Decade[])[i-1].range[1] }}</div>
               <div class="row-value">{{ (safeAllDecades as Decade[])[i-1].heavenlyStem }}{{ (safeAllDecades as Decade[])[i-1].earthlyBranch }}</div>
             </div>
           </td>
@@ -827,10 +827,10 @@ defineExpose({
 <style scoped>
 .horoscope-fortune-container {
   position: absolute;
-  left: -200px;
-  top: 0px;
-  width: 340px;
-  height: 870px;
+  left:-150px ;
+  top: -65px;
+  width: 290px;
+  height: 800px;
   z-index: 100;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -846,7 +846,7 @@ defineExpose({
   border-radius: 8px;
   width: 100%;
   background-color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   table-layout: fixed;
   display: block;
   height: 100%;
@@ -880,7 +880,7 @@ defineExpose({
   text-align: center;
   font-weight: bold;
   border: 1px solid #ccc;
-  width: 55px;
+  width: 49px;
 }
 
 .table-cell {

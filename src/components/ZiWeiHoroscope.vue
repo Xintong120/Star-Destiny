@@ -676,7 +676,7 @@ const getStarMutagenType = (star) => {
 
 <style>
 .horoscope-container {
-  padding: 20px;
+  padding: 1.25rem;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -686,7 +686,7 @@ const getStarMutagenType = (star) => {
 .year-selector,
 .month-selector,
 .month-info {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .decade-list,
@@ -694,15 +694,15 @@ const getStarMutagenType = (star) => {
 .month-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .decade-item,
 .year-item,
 .month-item {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border: 1px solid #dcdfe6;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -723,14 +723,14 @@ const getStarMutagenType = (star) => {
 .month-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
-  margin-top: 10px;
+  gap: 0.75rem;
+  margin-top: 0.625rem;
 }
 
 .month-cell {
   border: 1px solid #dcdfe6;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
   text-align: center;
   transition: all 0.3s;
   background-color: #f9f9f9;
@@ -754,11 +754,11 @@ const getStarMutagenType = (star) => {
 
 .month-title {
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 0.3125rem;
   color: #409eff;
-  font-size: 14px;
+  font-size: 0.875rem;
   border-bottom: 1px dashed #e0e0e0;
-  padding-bottom: 4px;
+  padding-bottom: 0.25rem;
 }
 
 .month-cell.selected .month-title {
@@ -768,9 +768,9 @@ const getStarMutagenType = (star) => {
 
 .month-value {
   color: #303133;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
-  padding: 4px 0;
+  padding: 0.25rem 0;
 }
 
 .month-cell.selected .month-value {
@@ -779,31 +779,31 @@ const getStarMutagenType = (star) => {
 }
 
 .month-palaces {
-  margin-top: 5px;
-  padding: 4px;
+  margin-top: 0.3125rem;
+  padding: 0.25rem;
   background-color: #f8f8f8;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
 }
 
 .palace-title {
   font-weight: bold;
   margin-bottom: 2px;
   color: #409eff;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .palace-value {
   color: #303133;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .month-stars {
-  margin-top: 5px;
-  padding: 4px;
+  margin-top: 0.3125rem;
+  padding: 0.25rem;
   background-color: #f8f8f8;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
 }
 
 .debug-month-info {
@@ -811,7 +811,7 @@ const getStarMutagenType = (star) => {
   padding: 2px;
   background-color: #f0f7ff;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #666;
   display: flex;
   justify-content: space-between;
@@ -825,25 +825,25 @@ const getStarMutagenType = (star) => {
   font-weight: bold;
   margin-bottom: 2px;
   color: #409eff;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .star-value {
   color: #303133;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .month-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 0.625rem;
+  margin-top: 0.625rem;
 }
 
 .month-item {
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   border: 1px solid #dcdfe6;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.3s;
   background-color: #f9f9f9;
@@ -864,29 +864,29 @@ const getStarMutagenType = (star) => {
 }
 
 .debug-info {
-  margin-bottom: 15px;
-  padding: 10px;
+  margin-bottom: 0.9375rem;
+  padding: 0.625rem;
   background-color: #f8f8f8;
   border: 1px dashed #ccc;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
   color: #666;
 }
 
 .debug-info p {
-  margin: 5px 0;
+  margin: 0.3125rem 0;
 }
 
 .history-container {
-  margin-top: 20px;
-  padding: 10px;
+  margin-top: 1.25rem;
+  padding: 0.625rem;
   border: 1px solid #ebeef5;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   background-color: #f5f7fa;
 }
 
 .history-item {
-  padding: 5px 0;
+  padding: 0.3125rem 0;
   border-bottom: 1px dashed #ebeef5;
 }
 
@@ -895,27 +895,27 @@ const getStarMutagenType = (star) => {
 }
 
 .loading-months {
-  padding: 20px;
+  padding: 1.25rem;
   text-align: center;
   color: #909399;
   background-color: #f8f8f8;
-  border-radius: 4px;
-  margin: 10px 0;
+  border-radius: 0.25rem;
+  margin: 0.625rem 0;
 }
 
 .debug-month-grid-info {
-  margin-bottom: 15px;
-  padding: 10px;
+  margin-bottom: 0.9375rem;
+  padding: 0.625rem;
   background-color: #f0f7ff;
   border: 1px dashed #409eff;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
   color: #666;
   width: 100%;
 }
 
 .debug-month-grid-info p {
-  margin: 5px 0;
+  margin: 0.3125rem 0;
 }
 
 @media (max-width: 768px) {

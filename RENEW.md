@@ -53,6 +53,26 @@ ZiWeiHoroscope.vue：命盘UI组件，负责展示和用户交互
 2.  **可靠性**: 自动化流程减少了人为错误的可能性，确保每次部署都遵循相同的、经过验证的步骤。
 3.  **效率提升**: 快速迭代成为可能，每次代码合并到主分支后，网站内容都会在几分钟内自动更新。
 
+### 修复 GitHub Pages 部署后页面空白问题
+
+**问题现象**:
+在自动化部署成功后，访问 `https://xintong120.github.io/Star-Destiny/` 页面显示为空白，但控制台没有报错。
+
+**问题分析**:
+此问题是单页应用（SPA）部署在子目录下的典型路由问题。
+- **Vite 配置 (`vite.config.js`)**: 已经通过 `base: '/Star-Destiny/'` 正确设置了静态资源的加载路径。
+- **路由配置 (`src/router/index.js`)**: `createWebHistory()` 在未传递参数时，假定应用部署在域名的根目录 (`/`)。它不知道所有的路由都应该基于 `/Star-Destiny/` 这个子目录。这导致路由无法匹配到任何组件，因此页面一片空白。
+
+**解决方案**:
+为了让 Vue Router 知道项目的根路径，对 `src/router/index.js` 进行了修改：
+- 将路由记录的创建方式从 `history: createWebHistory()`
+- 修改为：`history: createWebHistory('/Star-Destiny/')`
+- 这确保了前端路由能够正确解析 URL，并将 `/` 或 `/ziwei` 这样的路径正确地映射到 `https://.../Star-Destiny/` 和 `https://.../Star-Destiny/ziwei`。
+
+**修复的好处**:
+1.  **路由正常工作**: 彻底解决了因路由基准路径不匹配导致的空白页问题。
+2.  **配置统一**: 确保了 Vite 的构建配置和 Vue Router 的运行时配置在 `base` 路径上保持一致，使部署配置更加健壮。
+
 ## 2025.07.09
 
 ### 新增 点击星耀显示详情信息功能
