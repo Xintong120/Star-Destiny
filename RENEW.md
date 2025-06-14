@@ -17,6 +17,42 @@ ZiWeiHoroscope.vue：命盘UI组件，负责展示和用户交互
 
 # 项目重构记录
 
+## 2025.07.10
+
+### 实现 GitHub Pages 自动化部署
+
+为了方便项目展示与分享，本次更新配置了完整的 CI/CD (持续集成/持续部署) 流程，实现了项目在推送到 `main` 分支后自动构建并部署到 GitHub Pages。
+
+#### 1. 修改 Vite 构建配置
+
+为确保项目构建后的静态资源能够在 GitHub Pages 的子目录 (`/Star-Destiny/`) 下被正确访问，我们对 `vite.config.js` 文件进行了核心配置调整：
+
+-   **`base` 属性设置**: 将 `base` 选项设置为 `'/Star-Destiny/'`。这会告诉 Vite，在打包时所有静态资源的 URL 前缀都应加上这个仓库路径。
+-   **`build.outDir` 属性设置**: 将 `build.outDir` 选项设置为 `'docs'`。这指定了 `npm run build` 命令的输出目录为 `docs/`，以适配 GitHub Pages 的部署源。
+
+#### 2. 创建 GitHub Actions 工作流
+
+我们引入了 GitHub Actions 来实现部署自动化，替代了传统的手动构建和上传流程。
+
+1.  **创建工作流文件**: 在项目根目录下创建了 `.github/workflows/deploy.yml` 文件。
+2.  **定义工作流**:
+    *   **触发条件**: 该工作流被设置为在每次向 `main` 分支执行 `push` 操作时自动触发。
+    *   **核心任务 (Job)**:
+        1.  **环境准备**: 使用最新的 Ubuntu 环境，并配置 Node.js 18.x。
+        2.  **依赖安装**: 自动执行 `npm install` 安装项目所需的所有依赖。
+        3.  **项目构建**: 运行 `npm run build`，根据修改后的 Vite 配置生成部署文件到 `docs` 目录。
+        4.  **部署到 Pages**: 使用官方的 `actions/deploy-pages` Action，将 `docs` 目录中的内容作为构建产物（Artifact）上传，并部署到 GitHub Pages。
+
+#### 3. 修改 GitHub 仓库设置
+
+为了让新的自动化工作流生效，需要在 GitHub 仓库的 `Settings > Pages` 页面中，将构建和部署的源（Source）从原来的 "Deploy from a branch" **更改为 "GitHub Actions"**。
+
+#### 实现的好处
+
+1.  **自动化**: 彻底消除了手动部署的繁琐步骤。开发者只需专注于代码，提交后即可自动发布新版本。
+2.  **可靠性**: 自动化流程减少了人为错误的可能性，确保每次部署都遵循相同的、经过验证的步骤。
+3.  **效率提升**: 快速迭代成为可能，每次代码合并到主分支后，网站内容都会在几分钟内自动更新。
+
 ## 2025.07.09
 
 ### 新增 点击星耀显示详情信息功能

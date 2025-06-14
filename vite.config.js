@@ -7,7 +7,10 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // ...
+  base: '/Star-Destiny/',
+  build: {
+    outDir: 'docs',
+  },
   plugins: [
     vue(),
     AutoImport({
