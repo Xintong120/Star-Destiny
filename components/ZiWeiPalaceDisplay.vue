@@ -6,7 +6,7 @@
     @click="$emit('palace-click')"
   >
     <!-- 宫位序号 -->
-     <div class="palace-index">{{ displayIndex }}</div> 
+     <!-- <div class="palace-index">{{ displayIndex }}</div>  -->
 
     <!-- 宫位名称容器 -->
     <div class="palace-name">
@@ -99,14 +99,15 @@
       <div v-if="palaceData.changsheng12" class="decorative-star changsheng" :data-length="palaceData.changsheng12.length">
         {{ palaceData.changsheng12 }}
       </div>
-      <!-- 博士十二神 -->
+     
+    </div>
+
+    <!-- 流年神煞（博士十二神除外） -->
+    <div class="yearly-decorative-stars-container" v-if="yearlyDecorativeStars && (yearlyDecorativeStars.jiangqian || yearlyDecorativeStars.suiqian)">
+       <!-- 博士十二神 -->
       <div v-if="palaceData.boshi12" class="decorative-star boshi">
         {{ palaceData.boshi12 }}
       </div>
-    </div>
-
-    <!-- 流年神煞 -->
-    <div class="yearly-decorative-stars-container" v-if="yearlyDecorativeStars && (yearlyDecorativeStars.jiangqian || yearlyDecorativeStars.suiqian)">
       <!-- 岁前十二神 -->
       <div v-if="yearlyDecorativeStars.suiqian" class="decorative-star suiqian">
         {{ yearlyDecorativeStars.suiqian }}
@@ -565,25 +566,16 @@ const otherHoroscopeStars = computed(() => {
   justify-content: center; /* 水平居中 */
 }
 
-/* 博士十二神样式 */
-.decorative-star.boshi {
-  position: absolute;
-  top: 11rem; /* 176px */
-  left: 0.3rem; /* 4.8px */
-  color: black;
-  font-size: 0.8125rem; /* 13px */
-  font-weight: thin;
-  writing-mode: horizontal-tb; /* 水平排列 */
-}
 
-/* 流年神煞容器 (将前, 岁前) */
+
+/* 流年神煞容器 (博士, 将前, 岁前) */
 .yearly-decorative-stars-container {
   position: absolute;
-  bottom: 1.2rem; /* 19.2px */
-  left: 0.3rem; /* 4.8px */
+  bottom: 0; 
+  left: 0.3rem; 
   display: flex;
   flex-direction: column;
-  gap: 0.08rem; /* 1.28px */
+  gap: 0;
   align-items: flex-start;
 }
 
