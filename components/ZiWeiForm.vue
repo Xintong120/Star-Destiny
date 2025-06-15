@@ -23,17 +23,40 @@
           <!-- 生日输入 -->
           <div class="form-item">
             <div class="form-label">
-              <span class="required">*</span> 生日 <i class="info-icon">?</i>
+              <span class="required">*</span> 生日
+              <el-tooltip
+                effect="dark"
+                placement="top"
+              >
+                <template #content>
+                  请输入YYYY-M-D格式的日期，阳历或<br />
+                  农历格式一样，比如农历二〇〇〇年<br />
+                  三月初四, 请输入2000-3-4
+                </template>
+                <i class="info-icon">?</i>
+              </el-tooltip>
             </div>
             <div class="form-input">
-              <input type="text" v-model="dateStr" placeholder="阳历生日" class="date-input" required />
+              <input type="text" v-model="dateStr" :placeholder="type === 'solar' ? '阳历生日' : '农历生日'"
+                class="date-input" required />
             </div>
           </div>
           
           <!-- 时辰选择 -->
           <div class="form-item">
             <div class="form-label">
-              <span class="required">*</span> 时辰 <i class="info-icon">?</i>
+              <span class="required">*</span> 时辰 <el-tooltip
+                effect="dark"
+                placement="top"
+              >
+                <template #content>
+                  一天分为12个时辰，但是子时分为早<br />
+                  子时和晚子时，请注意查看时间范<br />
+                  围，时间范围包含起始时间但是不包<br />
+                  含结束时间，比如1是丑时，3是寅时
+                </template>
+                <i class="info-icon">?</i>
+              </el-tooltip>
             </div>
             <div class="form-input">
               <div class="time-selector">
