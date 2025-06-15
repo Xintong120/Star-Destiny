@@ -120,8 +120,6 @@
       <!-- 中央信息区的骨架 -->
       <div class="center-info-skeleton"></div>
     </div>
-    <!-- 底部运限信息的骨架 -->
-    <div class="horoscope-skeleton"></div>
   </div>
   </div>
 </template>

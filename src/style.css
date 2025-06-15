@@ -87,3 +87,123 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.palace.surrounded {
+  background-color: #FCF9D4;
+  border: thick double #72AEC5;
+}
+
+/* Custom styles for the Star Info Notification */
+
+/* Main container for the notification */
+.el-notification {
+  --star-info-bg: #fdfdfd;
+  --star-info-border: #e0e0e0;
+  --title-color: #2c3e50;
+  --subtitle-color: #34495e;
+  --text-color: #555;
+  --accent-color: #72AEC5;
+  --list-border-color: #eee;
+  
+  font-size: 16px; /* Increase the base font size for the entire notification */
+
+  background-color: var(--star-info-bg) !important;
+  border: 1px solid var(--star-info-border) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  width: 450px !important; /* Widen the container for better readability */
+}
+
+/* Notification Title */
+.el-notification__title {
+  font-size: 1.4em; /* Adjust title size to be proportional to the new base font size */
+  font-weight: bold;
+  color: var(--title-color);
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+/* Content wrapper - THIS IS WHERE WE ADD THE SCROLLBAR */
+.el-notification__content {
+  max-height: 70vh; /* Set a maximum height relative to the viewport */
+  overflow-y: auto;   /* Add a scrollbar only when content overflows */
+  padding-right: 15px; /* Add some space for the scrollbar */
+  margin-top: 10px;
+}
+
+/* Styling for different heading levels inside the content */
+.el-notification__content h3,
+.el-notification__content h4,
+.el-notification__content h5,
+.el-notification__content h6 {
+  margin-top: 1.2rem;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  color: var(--subtitle-color);
+  border-left: 4px solid var(--accent-color);
+  padding-left: 8px;
+}
+
+.el-notification__content h3 {
+  font-size: 1.3em;
+}
+
+.el-notification__content h4 {
+  font-size: 1.2em;
+}
+
+.el-notification__content h5 {
+  font-size: 1.15em;
+}
+
+.el-notification__content h6 {
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.el-notification__content p {
+  line-height: 1.7;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  padding-left: 4px; /* Align with headings */
+  font-size: 1.1em;
+}
+
+.el-notification__content strong {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* Styling for lists */
+.el-notification__content ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.el-notification__content li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--list-border-color);
+  line-height: 1.6;
+}
+
+.el-notification__content li:last-child {
+  border-bottom: none;
+}
+
+/* Custom scrollbar styles (for Webkit browsers like Chrome/Safari) */
+.el-notification__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.el-notification__content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.el-notification__content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+.el-notification__content::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}

@@ -100,13 +100,7 @@
             <button type="submit" class="drawer-submit-btn">排盘</button>
           </div>
           
-          <!-- 快捷键提示 -->
-          <div class="shortcut-tips">
-            <span class="tip-item">⌘</span>
-            <span class="tip-item">shift</span>
-            <span class="tip-item">L</span>
-            <span class="tip-text">保存的星盘</span>
-          </div>
+          
         </form>
       </div>
     </el-drawer>
@@ -223,13 +217,7 @@ function submitForm() {
   padding: 1.25rem;
 }
 
-form {
-  background-color: #fff;
-  border-radius: 0.625rem;
-  padding: 1.875rem;
-  width: 100%;
-  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
-}
+
 
 .form-item {
   margin-bottom: 1.25rem;

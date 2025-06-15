@@ -54,6 +54,7 @@
       <div class="main-minor-stars">
         <!-- 主星列表 -->
         <div v-for="star in palaceData.majorStars" :key="star.name" class="star-item major-star">
+          <!-- 新增点击功能 -->
           <span class="star-name" @click.stop="showStarInfo(star)">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
@@ -66,6 +67,7 @@
         </div>
         <!-- 辅星列表 -->
         <div v-for="star in palaceData.minorStars" :key="star.name" class="star-item minor-star">
+          <!-- 新增点击功能 -->
           <span class="star-name" @click.stop="showStarInfo(star)">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>
@@ -80,6 +82,7 @@
       <!-- 杂曜容器，根据杂曜数量动态调整样式 -->
       <div class="adjective-stars-container" :class="{ 'two-rows': palaceData.adjectiveStars.length > 5 }">
         <div v-for="star in palaceData.adjectiveStars" :key="star.name" class="star-item adjective-star">
+          <!-- 新增点击功能 -->
           <span class="star-name" @click.stop="showStarInfo(star)">{{ star.name }}</span>
           <span class="star-state">{{ star.brightness }}</span>
           <span class="star-mutagen" v-if="star.mutagen">{{ star.mutagen }}</span>

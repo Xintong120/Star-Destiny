@@ -19,6 +19,7 @@ const starNameToKey: Record<string, string> = {
   '贪狼': 'tanlangMaj',
   '巨门': 'jumenMaj',
   '天相': 'tianxiangMaj',
+  '天梁': 'tianliangMaj',
   '七杀': 'qishaMaj',
   '破军': 'pojunMaj',
   '文昌': 'wenchangMin',
@@ -109,39 +110,64 @@ export const showStarNotification = async (star: Star) => {
     // Diagnostic log
     console.log('Loaded JSON data:', starDetails);
 
-    // Build the message HTML conditionally, only including fields that exist.
-    let messageHTML = '<div>';
-    if (starDetails.description) {
-      messageHTML += `<p><strong>基本描述:</strong> ${starDetails.description}</p>`;
+    // Helper function to recursively build HTML from the star details object.
+    const buildHtml = (data, level = 3) => {
+      let html = '';
+      if (!data) {
+        return '';
+      }
+
+      if (typeof data === 'string') {
+        // Replace markdown-style bold with <strong> tags
+        return `<p>${data.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`;
+      }
+
+      if (Array.isArray(data)) {
+        html += '<ul>';
+        for (const item of data) {
+          html += `<li>${buildHtml(item, level)}</li>`;
+        }
+        html += '</ul>';
+        return html;
+      }
+
+      if (typeof data === 'object' && data !== null) {
+        if (data.title) {
+          html += `<h${level}>${data.title}</h${level}>`;
+        }
+        
+        const content = data.content || data.points;
+        if (content) {
+          html += buildHtml(content, level + 1);
+        } else {
+          // If no specific content/points, iterate through all keys
+          for (const key in data) {
+            if (key !== 'title') {
+              html += buildHtml(data[key], level + 1);
+            }
+          }
+        }
+      }
+      return html;
+    };
+
+    let messageHTML = '';
+    // Build HTML by iterating over top-level keys of the JSON data
+    for (const key in starDetails) {
+      if (key !== 'name' && key !== 'nameCn') {
+        messageHTML += buildHtml(starDetails[key], 3); // Start with <h3>
+      }
     }
-    if (starDetails.poem) {
-      messageHTML += `<p><strong>诗曰:</strong> ${starDetails.poem}</p>`;
-    }
-    if (starDetails.meaning) {
-      if (starDetails.meaning.personality) {
-        messageHTML += `<p><strong>性格:</strong> ${starDetails.meaning.personality}</p>`;
-      }
-      if (starDetails.meaning.career) {
-        messageHTML += `<p><strong>事业:</strong> ${starDetails.meaning.career}</p>`;
-      }
-      if (starDetails.meaning.wealth) {
-        messageHTML += `<p><strong>财富:</strong> ${starDetails.meaning.wealth}</p>`;
-      }
-      if (starDetails.meaning.health) {
-        messageHTML += `<p><strong>健康:</strong> ${starDetails.meaning.health}</p>`;
-      }
-    }
-    messageHTML += '</div>';
 
     // Fallback if no details were found at all
-    if (messageHTML === '<div></div>') {
+    if (!messageHTML.trim()) {
       messageHTML = '暂无该星耀的详细信息。';
     }
 
     ElNotification({
-      title: starDetails.name || star.name,
+      title: starDetails.nameCn || starDetails.name || star.name,
       dangerouslyUseHTMLString: true,
-      message: messageHTML,
+      message: `<div>${messageHTML}</div>`,
       position: 'top-left',
       duration: 0, // A duration of 0 means the notification will not close automatically
     });
