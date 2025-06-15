@@ -384,6 +384,7 @@ const otherHoroscopeStars = computed(() => {
   flex-wrap: wrap;
   gap: 0;
   margin-bottom: 0.125rem; /* 2px */
+  left:-0.2rem;
 }
 
 /* 杂曜容器 */
@@ -408,7 +409,7 @@ const otherHoroscopeStars = computed(() => {
 .adjective-star {
   color: grey;
   font-size: 0.875rem; /* 14px */
-  margin: 0 0.0625rem; /* 1px */
+  margin: 0 -0.125rem; /* -2px */
   font-weight: thin;
 }
 
@@ -418,6 +419,7 @@ const otherHoroscopeStars = computed(() => {
   flex-direction: column;
   align-items: center;
   position: relative;
+  margin: 0 -0.05rem; /* -4px */
 }
 
 /* 主星样式 */
@@ -425,7 +427,7 @@ const otherHoroscopeStars = computed(() => {
   color: #d32f2f; /* 红色 */
   font-weight: thin;
   font-size: 1rem; /* 16px */
-  top:-0.625rem;
+  top:-0.2rem;
 }
 
 /* 辅星样式 */
@@ -433,7 +435,7 @@ const otherHoroscopeStars = computed(() => {
   color: black;
   font-size: 0.9375rem; /* 15px */
   font-weight: thin;
-  top:-0.625rem;
+  top:-0.2rem;
   
 }
 
