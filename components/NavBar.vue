@@ -22,7 +22,11 @@
             d="M892.7 141c-1.2-2.2-3.6-3.5-6.1-3.3l-27.8 1.4-16.9-22.1c-1.5-2-4-2.9-6.5-2.4-2.4 0.5-4.4 2.3-5.1 4.7l-7.3 26.8-26.3 9.2c-2.4 0.8-4 2.9-4.3 5.4-0.3 2.5 0.8 4.9 2.9 6.3l23.3 15.2 0.6 27.8c0.1 2.5 1.5 4.7 3.8 5.8 2.3 1.1 4.9 0.7 6.9-0.8l21.7-17.4 26.7 8c1 0.3 2.1 0.4 3.1 0.2 1.3-0.3 2.6-0.9 3.5-2 1.7-1.8 2.2-4.4 1.3-6.8l-9.9-26 15.8-22.9c1.7-2.3 1.8-4.9 0.6-7.1z"
             fill="#FED572"></path>
         </svg>
-        <h2 class="site-name">命宫在线</h2>
+        <h2 class="site-name">
+          <router-link to="/" class="site-name-link">
+            <span>命宫在线</span>
+          </router-link>
+        </h2>
       </div>
       <div class="nav-links">
         <span @click="openFormDrawer" class="nav-link">排盘</span>
@@ -98,6 +102,11 @@ onMounted(() => {
 .logo-star.logo-star-hover {
   filter: drop-shadow(0 0 5px #FED572);
   cursor: pointer;
+}
+
+.site-name-link {
+  text-decoration: none;
+  color: inherit;
 }
 
 .site-name {
