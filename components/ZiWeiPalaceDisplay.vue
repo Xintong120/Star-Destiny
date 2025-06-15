@@ -5,8 +5,8 @@
     :class="palaceClasses"
     @click="$emit('palace-click')"
   >
-    <!-- 宫位序号 (当前注释掉) -->
-    <!-- <div class="palace-index">{{ displayIndex }}</div> -->
+    <!-- 宫位序号 -->
+     <div class="palace-index">{{ displayIndex }}</div> 
 
     <!-- 宫位名称容器 -->
     <div class="palace-name">
@@ -404,6 +404,14 @@ const otherHoroscopeStars = computed(() => {
   top: -0.625rem; /* -10px */
 }
 
+/* 杂曜样式 */
+.adjective-star {
+  color: grey;
+  font-size: 0.875rem; /* 14px */
+  margin: 0 0.0625rem; /* 1px */
+  font-weight: thin;
+}
+
 /* 星曜项目的通用样式 */
 .star-item {
   display: flex;
@@ -417,6 +425,7 @@ const otherHoroscopeStars = computed(() => {
   color: #d32f2f; /* 红色 */
   font-weight: thin;
   font-size: 1rem; /* 16px */
+  top:-0.625rem;
 }
 
 /* 辅星样式 */
@@ -424,16 +433,11 @@ const otherHoroscopeStars = computed(() => {
   color: black;
   font-size: 0.9375rem; /* 15px */
   font-weight: thin;
+  top:-0.625rem;
+  
 }
 
-/* 杂曜样式 */
-.adjective-star {
-  color: grey;
-  font-size: 0.875rem; /* 14px */
-  margin: 0 0.0625rem; /* 1px */
-  font-weight: thin;
-  top:0.05rem; /* 0.8px */
-}
+
 
 /* 星名 (垂直排列) */
 .star-name {
@@ -583,7 +587,8 @@ const otherHoroscopeStars = computed(() => {
 
 /* 将前和岁前神煞通用样式 */
 .decorative-star.jiangqian,
-.decorative-star.suiqian {
+.decorative-star.suiqian, 
+.decorative-star.boshi {
   font-size: 0.8125rem; /* 13px */
   font-weight: thin;
   color: black; 
