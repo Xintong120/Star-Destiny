@@ -112,8 +112,16 @@
   <!-- 大限流年流月流日流时 -->
    <ZiWeiHoroscope :astrolabe="props.astrolabe" :personName="props.personName" ref="fortuneRef" @updateHoroscope="handleHoroscopeUpdate" />
   </div>
-  <div v-else class="loading-container">
-    <div class="loading-message">正在加载紫微斗数命盘...</div>
+  <!-- 骨架屏加载状态 -->
+  <div v-else class="ziwei-content">
+    <div class="ziwei-grid">
+      <!-- 12个宫位的骨架 -->
+      <div v-for="n in 12" :key="`sk-palace-${n}`" class="palace-skeleton"></div>
+      <!-- 中央信息区的骨架 -->
+      <div class="center-info-skeleton"></div>
+    </div>
+    <!-- 底部运限信息的骨架 -->
+    <div class="horoscope-skeleton"></div>
   </div>
   </div>
 </template>
@@ -1499,5 +1507,55 @@ const currentHoroscopeType = computed(() => {
 .toggle-button:active {
   transform: translateY(0); /* 点击时恢复位置 */
   box-shadow: 0 1px 3px rgba(114, 174, 197, 0.2); /* 点击时阴影变浅，模拟按压效果 */
+}
+
+/* 骨架屏样式 */
+.palace-skeleton,
+.center-info-skeleton,
+.horoscope-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #f0f2f5; /* 骨架屏背景色 */
+  border-radius: 4px; /* 轻微圆角 */
+}
+
+/* 动画效果 */
+.palace-skeleton::before,
+.center-info-skeleton::before,
+.horoscope-skeleton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.palace-skeleton {
+  border: 2px solid #e5e7eb;
+}
+
+.center-info-skeleton {
+  grid-column: 2/4;
+  grid-row: 2/4;
+  border: 2px solid #e5e7eb;
+}
+
+.horoscope-skeleton {
+  width: calc(50rem + 150px);
+  height: 12rem; /* 大致匹配下方组件的高度 */
+  margin: 1rem auto;
+  left: -75px; /* (150px / 2) - to re-center it*/
 }
 </style>
