@@ -10,11 +10,12 @@ import {
   kot,
 } from '../i18n';
 import { fixEarthlyBranchIndex, fixIndex, fixLunarDayIndex, fixLunarMonthIndex } from '../utils';
+import { safeAsEarthlyBranchName, pipe, curry, refactorSafely, benchmarkRefactor } from '../utils/fp-helpers';
 import { AstrolabeParam } from '../data/types';
 
 /**
  * 起紫微星诀算法
- *
+ *  
  * - 六五四三二，酉午亥辰丑，
  * - 局数除日数，商数宫前走；
  * - 若见数无余，便要起虎口，
@@ -91,6 +92,178 @@ export const getStartIndex = (param: AstrolabeParam) => {
   const tianfuIndex = fixIndex(12 - ziweiIndex);
 
   return { ziweiIndex, tianfuIndex };
+};
+
+// 🎯 紫微星算法函数式模块化重构
+
+/**
+ * 模块1：提取和预处理基础数据
+ * 职责：获取命盘基础信息，确定计算用的干支
+ */
+const extractBaseData = (param: AstrolabeParam) => {
+  const { solarDate, timeIndex, fixLeap, from } = param;
+  const soulData = getSoulAndBody({ solarDate, timeIndex, fixLeap });
+  const lunarData = solar2lunar(solarDate);
+  
+  // 确定用于起五行局的地盘干支
+  const baseHeavenlyStem = from?.heavenlyStem ?? soulData.heavenlyStemOfSoul;
+  const baseEarthlyBranch = from?.earthlyBranch ?? soulData.earthlyBranchOfSoul;
+  
+  return {
+    solarDate,
+    timeIndex,
+    lunarDay: lunarData.lunarDay,
+    baseHeavenlyStem,
+    baseEarthlyBranch
+  };
+};
+
+/**
+ * 模块2：计算五行局数值
+ * 职责：根据干支确定五行局，返回对应的数值
+ */
+const calculateFiveElementsValue = (baseHeavenlyStem: HeavenlyStemName, baseEarthlyBranch: EarthlyBranchName): number => {
+  const fiveElements = kot<FiveElementsClassKey>(
+    getFiveElementsClass(baseHeavenlyStem, baseEarthlyBranch)
+  );
+  return FiveElementsClass[fiveElements];
+};
+
+/**
+ * 模块3：处理农历日期边界情况
+ * 职责：处理晚子时和跨月情况
+ */
+const processLunarDay = (lunarDay: number, timeIndex: number, solarDate: string): number => {
+  const maxDays = getTotalDaysOfLunarMonth(solarDate);
+  let day = timeIndex === 12 ? lunarDay + 1 : lunarDay;
+  
+  if (day > maxDays) {
+    day -= maxDays;  // 处理跨月情况
+  }
+  
+  return day;
+};
+
+/**
+ * 模块4：查找能被五行局整除的偏移量
+ * 职责：执行核心的循环查找算法
+ * 这是性能关键模块，保持高效实现
+ */
+const findDivisibleOffset = (day: number, fiveElementsValue: number) => {
+  let offset = 0;
+  let remainder: number;
+  let quotient: number;
+  
+  do {
+    const divisor = day + offset;
+    quotient = Math.floor(divisor / fiveElementsValue);
+    remainder = divisor % fiveElementsValue;
+    
+    if (remainder !== 0) {
+      offset++;
+    }
+  } while (remainder !== 0);
+  
+  return { offset, quotient };
+};
+
+/**
+ * 模块5：计算紫微星和天府星的位置
+ * 职责：根据商和偏移量计算最终的星位索引
+ */
+const calculateStarPositions = (quotient: number, offset: number) => {
+  quotient %= 12;
+  let ziweiIndex = quotient - 1;
+  
+  // 根据偏移量的奇偶性决定方向
+  if (offset % 2 === 0) {
+    ziweiIndex += offset;  // 偶数：顺时针
+  } else {
+    ziweiIndex -= offset;  // 奇数：逆时针
+  }
+  
+  ziweiIndex = fixIndex(ziweiIndex);
+  const tianfuIndex = fixIndex(12 - ziweiIndex);
+  
+  return { ziweiIndex, tianfuIndex };
+};
+
+/**
+ * 紫微星算法 - 函数式模块化版本
+ * 
+ * 模块化优势：
+ * 1. 每个模块职责单一，易于理解和测试
+ * 2. 数据流清晰，便于调试和维护
+ * 3. 保持原有算法逻辑的正确性
+ * 4. 核心循环模块保持高性能实现
+ * 5. 便于单独优化每个计算步骤
+ */
+export const getStartIndexFP = (param: AstrolabeParam) => {
+  // 步骤1：提取基础数据
+  const baseData = extractBaseData(param);
+  
+  // 步骤2：计算五行局数值
+  const fiveElementsValue = calculateFiveElementsValue(
+    baseData.baseHeavenlyStem, 
+    baseData.baseEarthlyBranch
+  );
+  
+  // 步骤3：处理农历日期
+  const processedDay = processLunarDay(
+    baseData.lunarDay, 
+    baseData.timeIndex, 
+    baseData.solarDate
+  );
+  
+  // 步骤4：执行核心循环算法
+  const { offset, quotient } = findDivisibleOffset(processedDay, fiveElementsValue);
+  
+  // 步骤5：计算最终星位
+  return calculateStarPositions(quotient, offset);
+};
+
+// 🛡️ 重构安全验证
+export const getStartIndexSafe = refactorSafely(
+  getStartIndex,
+  getStartIndexFP,
+  'getStartIndex 模块化函数式重构'
+);
+
+// 📊 性能测试函数
+export const testStartIndexPerformance = () => {
+  console.log('🔍 开始 getStartIndex 重构性能测试...');
+  
+  const testCases = [
+    { solarDate: '2000-1-1', timeIndex: 0, fixLeap: false },
+    { solarDate: '2000-6-15', timeIndex: 6, fixLeap: false },
+    { solarDate: '2000-12-31', timeIndex: 12, fixLeap: false },
+    { solarDate: '1990-8-16', timeIndex: 6, fixLeap: false },
+    { solarDate: '2010-3-21', timeIndex: 9, fixLeap: false }
+  ];
+  
+  testCases.forEach((testParam, index) => {
+    console.log(`\n📅 测试案例 ${index + 1}: ${testParam.solarDate}`);
+    
+    const originalResult = getStartIndex(testParam);
+    const fpResult = getStartIndexFP(testParam);
+    
+    console.log('原版结果:', originalResult);
+    console.log('FP版结果:', fpResult);
+    
+    // 验证结果一致性
+    const isEqual = JSON.stringify(originalResult) === JSON.stringify(fpResult);
+    console.log(`结果一致性: ${isEqual ? '✅' : '❌'}`);
+    
+    if (isEqual) {
+      // 只有结果一致时才进行性能测试
+      benchmarkRefactor(
+        getStartIndex,
+        getStartIndexFP,
+        [testParam],
+        1000  // 减少测试次数，因为这是复杂算法
+      );
+    }
+  });
 };
 
 /**
@@ -257,6 +430,72 @@ export const getZuoYouIndex = (lunarMonth: number) => {
   return { zuoIndex, youIndex };
 };
 
+// 🎯 函数式编程重构版本
+// 步骤1: 分解职责 - 创建小的纯函数
+const calculateMonthOffset = (lunarMonth: number): number => lunarMonth - 1;
+
+const calculatePalaceIndex = curry((basePosition: EarthlyBranchName, offset: number): number => 
+  fixIndex(fixEarthlyBranchIndex(basePosition) + offset)
+);
+
+const calculateReversePalaceIndex = curry((basePosition: EarthlyBranchName, offset: number): number => 
+  fixIndex(fixEarthlyBranchIndex(basePosition) - offset)
+);
+
+// 步骤2: 使用函数组合创建数据转换管道
+const createZuoYouCalculator = (lunarMonth: number) => {
+  const offset = calculateMonthOffset(lunarMonth);
+  
+  return {
+    zuoIndex: calculatePalaceIndex('chen' as EarthlyBranchName)(offset),
+    youIndex: calculateReversePalaceIndex('xu' as EarthlyBranchName)(offset)
+  };
+};
+
+// 步骤3: 函数式版本 - 更清晰的意图表达
+export const getZuoYouIndexFP = (lunarMonth: number) => {
+  const offset = calculateMonthOffset(lunarMonth);
+  
+  return {
+    zuoIndex: calculatePalaceIndex('chen' as EarthlyBranchName)(offset),
+    youIndex: calculateReversePalaceIndex('xu' as EarthlyBranchName)(offset)
+  };
+};
+
+// 🛡️ 重构安全验证 - 确保新旧函数行为完全一致
+export const getZuoYouIndexSafe = refactorSafely(
+  getZuoYouIndex,
+  getZuoYouIndexFP,
+  'getZuoYouIndex 函数式重构'
+);
+
+// 📊 性能测试函数 - 可以在开发时调用来比较性能
+export const testZuoYouPerformance = () => {
+  console.log('🔍 开始 getZuoYouIndex 重构性能测试...');
+  
+  // 测试多个不同的输入
+  const testCases = [1, 6, 12];
+  
+  testCases.forEach(testMonth => {
+    console.log(`\n📅 测试农历 ${testMonth} 月:`);
+    
+    // 验证结果一致性
+    const originalResult = getZuoYouIndex(testMonth);
+    const fpResult = getZuoYouIndexFP(testMonth);
+    
+    console.log('原版结果:', originalResult);
+    console.log('FP版结果:', fpResult);
+    
+    // 性能对比
+    benchmarkRefactor(
+      getZuoYouIndex,
+      getZuoYouIndexFP,
+      [testMonth],
+      10000
+    );
+  });
+};
+
 /**
  * 获取文昌文曲的索引（按时支）
  *
@@ -278,6 +517,68 @@ export const getChangQuIndex = (timeIndex: number) => {
   const quIndex = fixIndex(fixEarthlyBranchIndex('chen') + fixIndex(timeIndex));
 
   return { changIndex, quIndex };
+};
+
+// 🎯 Step 3.1: 提取基础计算函数 - 消除重复计算
+
+/**
+ * 标准化时辰索引
+ * 职责：确保时辰索引在有效范围内
+ * 优势：只计算一次，避免重复
+ */
+const normalizeTimeIndex = (timeIndex: number): number => fixIndex(timeIndex);
+
+/**
+ * 获取基础宫位索引
+ * 职责：根据地支名称获取对应的宫位索引
+ * 优势：语义清晰，可复用
+ */
+const getBasePosition = (earthlyBranch: EarthlyBranchName): number => 
+  fixEarthlyBranchIndex(earthlyBranch);
+
+// 🎯 Step 3.2: 创建专用计算函数 - 提高可读性
+
+/**
+ * 计算顺时针星曜索引
+ * 职责：从基础位置顺时针计算到目标位置
+ * 参数：basePosition - 起始宫位, offset - 偏移量
+ */
+const calculateForwardStarIndex = curry((basePosition: EarthlyBranchName, offset: number): number =>
+  fixIndex(getBasePosition(basePosition) + offset)
+);
+
+/**
+ * 计算逆时针星曜索引  
+ * 职责：从基础位置逆时针计算到目标位置
+ * 参数：basePosition - 起始宫位, offset - 偏移量
+ */
+const calculateReverseStarIndex = curry((basePosition: EarthlyBranchName, offset: number): number =>
+  fixIndex(getBasePosition(basePosition) - offset)
+);
+
+// 🎯 Step 3.3: 函数式重构版本 - 清晰的数据流
+
+/**
+ * 文昌文曲索引计算 - 函数式版本
+ * 
+ * 优势对比：
+ * 1. 消除重复计算：normalizeTimeIndex 只计算一次
+ * 2. 提高可读性：函数名清晰表达业务意图
+ * 3. 增强可测试性：每个步骤都可以单独测试
+ * 4. 提升可复用性：小函数可以在其他地方使用
+ * 5. 降低维护成本：修改某个步骤不影响其他部分
+ */
+export const getChangQuIndexFP = (timeIndex: number) => {
+  // Step 1: 标准化输入，避免重复计算
+  const normalizedTimeIndex = normalizeTimeIndex(timeIndex);
+  
+  // Step 2: 并行计算两个星曜位置，逻辑清晰
+  return {
+    // 文昌：从戌宫逆时针计算
+    changIndex: calculateReverseStarIndex('xu' as EarthlyBranchName)(normalizedTimeIndex),
+    // 文曲：从辰宫顺时针计算  
+    quIndex: calculateForwardStarIndex('chen' as EarthlyBranchName)(normalizedTimeIndex)
+  };
 };
 
 /**
@@ -646,8 +947,8 @@ export const getYearlyStarIndex = (param: AstrolabeParam) => {
   const heavenlyStem = kot<HeavenlyStemKey>(yearly[0], 'Heavenly');
   const earthlyBranch = kot<EarthlyBranchKey>(yearly[1], 'Earthly');
 
-  const { huagaiIndex, xianchiIndex } = getHuagaiXianchiIndex(yearly[1]);
-  const { guchenIndex, guasuIndex } = getGuGuaIndex(yearly[1]);
+  const { huagaiIndex, xianchiIndex } = getHuagaiXianchiIndex(safeAsEarthlyBranchName(yearly[1]));
+  const { guchenIndex, guasuIndex } = getGuGuaIndex(safeAsEarthlyBranchName(yearly[1]));
   const tiancaiIndex = fixIndex(soulIndex + EARTHLY_BRANCHES.indexOf(earthlyBranch));
   const tianshouIndex = fixIndex(bodyIndex + EARTHLY_BRANCHES.indexOf(earthlyBranch));
   const tianchuIndex = fixIndex(
@@ -687,7 +988,7 @@ export const getYearlyStarIndex = (param: AstrolabeParam) => {
   );
   const tiandeIndex = fixIndex(fixEarthlyBranchIndex('you') + EARTHLY_BRANCHES.indexOf(earthlyBranch));
   const yuedeIndex = fixIndex(fixEarthlyBranchIndex('si') + EARTHLY_BRANCHES.indexOf(earthlyBranch));
-  const tiankongIndex = fixIndex(fixEarthlyBranchIndex(yearly[1]) + 1);
+  const tiankongIndex = fixIndex(fixEarthlyBranchIndex(safeAsEarthlyBranchName(yearly[1])) + 1);
   const jieluIndex = fixIndex(
     fixEarthlyBranchIndex(
       ['shen', 'woo', 'chen', 'yin', 'zi'][HEAVENLY_STEMS.indexOf(heavenlyStem) % 5] as EarthlyBranchName,
@@ -699,7 +1000,7 @@ export const getYearlyStarIndex = (param: AstrolabeParam) => {
     ),
   );
   let xunkongIndex = fixIndex(
-    fixEarthlyBranchIndex(yearly[1]) + HEAVENLY_STEMS.indexOf('guiHeavenly') - HEAVENLY_STEMS.indexOf(heavenlyStem) + 1,
+    fixEarthlyBranchIndex(safeAsEarthlyBranchName(yearly[1])) + HEAVENLY_STEMS.indexOf('guiHeavenly') - HEAVENLY_STEMS.indexOf(heavenlyStem) + 1,
   );
 
   // 判断命主出生年年支阴阳属性，如果结果为 0 则为阳，否则为阴
@@ -715,7 +1016,7 @@ export const getYearlyStarIndex = (param: AstrolabeParam) => {
   const jiekongIndex = yinyang === 0 ? jieluIndex : kongwangIndex;
 
   const jieshaAdjIndex = getJieshaAdjIndex(earthlyBranch);
-  const nianjieIndex = getNianjieIndex(yearly[1]);
+  const nianjieIndex = getNianjieIndex(safeAsEarthlyBranchName(yearly[1]));
   const dahaoAdjIndex = getDahaoIndex(earthlyBranch);
 
   const genderYinyang = ['male', 'female'];

@@ -22,3 +22,37 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test files and development documentation
+src/tests/
+src/study/
+src/__tests__/
+
+# Development and learning files
+*.test.ts
+*.spec.ts
+**/test/
+**/tests/
+**/study/
+**/*.md.backup
+
+# Development tools and reports
+health-report/
+_create_star_files.js
+star.md
+
+# IDE and workspace files
+*.code-workspace
+*.workspace
+vue3-iztroview.code-workspace
+
+# Auto-generated files
+auto-imports.d.ts
+components.d.ts
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~

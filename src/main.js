@@ -12,6 +12,16 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import "normalize.css";
 import "./assets/styles.scss";
 
+// 🎯 导入函数式编程重构演示（开发环境）
+if (import.meta.env.DEV) {
+  import('./star/refactor-demo.ts').then(() => {
+    console.log('🎓 函数式编程重构演示已加载！');
+    console.log('💡 在浏览器控制台输入以下命令来体验：');
+    console.log('   runRefactorDemo() - 运行完整演示');
+    console.log('   verifyRefactor() - 仅验证重构正确性');
+  });
+}
+
 const pinia = createPinia()
 // 使用持久化插件
 pinia.use(piniaPluginPersistedstate)
