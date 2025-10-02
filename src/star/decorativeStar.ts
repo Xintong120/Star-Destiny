@@ -14,7 +14,7 @@ import {
   StarKey,
 } from '../i18n';
 import { fixEarthlyBranchIndex, fixIndex } from '../utils';
-import { getLuYangTuoMaIndex } from './location';
+import { getLuYangTuoMaIndexFP } from './location';
 import { AstrolabeParam } from '../data/types';
 
 /**
@@ -142,7 +142,7 @@ export const getBoShi12 = (solarDateStr: string, gender: GenderName): StarName[]
     'fubing',
     'guanfu',
   ];
-  const { luIndex } = getLuYangTuoMaIndex(heavenlyStemNameOfYear, earthlyBranchNameOfYear);
+  const { luIndex } = getLuYangTuoMaIndexFP(heavenlyStemNameOfYear as any, earthlyBranchNameOfYear as any);
   const boshi12: StarName[] = [];
 
   for (let i = 0; i < stars.length; i++) {

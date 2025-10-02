@@ -25,7 +25,6 @@ dist-ssr
 
 # Test files and development documentation
 src/tests/
-src/study/
 src/__tests__/
 
 # Development and learning files
@@ -33,13 +32,16 @@ src/__tests__/
 *.spec.ts
 **/test/
 **/tests/
-**/study/
 **/*.md.backup
+
+# Learning and study materials (local only)
+src/study/
 
 # Development tools and reports
 health-report/
 _create_star_files.js
 star.md
+PROJECT_SUMMARY.md
 
 # IDE and workspace files
 *.code-workspace

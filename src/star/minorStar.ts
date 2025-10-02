@@ -5,10 +5,10 @@ import { fixLunarMonthIndex, getBrightness, getMutagen } from '../utils';
 import FunctionalStar from './FunctionalStar';
 import {
   getChangQuIndex,
-  getHuoLingIndex,
+  getHuoLingIndexFP,
   getKongJieIndex,
-  getKuiYueIndex,
-  getLuYangTuoMaIndex,
+  getKuiYueIndexFP,
+  getLuYangTuoMaIndexFP,
   getZuoYouIndex,
 } from './location';
 import { getConfig } from '../astro';
@@ -31,10 +31,10 @@ export const getMinorStar = (solarDateStr: string, timeIndex: number, fixLeap?: 
   // 此处获取到的是索引，下标是从0开始的，所以需要加1
   const { zuoIndex, youIndex } = getZuoYouIndex(monthIndex + 1);
   const { changIndex, quIndex } = getChangQuIndex(timeIndex);
-  const { kuiIndex, yueIndex } = getKuiYueIndex(yearly[0]);
-  const { huoIndex, lingIndex } = getHuoLingIndex(yearly[1], timeIndex);
+  const { kuiIndex, yueIndex } = getKuiYueIndexFP(yearly[0] as any);
+  const { huoIndex, lingIndex } = getHuoLingIndexFP(yearly[1] as any, timeIndex);
   const { kongIndex, jieIndex } = getKongJieIndex(timeIndex);
-  const { luIndex, yangIndex, tuoIndex, maIndex } = getLuYangTuoMaIndex(yearly[0], yearly[1]);
+  const { luIndex, yangIndex, tuoIndex, maIndex } = getLuYangTuoMaIndexFP(yearly[0] as any, yearly[1] as any);
 
   stars[zuoIndex].push(
     new FunctionalStar({

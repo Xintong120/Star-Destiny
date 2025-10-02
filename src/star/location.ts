@@ -10,7 +10,7 @@ import {
   kot,
 } from '../i18n';
 import { fixEarthlyBranchIndex, fixIndex, fixLunarDayIndex, fixLunarMonthIndex } from '../utils';
-import { safeAsEarthlyBranchName, pipe, curry, refactorSafely, benchmarkRefactor } from '../utils/fp-helpers';
+import { safeAsEarthlyBranchName, pipe, curry } from '../utils/fp-helpers';
 import { AstrolabeParam } from '../data/types';
 
 /**
@@ -222,192 +222,95 @@ export const getStartIndexFP = (param: AstrolabeParam) => {
   return calculateStarPositions(quotient, offset);
 };
 
-// 🛡️ 重构安全验证
-export const getStartIndexSafe = refactorSafely(
-  getStartIndex,
-  getStartIndexFP,
-  'getStartIndex 模块化函数式重构'
-);
 
-// 📊 性能测试函数
-export const testStartIndexPerformance = () => {
-  console.log('🔍 开始 getStartIndex 重构性能测试...');
-  
-  const testCases = [
-    { solarDate: '2000-1-1', timeIndex: 0, fixLeap: false },
-    { solarDate: '2000-6-15', timeIndex: 6, fixLeap: false },
-    { solarDate: '2000-12-31', timeIndex: 12, fixLeap: false },
-    { solarDate: '1990-8-16', timeIndex: 6, fixLeap: false },
-    { solarDate: '2010-3-21', timeIndex: 9, fixLeap: false }
-  ];
-  
-  testCases.forEach((testParam, index) => {
-    console.log(`\n📅 测试案例 ${index + 1}: ${testParam.solarDate}`);
-    
-    const originalResult = getStartIndex(testParam);
-    const fpResult = getStartIndexFP(testParam);
-    
-    console.log('原版结果:', originalResult);
-    console.log('FP版结果:', fpResult);
-    
-    // 验证结果一致性
-    const isEqual = JSON.stringify(originalResult) === JSON.stringify(fpResult);
-    console.log(`结果一致性: ${isEqual ? '✅' : '❌'}`);
-    
-    if (isEqual) {
-      // 只有结果一致时才进行性能测试
-      benchmarkRefactor(
-        getStartIndex,
-        getStartIndexFP,
-        [testParam],
-        1000  // 减少测试次数，因为这是复杂算法
-      );
-    }
-  });
+//天干映射表
+const HEAVENLY_STEM_TO_LU: Record<HeavenlyStemKey, EarthlyBranchName> = {
+  jiaHeavenly: 'yin',    // 甲禄到寅宫
+  yiHeavenly: 'mao',     // 乙禄居卯府
+  bingHeavenly: 'si',    
+  wuHeavenly: 'si',      
+  dingHeavenly: 'woo',   
+  jiHeavenly: 'woo',     
+  gengHeavenly: 'shen',  
+  xinHeavenly: 'you',    
+  renHeavenly: 'hai',    
+  guiHeavenly: 'zi'      
 };
 
-/**
- * 按年干支计算禄存、擎羊，陀罗、天马的索引
- *
- * 定禄存、羊、陀诀（按年干）
- *
- * - 甲禄到寅宫，乙禄居卯府。
- * - 丙戊禄在巳，丁己禄在午。
- * - 庚禄定居申，辛禄酉上补。
- * - 壬禄亥中藏，癸禄居子户。
- * - 禄前羊刃当，禄后陀罗府。
- *
- * 安天马（按年支），天马只会出现在四马地【寅申巳亥】
- *
- * - 寅午戍流马在申，申子辰流马在寅。
- * - 巳酉丑流马在亥，亥卯未流马在巳。
- *
- * @param heavenlyStemName 天干
- * @param earthlyBranchName 地支
- * @returns 禄存、擎羊，陀罗、天马的索引
- */
-export const getLuYangTuoMaIndex = (heavenlyStemName: HeavenlyStemName, earthlyBranchName: EarthlyBranchName) => {
-  let luIndex = -1; // 禄存索引
-  let maIndex = 0; // 天马索引
+//地支映射表
+const EARTHLY_BRANCH_TO_MA: Record<EarthlyBranchKey, EarthlyBranchName> = {
+  yinEarthly: 'shen',
+  wuEarthly: 'shen', 
+  xuEarthly: 'shen',
+  shenEarthly: 'yin',
+  ziEarthly: 'yin',
+  chenEarthly: 'yin',    
+  siEarthly: 'hai',      
+  youEarthly: 'hai',     
+  chouEarthly: 'hai',    
+  haiEarthly: 'si',      
+  maoEarthly: 'si',      
+  weiEarthly: 'si'       
+};
 
+
+
+
+// 修正后的函数式版本
+export const getLuYangTuoMaIndexFP = (heavenlyStemName: HeavenlyStemName, earthlyBranchName: EarthlyBranchName) => {
+  // 步骤1：转换为内部键值
   const heavenlyStem = kot<HeavenlyStemKey>(heavenlyStemName, 'Heavenly');
   const earthlyBranch = kot<EarthlyBranchKey>(earthlyBranchName, 'Earthly');
-
-  switch (earthlyBranch) {
-    case 'yinEarthly':
-    case 'wuEarthly':
-    case 'xuEarthly':
-      maIndex = fixEarthlyBranchIndex('shen');
-      break;
-    case 'shenEarthly':
-    case 'ziEarthly':
-    case 'chenEarthly':
-      maIndex = fixEarthlyBranchIndex('yin');
-      break;
-    case 'siEarthly':
-    case 'youEarthly':
-    case 'chouEarthly':
-      maIndex = fixEarthlyBranchIndex('hai');
-      break;
-    case 'haiEarthly':
-    case 'maoEarthly':
-    case 'weiEarthly':
-      maIndex = fixEarthlyBranchIndex('si');
-      break;
-  }
-
-  switch (heavenlyStem) {
-    case 'jiaHeavenly': {
-      luIndex = fixEarthlyBranchIndex('yin');
-      break;
-    }
-    case 'yiHeavenly': {
-      luIndex = fixEarthlyBranchIndex('mao');
-      break;
-    }
-    case 'bingHeavenly':
-    case 'wuHeavenly': {
-      luIndex = fixEarthlyBranchIndex('si');
-      break;
-    }
-    case 'dingHeavenly':
-    case 'jiHeavenly': {
-      luIndex = fixEarthlyBranchIndex('woo');
-      break;
-    }
-    case 'gengHeavenly': {
-      luIndex = fixEarthlyBranchIndex('shen');
-      break;
-    }
-    case 'xinHeavenly': {
-      luIndex = fixEarthlyBranchIndex('you');
-      break;
-    }
-    case 'renHeavenly': {
-      luIndex = fixEarthlyBranchIndex('hai');
-      break;
-    }
-    case 'guiHeavenly': {
-      luIndex = fixEarthlyBranchIndex('zi');
-      break;
-    }
-  }
-
+  
+  // 步骤2：查找禄存位置
+  const luPosition = HEAVENLY_STEM_TO_LU[heavenlyStem];  // ← 修正：使用天干映射表
+  
+  // 步骤3：查找天马位置  
+  const maPosition = EARTHLY_BRANCH_TO_MA[earthlyBranch]; // ← 修正：直接查找，不需要函数
+  
+  // 步骤4：计算最终索引
+  const luIndex = fixEarthlyBranchIndex(luPosition);
+  const maIndex = fixEarthlyBranchIndex(maPosition);
+  
   return {
     luIndex,
     maIndex,
-    yangIndex: fixIndex(luIndex + 1),
-    tuoIndex: fixIndex(luIndex - 1),
+    yangIndex: fixIndex(luIndex + 1), // 擎羊在禄存后一位
+    tuoIndex: fixIndex(luIndex - 1),  // 陀罗在禄存前一位
   };
 };
 
-/**
- * 获取天魁天钺所在宫位索引（按年干）
- *
- * - 甲戊庚之年丑未
- * - 乙己之年子申
- * - 辛年午寅
- * - 壬癸之年卯巳
- * - 丙丁之年亥酉
- *
- * @param heavenlyStemName 天干
- * @returns
- */
-export const getKuiYueIndex = (heavenlyStemName: HeavenlyStemName) => {
-  let kuiIndex = -1;
-  let yueIndex = -1;
+
+const HEAVENLY_STEM_TO_KUI_YUE: Record<HeavenlyStemKey, {kui: EarthlyBranchName, yue: EarthlyBranchName}> = {
+  jiaHeavenly: { kui: 'chou', yue: 'wei' },
+  wuHeavenly: { kui: 'chou', yue: 'wei' },
+  gengHeavenly: { kui: 'chou', yue: 'wei' },
+  yiHeavenly: { kui: 'zi', yue: 'shen' },      
+  jiHeavenly: { kui: 'zi', yue: 'shen' },      
+  xinHeavenly: { kui: 'woo', yue: 'yin' },     
+  bingHeavenly: { kui: 'hai', yue: 'you' },
+  dingHeavenly: { kui: 'hai', yue: 'you' },
+  renHeavenly: { kui: 'mao', yue: 'si' },
+  guiHeavenly: { kui: 'mao', yue: 'si' }
+};
+
+
+
+// 🎯 修正后的函数式版本
+export const getKuiYueIndexFP = (heavenlyStemName: HeavenlyStemName) => {
+  // 步骤1：转换为内部键值
   const heavenlyStem = kot<HeavenlyStemKey>(heavenlyStemName, 'Heavenly');
-
-  switch (heavenlyStem) {
-    case 'jiaHeavenly':
-    case 'wuHeavenly':
-    case 'gengHeavenly':
-      kuiIndex = fixEarthlyBranchIndex('chou');
-      yueIndex = fixEarthlyBranchIndex('wei');
-      break;
-    case 'yiHeavenly':
-    case 'jiHeavenly':
-      kuiIndex = fixEarthlyBranchIndex('zi');
-      yueIndex = fixEarthlyBranchIndex('shen');
-      break;
-    case 'xinHeavenly':
-      kuiIndex = fixEarthlyBranchIndex('woo');
-      yueIndex = fixEarthlyBranchIndex('yin');
-      break;
-    case 'bingHeavenly':
-    case 'dingHeavenly':
-      kuiIndex = fixEarthlyBranchIndex('hai');
-      yueIndex = fixEarthlyBranchIndex('you');
-      break;
-    case 'renHeavenly':
-    case 'guiHeavenly':
-      kuiIndex = fixEarthlyBranchIndex('mao');
-      yueIndex = fixEarthlyBranchIndex('si');
-      break;
-  }
-
+  
+  // 步骤2：查找天魁天钺位置
+  const positions = HEAVENLY_STEM_TO_KUI_YUE[heavenlyStem]; // ← 修正：应该是 heavenlyStem，不是 Heavenly
+  
+  // 步骤3：计算最终索引
+  const kuiIndex = fixEarthlyBranchIndex(positions.kui);
+  const yueIndex = fixEarthlyBranchIndex(positions.yue);
+  
   return { kuiIndex, yueIndex };
 };
+
 
 /**
  * 获取左辅右弼的索引（按生月）
@@ -462,39 +365,6 @@ export const getZuoYouIndexFP = (lunarMonth: number) => {
   };
 };
 
-// 🛡️ 重构安全验证 - 确保新旧函数行为完全一致
-export const getZuoYouIndexSafe = refactorSafely(
-  getZuoYouIndex,
-  getZuoYouIndexFP,
-  'getZuoYouIndex 函数式重构'
-);
-
-// 📊 性能测试函数 - 可以在开发时调用来比较性能
-export const testZuoYouPerformance = () => {
-  console.log('🔍 开始 getZuoYouIndex 重构性能测试...');
-  
-  // 测试多个不同的输入
-  const testCases = [1, 6, 12];
-  
-  testCases.forEach(testMonth => {
-    console.log(`\n📅 测试农历 ${testMonth} 月:`);
-    
-    // 验证结果一致性
-    const originalResult = getZuoYouIndex(testMonth);
-    const fpResult = getZuoYouIndexFP(testMonth);
-    
-    console.log('原版结果:', originalResult);
-    console.log('FP版结果:', fpResult);
-    
-    // 性能对比
-    benchmarkRefactor(
-      getZuoYouIndex,
-      getZuoYouIndexFP,
-      [testMonth],
-      10000
-    );
-  });
-};
 
 /**
  * 获取文昌文曲的索引（按时支）
@@ -652,64 +522,46 @@ export const getKongJieIndex = (timeIndex: number) => {
   return { kongIndex, jieIndex };
 };
 
-/**
- * 获取火星铃星索引（按年支以及时支）
- *
- * - 申子辰人寅戌扬
- * - 寅午戌人丑卯方
- * - 巳酉丑人卯戌位
- * - 亥卯未人酉戌房
- *
- * 起火铃二耀先据出生年支，依口诀定火铃起子时位。
- *
- * 例如壬辰年卯时生人，据[申子辰人寅戌扬]口诀，故火星在寅宫起子时，铃星在戌宫起子时，顺数至卯时，即火星在巳，铃星在丑。
- *
- * @param earthlyBranchName 地支
- * @param timeIndex 时辰序号
- * @returns 火星、铃星索引
- */
-export const getHuoLingIndex = (earthlyBranchName: EarthlyBranchName, timeIndex: number) => {
-  let huoIndex = -1;
-  let lingIndex = -1;
-  const fixedTimeIndex = fixIndex(timeIndex);
-  const earthlyBranch = kot<EarthlyBranchKey>(earthlyBranchName, 'Earthly');
 
-  switch (earthlyBranch) {
-    case 'yinEarthly':
-    case 'wuEarthly':
-    case 'xuEarthly': {
-      huoIndex = fixEarthlyBranchIndex('chou') + fixedTimeIndex;
-      lingIndex = fixEarthlyBranchIndex('mao') + fixedTimeIndex;
-      break;
-    }
-    case 'shenEarthly':
-    case 'ziEarthly':
-    case 'chenEarthly': {
-      huoIndex = fixEarthlyBranchIndex('yin') + fixedTimeIndex;
-      lingIndex = fixEarthlyBranchIndex('xu') + fixedTimeIndex;
-      break;
-    }
-    case 'siEarthly':
-    case 'youEarthly':
-    case 'chouEarthly': {
-      huoIndex = fixEarthlyBranchIndex('mao') + fixedTimeIndex;
-      lingIndex = fixEarthlyBranchIndex('xu') + fixedTimeIndex;
-      break;
-    }
-    case 'haiEarthly':
-    case 'weiEarthly':
-    case 'maoEarthly': {
-      huoIndex = fixEarthlyBranchIndex('you') + fixedTimeIndex;
-      lingIndex = fixEarthlyBranchIndex('xu') + fixedTimeIndex;
-      break;
-    }
-  }
-
-  return {
-    huoIndex: fixIndex(huoIndex),
-    lingIndex: fixIndex(lingIndex),
-  };
+// 🎯 火星铃星映射表 - 地支组→起始位置
+const EARTHLY_BRANCH_TO_HUO_LING_BASE: Record<EarthlyBranchKey, {huoBase: number, lingBase: number}> = {
+  // 寅午戌组：火星从丑开始，铃星从卯开始
+  yinEarthly: { huoBase: fixEarthlyBranchIndex('chou'), lingBase: fixEarthlyBranchIndex('mao') },
+  wuEarthly: { huoBase: fixEarthlyBranchIndex('chou'), lingBase: fixEarthlyBranchIndex('mao') },
+  xuEarthly: { huoBase: fixEarthlyBranchIndex('chou'), lingBase: fixEarthlyBranchIndex('mao') },
+  
+  // 申子辰组：火星从寅开始，铃星从戌开始
+  shenEarthly: { huoBase: fixEarthlyBranchIndex('yin'), lingBase: fixEarthlyBranchIndex('xu') },
+  ziEarthly: { huoBase: fixEarthlyBranchIndex('yin'), lingBase: fixEarthlyBranchIndex('xu') },
+  chenEarthly: { huoBase: fixEarthlyBranchIndex('yin'), lingBase: fixEarthlyBranchIndex('xu') },
+  
+  // 巳酉丑组：火星从卯开始，铃星从戌开始
+  siEarthly: { huoBase: fixEarthlyBranchIndex('mao'), lingBase: fixEarthlyBranchIndex('xu') },
+  youEarthly: { huoBase: fixEarthlyBranchIndex('mao'), lingBase: fixEarthlyBranchIndex('xu') },
+  chouEarthly: { huoBase: fixEarthlyBranchIndex('mao'), lingBase: fixEarthlyBranchIndex('xu') },
+  
+  // 亥卯未组：火星从酉开始，铃星从戌开始
+  haiEarthly: { huoBase: fixEarthlyBranchIndex('you'), lingBase: fixEarthlyBranchIndex('xu') },
+  weiEarthly: { huoBase: fixEarthlyBranchIndex('you'), lingBase: fixEarthlyBranchIndex('xu') },
+  maoEarthly: { huoBase: fixEarthlyBranchIndex('you'), lingBase: fixEarthlyBranchIndex('xu') }
 };
+
+// 🎯 函数式版本
+export const getHuoLingIndexFP = (earthlyBranchName: EarthlyBranchName, timeIndex: number) => {
+  // 步骤1：转换为内部键值和标准化时辰
+  const earthlyBranch = kot<EarthlyBranchKey>(earthlyBranchName, 'Earthly');
+  const fixedTimeIndex = fixIndex(timeIndex);
+  
+  // 步骤2：查找起始位置
+  const basePositions = EARTHLY_BRANCH_TO_HUO_LING_BASE[earthlyBranch];
+  
+  // 步骤3：计算最终索引（起始位置 + 时辰偏移）
+  const huoIndex = fixIndex(basePositions.huoBase + fixedTimeIndex);
+  const lingIndex = fixIndex(basePositions.lingBase + fixedTimeIndex);
+  
+  return { huoIndex, lingIndex };
+};
+
 
 /**
  * 获取红鸾天喜所在宫位索引

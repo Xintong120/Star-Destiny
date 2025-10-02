@@ -4,9 +4,9 @@ import { t, HeavenlyStemName, EarthlyBranchName, StarName, StarKey } from '../i1
 import FunctionalStar from './FunctionalStar';
 import {
   getChangQuIndexByHeavenlyStem,
-  getKuiYueIndex,
+  getKuiYueIndexFP,
   getLuanXiIndex,
-  getLuYangTuoMaIndex,
+  getLuYangTuoMaIndexFP,
   getNianjieIndex,
 } from './location';
 
@@ -23,9 +23,9 @@ export const getHoroscopeStar = (
   earthlyBranch: EarthlyBranchName,
   scope: Scope,
 ): FunctionalStar[][] => {
-  const { kuiIndex, yueIndex } = getKuiYueIndex(heavenlyStem);
+  const { kuiIndex, yueIndex } = getKuiYueIndexFP(heavenlyStem);
   const { changIndex, quIndex } = getChangQuIndexByHeavenlyStem(heavenlyStem);
-  const { luIndex, yangIndex, tuoIndex, maIndex } = getLuYangTuoMaIndex(heavenlyStem, earthlyBranch);
+  const { luIndex, yangIndex, tuoIndex, maIndex } = getLuYangTuoMaIndexFP(heavenlyStem, earthlyBranch);
   const { hongluanIndex, tianxiIndex } = getLuanXiIndex(earthlyBranch);
   const stars = initStars();
 
