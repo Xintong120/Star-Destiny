@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:modules": "npx ts-node test-modules.ts",
+    "test:modules:js": "node test-modules.js"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

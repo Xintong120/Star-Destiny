@@ -1,0 +1,3538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Quality Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        .section { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .toggle { cursor: pointer; color: blue; text-decoration: underline; }
+        .hidden { display: none; }
+        .search { margin-bottom: 10px; padding: 5px; width: 98%; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .help { font-size: 14px; color: gray; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Code Quality Report</h1>
+        <div class="section">
+            <h2>Summary</h2>
+            <p><strong>Average Physical SLOC:</strong> <span id="avg-psloc"></span></p>
+            <p><strong>Average Logical SLOC:</strong> <span id="avg-lsloc"></span></p>
+            <p><strong>Average Maintainability:</strong> <span id="avg-maintainability"></span></p>
+            
+            <hr>
+            <span class="help">- Physical SLOC: Number of lines in source code (including comment lines and sometimes blank lines).<br></span>
+            <span class="help">- Logical SLOC: Number of lines that will be executed (executable statements).<br></span>
+            <span class="help">- Maintainability: A measure designed to track maintainability and indicate when it becomes less costly or less risky to rewrite the code instead of modifying it.<br></span>
+        </div>
+        
+        <input type="text" class="search" placeholder="Search files..." id="search">
+        
+        <div class="section">
+            <h2>File Reports</h2>
+            <div id="reports"></div>
+        </div>
+    </div>
+    
+    <script>
+        const codeComplexityReport = {
+  "summary": {
+    "total": {
+      "psloc": 9166,
+      "lsloc": 6577,
+      "maintainability": 7717.838999999995
+    },
+    "average": {
+      "psloc": 84,
+      "lsloc": 60,
+      "maintainability": "70.81"
+    },
+    "goodMaintainabilityTotal": 6,
+    "goodMaintainabilityFiles": "src/i18n/locales/zh-TW/gender.ts (87.21)\nsrc/i18n/locales/zh-CN/gender.ts (87.21)\nsrc/i18n/locales/vi-VN/gender.ts (87.21)\nsrc/i18n/locales/ko-KR/gender.ts (87.21)\nsrc/i18n/locales/ja-JP/gender.ts (87.21)\nsrc/i18n/locales/en-US/gender.ts (87.21)",
+    "moderateMaintainabilityTotal": 43,
+    "moderateMaintainabilityFiles": "src/i18n/locales/zh-TW/palace.ts (64.23)\nsrc/i18n/locales/zh-CN/palace.ts (64.23)\nsrc/i18n/locales/vi-VN/palace.ts (64.23)\nsrc/i18n/locales/ko-KR/palace.ts (64.23)\nsrc/i18n/locales/ja-JP/palace.ts (64.23)\nsrc/i18n/locales/en-US/palace.ts (64.23)\nsrc/astro/FunctionalHoroscope.ts (64.494)\nsrc/i18n/locales/zh-TW/earthlyBranch.ts (66.065)\nsrc/i18n/locales/zh-CN/earthlyBranch.ts (66.065)\nsrc/i18n/locales/vi-VN/earthlyBranch.ts (66.065)\nsrc/i18n/locales/ko-KR/earthlyBranch.ts (66.065)\nsrc/i18n/locales/ja-JP/earthlyBranch.ts (66.065)\nsrc/i18n/locales/en-US/earthlyBranch.ts (66.065)\nsrc/astro/FunctionalAstrolabe.ts (67.642)\nsrc/i18n/locales/zh-TW/heavenlyStem.ts (68.236)\nsrc/i18n/locales/zh-CN/heavenlyStem.ts (68.236)\nsrc/i18n/locales/vi-VN/heavenlyStem.ts (68.236)\nsrc/i18n/locales/ko-KR/heavenlyStem.ts (68.236)\nsrc/i18n/locales/ja-JP/heavenlyStem.ts (68.236)\nsrc/i18n/locales/en-US/heavenlyStem.ts (68.236)\nsrc/astro/analyzer.ts (69.166)\nsrc/star/FunctionalStar.ts (69.444)\nsrc/i18n/locales/zh-TW/brightness.ts (72.478)\nsrc/i18n/locales/zh-CN/brightness.ts (72.478)\nsrc/i18n/locales/vi-VN/brightness.ts (72.478)\nsrc/i18n/locales/ko-KR/brightness.ts (72.478)\nsrc/i18n/locales/ja-JP/brightness.ts (72.478)\nsrc/i18n/locales/en-US/brightness.ts (72.478)\nsrc/stores/astrolabeStore.ts (72.913)\nsrc/astro/FunctionalSurpalaces.ts (74.058)\nsrc/i18n/locales/zh-TW/fiveElementsClass.ts (76.469)\nsrc/i18n/locales/zh-CN/fiveElementsClass.ts (76.469)\nsrc/i18n/locales/vi-VN/fiveElementsClass.ts (76.469)\nsrc/i18n/locales/ko-KR/fiveElementsClass.ts (76.469)\nsrc/i18n/locales/ja-JP/fiveElementsClass.ts (76.469)\nsrc/i18n/locales/en-US/fiveElementsClass.ts (76.469)\nsrc/stores/drawerStore.ts (77.387)\nsrc/i18n/locales/zh-TW/mutagen.ts (79.106)\nsrc/i18n/locales/zh-CN/mutagen.ts (79.106)\nsrc/i18n/locales/vi-VN/mutagen.ts (79.106)\nsrc/i18n/locales/ko-KR/mutagen.ts (79.106)\nsrc/i18n/locales/ja-JP/mutagen.ts (79.106)\nsrc/i18n/locales/en-US/mutagen.ts (79.106)",
+    "badMaintainabilityTotal": 32,
+    "badMaintainabilityFiles": "src/star/horoscopeStar.ts (28.948)\nsrc/star/adjectiveStar.ts (28.964)\nsrc/i18n/locales/ko-KR/star.ts (35.15)\nsrc/i18n/locales/vi-VN/star.ts (35.166)\nsrc/i18n/locales/en-US/star.ts (35.166)\nsrc/i18n/locales/zh-TW/star.ts (35.176)\nsrc/i18n/locales/zh-CN/star.ts (35.176)\nsrc/i18n/locales/ja-JP/star.ts (35.176)\nsrc/data/stars.ts (36.968)\nsrc/data/earthlyBranches.ts (37.161)\nsrc/star/minorStar.ts (37.385)\nsrc/study/original-code/location-original.ts (41.53)\nsrc/astro/HoroscopeCalculator.ts (41.589)\nsrc/utils/starInfo.ts (42.166)\nsrc/data/heavenlyStems.ts (44.79)\nsrc/services/HoroscopeAdapter.ts (46.072)\nsrc/star/location.ts (47.201)\nsrc/star/decorativeStar.ts (49.129)\nsrc/data/constants.ts (49.321)\nsrc/stores/horoscopeStore.ts (49.419)\nsrc/star/refactor-demo.ts (50.341)\nsrc/astro/palace.ts (51.129)\nsrc/astro/TimePeriodCalculator.ts (51.707)\nsrc/composables/useHoroscope.ts (53.655)\nsrc/utils/monthGanZhiCalculator.js (53.883)\nsrc/astro/astro.ts (54.687)\nsrc/services/MonthlyGanZhiService.ts (54.758)\nsrc/composables/usePalaceCalculations.ts (56.924)\nsrc/star/majorStar.ts (58.02)\nsrc/astro/PalaceNameService.ts (60.782)\nsrc/astro/FunctionalPalace.ts (63.302)\nsrc/main.js (63.77)",
+    "goodCyclomaticTotal": 61,
+    "goodCyclomaticFiles": "src/star/horoscopeStar.ts (3)\nsrc/star/adjectiveStar.ts (3)\nsrc/i18n/locales/ko-KR/star.ts (1)\nsrc/i18n/locales/vi-VN/star.ts (1)\nsrc/i18n/locales/en-US/star.ts (1)\nsrc/i18n/locales/zh-TW/star.ts (1)\nsrc/i18n/locales/zh-CN/star.ts (1)\nsrc/i18n/locales/ja-JP/star.ts (1)\nsrc/data/stars.ts (1)\nsrc/data/earthlyBranches.ts (1)\nsrc/star/minorStar.ts (2)\nsrc/data/heavenlyStems.ts (1)\nsrc/data/constants.ts (1)\nsrc/astro/palace.ts (6)\nsrc/star/majorStar.ts (6)\nsrc/main.js (3)\nsrc/i18n/locales/zh-TW/palace.ts (1)\nsrc/i18n/locales/zh-CN/palace.ts (1)\nsrc/i18n/locales/vi-VN/palace.ts (1)\nsrc/i18n/locales/ko-KR/palace.ts (1)\nsrc/i18n/locales/ja-JP/palace.ts (1)\nsrc/i18n/locales/en-US/palace.ts (1)\nsrc/i18n/locales/zh-TW/earthlyBranch.ts (1)\nsrc/i18n/locales/zh-CN/earthlyBranch.ts (1)\nsrc/i18n/locales/vi-VN/earthlyBranch.ts (1)\nsrc/i18n/locales/ko-KR/earthlyBranch.ts (1)\nsrc/i18n/locales/ja-JP/earthlyBranch.ts (1)\nsrc/i18n/locales/en-US/earthlyBranch.ts (1)\nsrc/i18n/locales/zh-TW/heavenlyStem.ts (1)\nsrc/i18n/locales/zh-CN/heavenlyStem.ts (1)\nsrc/i18n/locales/vi-VN/heavenlyStem.ts (1)\nsrc/i18n/locales/ko-KR/heavenlyStem.ts (1)\nsrc/i18n/locales/ja-JP/heavenlyStem.ts (1)\nsrc/i18n/locales/en-US/heavenlyStem.ts (1)\nsrc/i18n/locales/zh-TW/brightness.ts (1)\nsrc/i18n/locales/zh-CN/brightness.ts (1)\nsrc/i18n/locales/vi-VN/brightness.ts (1)\nsrc/i18n/locales/ko-KR/brightness.ts (1)\nsrc/i18n/locales/ja-JP/brightness.ts (1)\nsrc/i18n/locales/en-US/brightness.ts (1)\nsrc/stores/astrolabeStore.ts (4)\nsrc/astro/FunctionalSurpalaces.ts (10)\nsrc/i18n/locales/zh-TW/fiveElementsClass.ts (1)\nsrc/i18n/locales/zh-CN/fiveElementsClass.ts (1)\nsrc/i18n/locales/vi-VN/fiveElementsClass.ts (1)\nsrc/i18n/locales/ko-KR/fiveElementsClass.ts (1)\nsrc/i18n/locales/ja-JP/fiveElementsClass.ts (1)\nsrc/i18n/locales/en-US/fiveElementsClass.ts (1)\nsrc/stores/drawerStore.ts (4)\nsrc/i18n/locales/zh-TW/mutagen.ts (1)\nsrc/i18n/locales/zh-CN/mutagen.ts (1)\nsrc/i18n/locales/vi-VN/mutagen.ts (1)\nsrc/i18n/locales/ko-KR/mutagen.ts (1)\nsrc/i18n/locales/ja-JP/mutagen.ts (1)\nsrc/i18n/locales/en-US/mutagen.ts (1)\nsrc/i18n/locales/zh-TW/gender.ts (1)\nsrc/i18n/locales/zh-CN/gender.ts (1)\nsrc/i18n/locales/vi-VN/gender.ts (1)\nsrc/i18n/locales/ko-KR/gender.ts (1)\nsrc/i18n/locales/ja-JP/gender.ts (1)\nsrc/i18n/locales/en-US/gender.ts (1)",
+    "moderateCyclomaticTotal": 7,
+    "moderateCyclomaticFiles": "src/astro/HoroscopeCalculator.ts (18)\nsrc/star/refactor-demo.ts (11)\nsrc/astro/TimePeriodCalculator.ts (16)\nsrc/composables/useHoroscope.ts (14)\nsrc/utils/monthGanZhiCalculator.js (13)\nsrc/services/MonthlyGanZhiService.ts (16)\nsrc/astro/FunctionalAstrolabe.ts (15)",
+    "badCyclomaticTotal": 9,
+    "badCyclomaticFiles": "src/utils/starInfo.ts (23)\nsrc/star/decorativeStar.ts (22)\nsrc/stores/horoscopeStore.ts (35)\nsrc/astro/astro.ts (40)\nsrc/astro/PalaceNameService.ts (21)\nsrc/astro/FunctionalPalace.ts (36)\nsrc/astro/FunctionalHoroscope.ts (32)\nsrc/astro/analyzer.ts (29)\nsrc/star/FunctionalStar.ts (21)",
+    "veryBadCyclomaticTotal": 4,
+    "veryBadCyclomaticFiles": "src/study/original-code/location-original.ts (85)\nsrc/services/HoroscopeAdapter.ts (57)\nsrc/star/location.ts (96)\nsrc/composables/usePalaceCalculations.ts (62)"
+  },
+  "reports": {
+    "src/star/horoscopeStar.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "28.95 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "126 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "309 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "3 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "992 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "7030.76 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "29.01 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "203977.87 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "2.34 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "11332.1 s"
+      }
+    ],
+    "src/star/adjectiveStar.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "28.96 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "101 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "289 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "3 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "1150 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "8138.34 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "34.15 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "277937.58 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "2.71 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "15440.98 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/star.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "35.15 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "165 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "162 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "488 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4065.49 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1.02 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "4129.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.35 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "229.39 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/star.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "35.17 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "165 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "162 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "488 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4072.02 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1.01 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "4097.23 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.36 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "227.62 s"
+      }
+    ],
+    "src/i18n/locales/en-US/star.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "35.17 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "165 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "162 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "488 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4072.02 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1.01 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "4097.23 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.36 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "227.62 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/star.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "35.18 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "165 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "162 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "488 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4076.34 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "4076.34 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.36 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "226.46 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/star.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "35.18 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "165 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "162 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "488 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4076.34 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "4076.34 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.36 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "226.46 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/star.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "35.18 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "165 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "162 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "488 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4076.34 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "4076.34 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.36 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "226.46 s"
+      }
+    ],
+    "src/data/stars.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "36.97 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "100 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "70 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "681 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "3862.92 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "22.93 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "88589.67 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.29 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "4921.65 s"
+      }
+    ],
+    "src/data/earthlyBranches.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "37.16 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "143 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "109 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "329 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "2156.46 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "4.58 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "9871.79 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.72 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "548.43 s"
+      }
+    ],
+    "src/star/minorStar.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "37.38 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "168 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "158 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "2 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "552 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "3583.5 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "22.63 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "81082.42 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.2 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "4504.58 s"
+      }
+    ],
+    "src/study/original-code/location-original.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "41.53 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "348 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "330 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "85 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "786 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "5064.15 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "39.22 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "198611.94 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.69 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "11034 s"
+      }
+    ],
+    "src/astro/HoroscopeCalculator.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "41.59 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "229 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "212 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "18 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "901 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "6713.54 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "48.38 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "324807.52 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "2.24 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "18044.86 s"
+      }
+    ],
+    "src/utils/starInfo.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "42.17 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "169 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "135 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "23 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "525 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4035.41 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "21.88 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "88308.28 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.34 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "4906.02 s"
+      }
+    ],
+    "src/data/heavenlyStems.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "44.79 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "86 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "49 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "219 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "1248.4 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "7.7 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "9607.22 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.42 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "533.74 s"
+      }
+    ],
+    "src/services/HoroscopeAdapter.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "46.07 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "402 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "261 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "57 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "1636 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "13097.2 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "81.53 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "1067755.44 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "4.37 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "59319.75 s"
+      }
+    ],
+    "src/star/location.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "47.2 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "1128 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "1062 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "96 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "4188 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "36016.43 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "119.17 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "4292061.11 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "12.01 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "238447.84 s"
+      }
+    ],
+    "src/star/decorativeStar.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "49.13 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "252 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "142 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "22 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "643 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "4672.54 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "30.28 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "141470.25 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.56 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "7859.46 s"
+      }
+    ],
+    "src/data/constants.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "49.32 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "167 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "32 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "271 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "1858.51 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "4.04 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "7501.63 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.62 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "416.76 s"
+      }
+    ],
+    "src/stores/horoscopeStore.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "49.42 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "333 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "202 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "35 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "887 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "5955.54 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "73.48 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "437621.59 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.99 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "24312.31 s"
+      }
+    ],
+    "src/star/refactor-demo.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "50.34 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "139 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "111 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "11 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "511 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "3523.25 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "28.69 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "101071.06 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.17 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5615.06 s"
+      }
+    ],
+    "src/astro/palace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "51.13 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "132 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "66 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "6 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "292 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "1871.54 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "23.46 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "43910.35 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.62 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2439.46 s"
+      }
+    ],
+    "src/astro/TimePeriodCalculator.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "51.71 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "144 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "72 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "16 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "362 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "2405.08 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "38.5 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "92595.42 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.8 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5144.19 s"
+      }
+    ],
+    "src/composables/useHoroscope.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "53.66 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "178 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "95 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "14 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "424 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "2494.24 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "45.21 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "112762.88 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.83 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "6264.6 s"
+      }
+    ],
+    "src/utils/monthGanZhiCalculator.js": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "53.88 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "86 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "45 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "13 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "332 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "2293.09 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "23.65 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "54229.08 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.76 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3012.73 s"
+      }
+    ],
+    "src/astro/astro.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "54.69 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "458 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "362 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "40 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "1268 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "9755.34 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "62.07 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "605543.64 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "3.25 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "33641.31 s"
+      }
+    ],
+    "src/services/MonthlyGanZhiService.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "54.76 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "152 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "65 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "16 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "481 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "3388.35 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "37.06 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "125568.4 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.13 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "6976.02 s"
+      }
+    ],
+    "src/composables/usePalaceCalculations.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "56.92 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "135 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "159 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "62 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "729 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "5413.75 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "37.92 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "205303.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.8 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "11405.72 s"
+      }
+    ],
+    "src/star/majorStar.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "58.02 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "85 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "53 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "6 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "214 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "1288.79 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "17.4 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "22424.89 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.43 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1245.83 s"
+      }
+    ],
+    "src/astro/PalaceNameService.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "60.78 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "111 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "62 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "21 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "257 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "1660.07 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "32.69 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "54261.91 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.55 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3014.55 s"
+      }
+    ],
+    "src/astro/FunctionalPalace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "63.3 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "288 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "132 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "36 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "575 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "3685.4 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "40.97 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "150991.38 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.23 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8388.41 s"
+      }
+    ],
+    "src/main.js": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "63.77 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "31 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "19 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "3 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "83 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "432.38 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "7.07 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "3057.58 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.14 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "169.87 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/palace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "64.23 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "17 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "14 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "44 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.07 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "12.11 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/palace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "64.23 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "17 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "14 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "44 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.07 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "12.11 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/palace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "64.23 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "17 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "14 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "44 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.07 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "12.11 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/palace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "64.23 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "17 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "14 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "44 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.07 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "12.11 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/palace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "64.23 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "17 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "14 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "44 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.07 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "12.11 s"
+      }
+    ],
+    "src/i18n/locales/en-US/palace.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "64.23 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "17 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "14 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "44 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "217.99 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.07 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "12.11 s"
+      }
+    ],
+    "src/astro/FunctionalHoroscope.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "64.49 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "300 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "132 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "32 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "616 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "3948.18 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "39.88 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "157433.87 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "1.32 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8746.33 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/earthlyBranch.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "66.06 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "15 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "12 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "38 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.06 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "10.04 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/earthlyBranch.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "66.06 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "15 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "12 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "38 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.06 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "10.04 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/earthlyBranch.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "66.06 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "15 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "12 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "38 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.06 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "10.04 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/earthlyBranch.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "66.06 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "15 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "12 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "38 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.06 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "10.04 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/earthlyBranch.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "66.06 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "15 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "12 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "38 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.06 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "10.04 s"
+      }
+    ],
+    "src/i18n/locales/en-US/earthlyBranch.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "66.06 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "15 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "12 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "38 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "180.69 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.06 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "10.04 s"
+      }
+    ],
+    "src/astro/FunctionalAstrolabe.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "67.64 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "256 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "62 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "15 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "341 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "2213.72 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "22.59 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "50005.86 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.74 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2778.1 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/heavenlyStem.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "68.24 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "13 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "32 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.05 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8.04 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/heavenlyStem.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "68.24 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "13 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "32 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.05 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8.04 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/heavenlyStem.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "68.24 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "13 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "32 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.05 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8.04 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/heavenlyStem.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "68.24 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "13 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "32 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.05 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8.04 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/heavenlyStem.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "68.24 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "13 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "32 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.05 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8.04 s"
+      }
+    ],
+    "src/i18n/locales/en-US/heavenlyStem.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "68.24 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "13 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "32 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "144.75 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.05 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "8.04 s"
+      }
+    ],
+    "src/astro/analyzer.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "69.17 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "155 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "121 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "29 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "433 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "2680.19 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "32 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "85766.21 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.89 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "4764.79 s"
+      }
+    ],
+    "src/star/FunctionalStar.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "69.44 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "126 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "49 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "21 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "267 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "1543.62 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "21.51 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "33206.27 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.52 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1844.79 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/brightness.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "72.48 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "23 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.03 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5.22 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/brightness.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "72.48 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "23 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.03 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5.22 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/brightness.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "72.48 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "23 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.03 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5.22 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/brightness.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "72.48 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "23 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.03 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5.22 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/brightness.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "72.48 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "23 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.03 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5.22 s"
+      }
+    ],
+    "src/i18n/locales/en-US/brightness.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "72.48 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "10 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "23 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "94.01 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.03 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "5.22 s"
+      }
+    ],
+    "src/stores/astrolabeStore.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "72.91 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "20 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "18 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "4 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "55 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "241.58 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "10.15 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "2452.94 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.08 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "136.27 s"
+      }
+    ],
+    "src/astro/FunctionalSurpalaces.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "74.06 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "72 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "24 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "10 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "114 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "559.39 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "14.14 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "7911.31 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.19 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "439.52 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/fiveElementsClass.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "76.47 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "8 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "17 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3.5 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/fiveElementsClass.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "76.47 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "8 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "17 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3.5 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/fiveElementsClass.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "76.47 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "8 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "17 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3.5 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/fiveElementsClass.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "76.47 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "8 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "17 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3.5 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/fiveElementsClass.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "76.47 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "8 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "17 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3.5 s"
+      }
+    ],
+    "src/i18n/locales/en-US/fiveElementsClass.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "76.47 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "8 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "17 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "62.91 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "3.5 s"
+      }
+    ],
+    "src/stores/drawerStore.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "77.39 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "15 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "13 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "4 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "34 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "136 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "9 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "1224 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.04 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "68 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/mutagen.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "79.11 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "4 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "14 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2.69 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/mutagen.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "79.11 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "4 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "14 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2.69 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/mutagen.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "79.11 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "4 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "14 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2.69 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/mutagen.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "79.11 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "4 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "14 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2.69 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/mutagen.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "79.11 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "4 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "14 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2.69 s"
+      }
+    ],
+    "src/i18n/locales/en-US/mutagen.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "79.11 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "7 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "4 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "14 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "48.43 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.02 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "2.69 s"
+      }
+    ],
+    "src/i18n/locales/zh-TW/gender.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "87.21 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "2 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "8 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.01 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1.25 s"
+      }
+    ],
+    "src/i18n/locales/zh-CN/gender.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "87.21 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "2 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "8 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.01 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1.25 s"
+      }
+    ],
+    "src/i18n/locales/vi-VN/gender.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "87.21 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "2 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "8 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.01 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1.25 s"
+      }
+    ],
+    "src/i18n/locales/ko-KR/gender.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "87.21 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "2 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "8 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.01 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1.25 s"
+      }
+    ],
+    "src/i18n/locales/ja-JP/gender.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "87.21 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "2 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "8 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.01 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1.25 s"
+      }
+    ],
+    "src/i18n/locales/en-US/gender.ts": [
+      {
+        "title": "Maintainability Index IM (%)",
+        "score": "87.21 %"
+      },
+      {
+        "title": "Number of lines in source code (physical SLOC)",
+        "score": "5 "
+      },
+      {
+        "title": "Number of lines that will be executed (logical SLOC)",
+        "score": "2 "
+      },
+      {
+        "title": "Cyclomatic Complexity",
+        "score": "1 "
+      },
+      {
+        "title": "Program Length (N)",
+        "score": "8 "
+      },
+      {
+        "title": "Program Volume (V)",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Difficulty Level (D)",
+        "score": "1 "
+      },
+      {
+        "title": "Implementation Effort (E) or Understanding",
+        "score": "22.46 bit"
+      },
+      {
+        "title": "Number of estimated bugs in a module or function (B)",
+        "score": "0.01 "
+      },
+      {
+        "title": "Time (T) to implement or understand the program",
+        "score": "1.25 s"
+      }
+    ]
+  }
+};
+
+        // Fill summary data
+        if (codeComplexityReport?.summary?.average) {
+            document.getElementById("avg-psloc").textContent = codeComplexityReport.summary.average.psloc;
+            document.getElementById("avg-psloc").textContent += ' physical statements';
+            
+            document.getElementById("avg-lsloc").textContent = codeComplexityReport.summary.average.lsloc;
+            document.getElementById("avg-lsloc").textContent += ' logical statements';
+            
+            document.getElementById("avg-maintainability").textContent = codeComplexityReport.summary.average.maintainability;
+            document.getElementById("avg-maintainability").textContent += ' %';
+        }
+
+        // Populate File Reports
+        if (codeComplexityReport?.reports && Object.keys(codeComplexityReport.reports).length !== 0) {
+            const reportsDiv = document.getElementById("reports");
+
+            Object.entries(codeComplexityReport.reports).forEach(([file, metrics]) => {
+                const fileDiv = document.createElement("div");
+                fileDiv.classList.add("section");
+
+                // Create file header with toggle button
+                const fileHeader = document.createElement("h3");
+                fileHeader.textContent = file;
+                const toggleSpan = document.createElement("span");
+                toggleSpan.className = "toggle";
+                toggleSpan.textContent = "▶ ";
+                fileHeader.prepend(toggleSpan);
+                fileHeader.onclick = function () {
+                    const details = fileDiv.querySelector(".details");
+                    details.classList.toggle("hidden");
+                    this.querySelector(".toggle").textContent = details.classList.contains("hidden") ? "▶" : "▼";
+                };
+                fileDiv.appendChild(fileHeader);
+
+                // Create details section with metrics table
+                const detailsDiv = document.createElement("div");
+                detailsDiv.classList.add("details", "hidden");
+
+                const table = document.createElement("table");
+                table.innerHTML = `<tr><th>Metric</th><th>Score</th></tr>`;
+                metrics.forEach(metric => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td>${metric.title}</td><td>${metric.score}</td>`;
+                    table.appendChild(row);
+                });
+                detailsDiv.appendChild(table);
+                fileDiv.appendChild(detailsDiv);
+
+                reportsDiv.appendChild(fileDiv);
+            });
+
+            // Implement Search Feature
+            document.getElementById("search").addEventListener("input", function () {
+                const searchText = this.value.toLowerCase();
+                document.querySelectorAll(".section h3").forEach(h3 => {
+                    h3.parentElement.style.display = h3.textContent.toLowerCase().includes(searchText) ? "block" : "none";
+                });
+            });
+        }
+    </script>
+</body>
+</html>

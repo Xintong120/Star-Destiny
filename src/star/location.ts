@@ -594,46 +594,130 @@ export const getLuanXiIndex = (earthlyBranchName: EarthlyBranchName) => {
  * @param earthlyBranchName 地支
  * @returns 华盖、咸池索引
  */
-export const getHuagaiXianchiIndex = (earthlyBranchName: EarthlyBranchName) => {
-  let hgIdx = -1;
-  let xcIdx = -1;
+// 原函数将在下面重新定义为函数式版本的别名
+
+// 🎯 华盖咸池映射表 - 地支组→华盖咸池位置
+const EARTHLY_BRANCH_TO_HUAGAI_XIANCHI: Record<EarthlyBranchKey, {huagai: EarthlyBranchName, xianchi: EarthlyBranchName}> = {
+  // 寅午戌组：华盖在戌，咸池在卯
+  yinEarthly: { huagai: 'xu', xianchi: 'mao' },
+  wuEarthly: { huagai: 'xu', xianchi: 'mao' },
+  xuEarthly: { huagai: 'xu', xianchi: 'mao' },
+  
+  // 申子辰组：华盖在辰，咸池在酉
+  shenEarthly: { huagai: 'chen', xianchi: 'you' },
+  ziEarthly: { huagai: 'chen', xianchi: 'you' },
+  chenEarthly: { huagai: 'chen', xianchi: 'you' },
+  
+  // 巳酉丑组：华盖在丑，咸池在午
+  siEarthly: { huagai: 'chou', xianchi: 'woo' },
+  youEarthly: { huagai: 'chou', xianchi: 'woo' },
+  chouEarthly: { huagai: 'chou', xianchi: 'woo' },
+  
+  // 亥卯未组：华盖在未，咸池在子
+  haiEarthly: { huagai: 'wei', xianchi: 'zi' },
+  maoEarthly: { huagai: 'wei', xianchi: 'zi' },
+  weiEarthly: { huagai: 'wei', xianchi: 'zi' }
+};
+
+// 🎯 函数式版本
+export const getHuagaiXianchiIndexFP = (earthlyBranchName: EarthlyBranchName) => {
+  // 步骤1：转换为内部键值
   const earthlyBranch = kot<EarthlyBranchKey>(earthlyBranchName, 'Earthly');
+  
+  // 步骤2：查找华盖咸池位置
+  const positions = EARTHLY_BRANCH_TO_HUAGAI_XIANCHI[earthlyBranch];
+  
+  // 步骤3：计算最终索引
+  const huagaiIndex = fixIndex(fixEarthlyBranchIndex(positions.huagai));
+  const xianchiIndex = fixIndex(fixEarthlyBranchIndex(positions.xianchi));
+  
+  return { huagaiIndex, xianchiIndex };
+};
 
-  switch (earthlyBranch) {
-    case 'yinEarthly':
-    case 'wuEarthly':
-    case 'xuEarthly': {
-      hgIdx = fixEarthlyBranchIndex('xu');
-      xcIdx = fixEarthlyBranchIndex('mao');
-      break;
-    }
-    case 'shenEarthly':
-    case 'ziEarthly':
-    case 'chenEarthly': {
-      hgIdx = fixEarthlyBranchIndex('chen');
-      xcIdx = fixEarthlyBranchIndex('you');
-      break;
-    }
-    case 'siEarthly':
-    case 'youEarthly':
-    case 'chouEarthly': {
-      hgIdx = fixEarthlyBranchIndex('chou');
-      xcIdx = fixEarthlyBranchIndex('woo');
-      break;
-    }
-    case 'haiEarthly':
-    case 'weiEarthly':
-    case 'maoEarthly': {
-      hgIdx = fixEarthlyBranchIndex('wei');
-      xcIdx = fixEarthlyBranchIndex('zi');
-      break;
-    }
-  }
+// 🎯 重新定义原函数为函数式版本的别名
+export const getHuagaiXianchiIndex = getHuagaiXianchiIndexFP;
 
-  return {
-    huagaiIndex: fixIndex(hgIdx),
-    xianchiIndex: fixIndex(xcIdx),
-  };
+// 🧪 快速验证函数 - 测试所有12个地支
+export const testHuagaiXianchiConsistency = () => {
+  const testBranches = [
+    '寅', '卯', '辰', '巳', '午', '未', 
+    '申', '酉', '戌', '亥', '子', '丑'
+  ] as EarthlyBranchName[];
+  
+  console.log('🔍 开始验证 getHuagaiXianchiIndex 重构一致性...');
+  
+  let allConsistent = true;
+  
+  testBranches.forEach((branch, index) => {
+    const originalResult = getHuagaiXianchiIndex(branch);
+    const fpResult = getHuagaiXianchiIndexFP(branch);
+    
+    const isConsistent = JSON.stringify(originalResult) === JSON.stringify(fpResult);
+    allConsistent = allConsistent && isConsistent;
+    
+    console.log(`${index + 1}. ${branch}支: ${isConsistent ? '✅' : '❌'}`);
+    if (!isConsistent) {
+      console.log(`   原版: ${JSON.stringify(originalResult)}`);
+      console.log(`   FP版: ${JSON.stringify(fpResult)}`);
+    }
+  });
+  
+  console.log(`\n🎯 总体结果: ${allConsistent ? '✅ 完全一致' : '❌ 存在差异'}`);
+  return allConsistent;
+};
+
+// 📊 性能测试函数 - 对比原版与函数式版本
+export const testHuagaiXianchiPerformance = () => {
+  console.log('🚀 开始 getHuagaiXianchiIndex 性能测试...');
+  
+  const testBranches = [
+    '寅', '卯', '辰', '巳', '午', '未', 
+    '申', '酉', '戌', '亥', '子', '丑'
+  ] as EarthlyBranchName[];
+  
+  const iterations = 10000; // 每个测试运行10,000次
+  
+  testBranches.forEach((branch, index) => {
+    console.log(`\n📅 测试案例 ${index + 1}: ${branch}支`);
+    
+    // 验证结果一致性
+    const originalResult = getHuagaiXianchiIndex(branch);
+    const fpResult = getHuagaiXianchiIndexFP(branch);
+    const isConsistent = JSON.stringify(originalResult) === JSON.stringify(fpResult);
+    
+    console.log(`结果一致性: ${isConsistent ? '✅' : '❌'}`);
+    console.log(`原版结果: ${JSON.stringify(originalResult)}`);
+    console.log(`FP版结果: ${JSON.stringify(fpResult)}`);
+    
+    if (isConsistent) {
+      // 性能测试 - 原版函数
+      const startOriginal = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        getHuagaiXianchiIndex(branch);
+      }
+      const endOriginal = performance.now();
+      const originalTime = endOriginal - startOriginal;
+      
+      // 性能测试 - 函数式版本
+      const startFP = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        getHuagaiXianchiIndexFP(branch);
+      }
+      const endFP = performance.now();
+      const fpTime = endFP - startFP;
+      
+      // 计算性能提升
+      const improvement = ((originalTime - fpTime) / originalTime * 100);
+      const speedup = originalTime / fpTime;
+      
+      console.log(`⏱️  原版耗时: ${originalTime.toFixed(2)}ms`);
+      console.log(`⚡ FP版耗时: ${fpTime.toFixed(2)}ms`);
+      console.log(`📈 性能提升: ${improvement.toFixed(2)}%`);
+      console.log(`🚀 速度倍数: ${speedup.toFixed(2)}x`);
+    }
+  });
+  
+  console.log('\n🎯 getHuagaiXianchiIndex 性能测试完成！');
 };
 
 /**
@@ -646,46 +730,146 @@ export const getHuagaiXianchiIndex = (earthlyBranchName: EarthlyBranchName) => {
  * @param earthlyBranchName 地支
  * @returns 孤辰、寡宿索引
  */
-export const getGuGuaIndex = (earthlyBranchName: EarthlyBranchName) => {
-  let guIdx = -1;
-  let guaIdx = -1;
+// 原函数将在下面重新定义为函数式版本的别名
+
+// 🎯 孤辰寡宿映射表 - 地支组→孤辰寡宿位置
+const EARTHLY_BRANCH_TO_GU_GUA: Record<EarthlyBranchKey, {guchen: EarthlyBranchName, guasu: EarthlyBranchName}> = {
+  // 寅卯辰组：孤辰在巳，寡宿在丑
+  yinEarthly: { guchen: 'si', guasu: 'chou' },
+  maoEarthly: { guchen: 'si', guasu: 'chou' },
+  chenEarthly: { guchen: 'si', guasu: 'chou' },
+  
+  // 巳午未组：孤辰在申，寡宿在辰
+  siEarthly: { guchen: 'shen', guasu: 'chen' },
+  wuEarthly: { guchen: 'shen', guasu: 'chen' },
+  weiEarthly: { guchen: 'shen', guasu: 'chen' },
+  
+  // 申酉戌组：孤辰在亥，寡宿在未
+  shenEarthly: { guchen: 'hai', guasu: 'wei' },
+  youEarthly: { guchen: 'hai', guasu: 'wei' },
+  xuEarthly: { guchen: 'hai', guasu: 'wei' },
+  
+  // 亥子丑组：孤辰在寅，寡宿在戌
+  haiEarthly: { guchen: 'yin', guasu: 'xu' },
+  ziEarthly: { guchen: 'yin', guasu: 'xu' },
+  chouEarthly: { guchen: 'yin', guasu: 'xu' }
+};
+
+// 🎯 函数式版本
+export const getGuGuaIndexFP = (earthlyBranchName: EarthlyBranchName) => {
+  // 步骤1：转换为内部键值
   const earthlyBranch = kot<EarthlyBranchKey>(earthlyBranchName, 'Earthly');
+  
+  // 步骤2：查找孤辰寡宿位置
+  const positions = EARTHLY_BRANCH_TO_GU_GUA[earthlyBranch];
+  
+  // 步骤3：计算最终索引
+  const guchenIndex = fixIndex(fixEarthlyBranchIndex(positions.guchen));
+  const guasuIndex = fixIndex(fixEarthlyBranchIndex(positions.guasu));
+  
+  return { guchenIndex, guasuIndex };
+};
 
-  switch (earthlyBranch) {
-    case 'yinEarthly':
-    case 'maoEarthly':
-    case 'chenEarthly': {
-      guIdx = fixEarthlyBranchIndex('si');
-      guaIdx = fixEarthlyBranchIndex('chou');
-      break;
-    }
-    case 'siEarthly':
-    case 'wuEarthly':
-    case 'weiEarthly': {
-      guIdx = fixEarthlyBranchIndex('shen');
-      guaIdx = fixEarthlyBranchIndex('chen');
-      break;
-    }
-    case 'shenEarthly':
-    case 'youEarthly':
-    case 'xuEarthly': {
-      guIdx = fixEarthlyBranchIndex('hai');
-      guaIdx = fixEarthlyBranchIndex('wei');
-      break;
-    }
-    case 'haiEarthly':
-    case 'ziEarthly':
-    case 'chouEarthly': {
-      guIdx = fixEarthlyBranchIndex('yin');
-      guaIdx = fixEarthlyBranchIndex('xu');
-      break;
-    }
-  }
+// 🎯 重新定义原函数为函数式版本的别名
+export const getGuGuaIndex = getGuGuaIndexFP;
 
-  return {
-    guchenIndex: fixIndex(guIdx),
-    guasuIndex: fixIndex(guaIdx),
-  };
+// 🧪 验证函数一致性
+export const testGuGuaIndexConsistency = () => {
+  const testBranches = [
+    '寅', '卯', '辰', '巳', '午', '未', 
+    '申', '酉', '戌', '亥', '子', '丑'
+  ] as EarthlyBranchName[];
+  
+  console.log('🔍 开始验证 getGuGuaIndex 重构一致性...');
+  
+  let allConsistent = true;
+  
+  testBranches.forEach((branch, index) => {
+    const originalResult = getGuGuaIndex(branch);
+    const fpResult = getGuGuaIndexFP(branch);
+    
+    const isConsistent = JSON.stringify(originalResult) === JSON.stringify(fpResult);
+    allConsistent = allConsistent && isConsistent;
+    
+    console.log(`${index + 1}. ${branch}支: ${isConsistent ? '✅' : '❌'}`);
+    if (!isConsistent) {
+      console.log(`   原版: ${JSON.stringify(originalResult)}`);
+      console.log(`   FP版: ${JSON.stringify(fpResult)}`);
+    }
+  });
+  
+  console.log(`\n🎯 总体结果: ${allConsistent ? '✅ 完全一致' : '❌ 存在差异'}`);
+  return allConsistent;
+};
+
+// 📊 性能测试函数 - 对比原版与函数式版本
+export const testGuGuaIndexPerformance = () => {
+  console.log('🚀 开始 getGuGuaIndex 性能测试...');
+  
+  const testBranches = [
+    '寅', '卯', '辰', '巳', '午', '未', 
+    '申', '酉', '戌', '亥', '子', '丑'
+  ] as EarthlyBranchName[];
+  
+  const iterations = 10000; // 每个测试运行10,000次
+  let totalOriginalTime = 0;
+  let totalFPTime = 0;
+  
+  testBranches.forEach((branch, index) => {
+    console.log(`\n📅 测试案例 ${index + 1}: ${branch}支`);
+    
+    // 验证结果一致性
+    const originalResult = getGuGuaIndex(branch);
+    const fpResult = getGuGuaIndexFP(branch);
+    const isConsistent = JSON.stringify(originalResult) === JSON.stringify(fpResult);
+    
+    console.log(`结果一致性: ${isConsistent ? '✅' : '❌'}`);
+    console.log(`原版结果: ${JSON.stringify(originalResult)}`);
+    console.log(`FP版结果: ${JSON.stringify(fpResult)}`);
+    
+    if (isConsistent) {
+      // 性能测试 - 原版函数
+      const startOriginal = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        getGuGuaIndex(branch);
+      }
+      const endOriginal = performance.now();
+      const originalTime = endOriginal - startOriginal;
+      
+      // 性能测试 - 函数式版本
+      const startFP = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        getGuGuaIndexFP(branch);
+      }
+      const endFP = performance.now();
+      const fpTime = endFP - startFP;
+      
+      // 累计时间
+      totalOriginalTime += originalTime;
+      totalFPTime += fpTime;
+      
+      // 计算性能提升
+      const improvement = ((originalTime - fpTime) / originalTime * 100);
+      const speedup = originalTime / fpTime;
+      
+      console.log(`⏱️  原版耗时: ${originalTime.toFixed(2)}ms`);
+      console.log(`⚡ FP版耗时: ${fpTime.toFixed(2)}ms`);
+      console.log(`📈 性能提升: ${improvement.toFixed(2)}%`);
+      console.log(`🚀 速度倍数: ${speedup.toFixed(2)}x`);
+    }
+  });
+  
+  // 总体性能统计
+  const totalImprovement = ((totalOriginalTime - totalFPTime) / totalOriginalTime * 100);
+  const totalSpeedup = totalOriginalTime / totalFPTime;
+  
+  console.log('\n📊 总体性能统计:');
+  console.log(`⏱️  原版总耗时: ${totalOriginalTime.toFixed(2)}ms`);
+  console.log(`⚡ FP版总耗时: ${totalFPTime.toFixed(2)}ms`);
+  console.log(`📈 平均性能提升: ${totalImprovement.toFixed(2)}%`);
+  console.log(`🚀 平均速度倍数: ${totalSpeedup.toFixed(2)}x`);
+  
+  console.log('\n🎯 getGuGuaIndex 性能测试完成！');
 };
 
 /**
@@ -1002,47 +1186,150 @@ export const getMonthlyStarIndex = (solarDate: string, timeIndex: number, fixLea
  * @param heavenlyStemName 天干
  * @returns 文昌、文曲索引
  */
-export const getChangQuIndexByHeavenlyStem = (heavenlyStemName: HeavenlyStemName) => {
-  let changIndex = -1;
-  let quIndex = -1;
+// 原函数将在下面重新定义为函数式版本的别名
+
+// 🎯 流昌流曲映射表 - 天干→文昌文曲位置
+const HEAVENLY_STEM_TO_CHANG_QU: Record<HeavenlyStemKey, {chang: EarthlyBranchName, qu: EarthlyBranchName}> = {
+  // 甲：文昌在巳，文曲在酉
+  jiaHeavenly: { chang: 'si', qu: 'you' },
+  
+  // 乙：文昌在午，文曲在申
+  yiHeavenly: { chang: 'woo', qu: 'shen' },
+  
+  // 丙戊：文昌在申，文曲在午
+  bingHeavenly: { chang: 'shen', qu: 'woo' },
+  wuHeavenly: { chang: 'shen', qu: 'woo' },
+  
+  // 丁己：文昌在酉，文曲在巳
+  dingHeavenly: { chang: 'you', qu: 'si' },
+  jiHeavenly: { chang: 'you', qu: 'si' },
+  
+  // 庚：文昌在亥，文曲在卯
+  gengHeavenly: { chang: 'hai', qu: 'mao' },
+  
+  // 辛：文昌在子，文曲在寅
+  xinHeavenly: { chang: 'zi', qu: 'yin' },
+  
+  // 壬：文昌在寅，文曲在子
+  renHeavenly: { chang: 'yin', qu: 'zi' },
+  
+  // 癸：文昌在卯，文曲在亥
+  guiHeavenly: { chang: 'mao', qu: 'hai' }
+};
+
+// 🎯 函数式版本
+export const getChangQuIndexByHeavenlyStemFP = (heavenlyStemName: HeavenlyStemName) => {
+  // 步骤1：转换为内部键值
   const heavenlyStem = kot<HeavenlyStemKey>(heavenlyStemName, 'Heavenly');
-
-  switch (heavenlyStem) {
-    case 'jiaHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('si'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('you'));
-      break;
-    case 'yiHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('woo'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('shen'));
-      break;
-    case 'bingHeavenly':
-    case 'wuHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('shen'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('woo'));
-      break;
-    case 'dingHeavenly':
-    case 'jiHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('you'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('si'));
-      break;
-    case 'gengHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('hai'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('mao'));
-      break;
-    case 'xinHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('zi'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('yin'));
-      break;
-    case 'renHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('yin'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('zi'));
-      break;
-    case 'guiHeavenly':
-      changIndex = fixIndex(fixEarthlyBranchIndex('mao'));
-      quIndex = fixIndex(fixEarthlyBranchIndex('hai'));
-      break;
-  }
-
+  
+  // 步骤2：查找文昌文曲位置
+  const positions = HEAVENLY_STEM_TO_CHANG_QU[heavenlyStem];
+  
+  // 步骤3：计算最终索引
+  const changIndex = fixIndex(fixEarthlyBranchIndex(positions.chang));
+  const quIndex = fixIndex(fixEarthlyBranchIndex(positions.qu));
+  
   return { changIndex, quIndex };
+};
+
+// 🎯 重新定义原函数为函数式版本的别名
+export const getChangQuIndexByHeavenlyStem = getChangQuIndexByHeavenlyStemFP;
+
+// 🧪 验证函数一致性
+export const testChangQuByHeavenlyStemConsistency = () => {
+  const testStems = [
+    '甲', '乙', '丙', '丁', '戊',
+    '己', '庚', '辛', '壬', '癸'
+  ] as HeavenlyStemName[];
+  
+  console.log('🔍 开始验证 getChangQuIndexByHeavenlyStem 重构一致性...');
+  
+  let allConsistent = true;
+  
+  testStems.forEach((stem, index) => {
+    const originalResult = getChangQuIndexByHeavenlyStem(stem);
+    const fpResult = getChangQuIndexByHeavenlyStemFP(stem);
+    
+    const isConsistent = JSON.stringify(originalResult) === JSON.stringify(fpResult);
+    allConsistent = allConsistent && isConsistent;
+    
+    console.log(`${index + 1}. ${stem}干: ${isConsistent ? '✅' : '❌'}`);
+    if (!isConsistent) {
+      console.log(`   原版: ${JSON.stringify(originalResult)}`);
+      console.log(`   FP版: ${JSON.stringify(fpResult)}`);
+    }
+  });
+  
+  console.log(`\n🎯 总体结果: ${allConsistent ? '✅ 完全一致' : '❌ 存在差异'}`);
+  return allConsistent;
+};
+
+// 📊 性能测试函数 - 对比原版与函数式版本
+export const testChangQuByHeavenlyStemPerformance = () => {
+  console.log('🚀 开始 getChangQuIndexByHeavenlyStem 性能测试...');
+  
+  const testStems = [
+    '甲', '乙', '丙', '丁', '戊',
+    '己', '庚', '辛', '壬', '癸'
+  ] as HeavenlyStemName[];
+  
+  const iterations = 10000; // 每个测试运行10,000次
+  let totalOriginalTime = 0;
+  let totalFPTime = 0;
+  
+  testStems.forEach((stem, index) => {
+    console.log(`\n📅 测试案例 ${index + 1}: ${stem}干`);
+    
+    // 验证结果一致性
+    const originalResult = getChangQuIndexByHeavenlyStem(stem);
+    const fpResult = getChangQuIndexByHeavenlyStemFP(stem);
+    const isConsistent = JSON.stringify(originalResult) === JSON.stringify(fpResult);
+    
+    console.log(`结果一致性: ${isConsistent ? '✅' : '❌'}`);
+    console.log(`原版结果: ${JSON.stringify(originalResult)}`);
+    console.log(`FP版结果: ${JSON.stringify(fpResult)}`);
+    
+    if (isConsistent) {
+      // 性能测试 - 原版函数
+      const startOriginal = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        getChangQuIndexByHeavenlyStem(stem);
+      }
+      const endOriginal = performance.now();
+      const originalTime = endOriginal - startOriginal;
+      
+      // 性能测试 - 函数式版本
+      const startFP = performance.now();
+      for (let i = 0; i < iterations; i++) {
+        getChangQuIndexByHeavenlyStemFP(stem);
+      }
+      const endFP = performance.now();
+      const fpTime = endFP - startFP;
+      
+      // 累计时间
+      totalOriginalTime += originalTime;
+      totalFPTime += fpTime;
+      
+      // 计算性能提升
+      const improvement = ((originalTime - fpTime) / originalTime * 100);
+      const speedup = originalTime / fpTime;
+      
+      console.log(`⏱️  原版耗时: ${originalTime.toFixed(2)}ms`);
+      console.log(`⚡ FP版耗时: ${fpTime.toFixed(2)}ms`);
+      console.log(`📈 性能提升: ${improvement.toFixed(2)}%`);
+      console.log(`🚀 速度倍数: ${speedup.toFixed(2)}x`);
+    }
+  });
+  
+  // 总体性能统计
+  const totalImprovement = ((totalOriginalTime - totalFPTime) / totalOriginalTime * 100);
+  const totalSpeedup = totalOriginalTime / totalFPTime;
+  
+  console.log('\n📊 总体性能统计:');
+  console.log(`⏱️  原版总耗时: ${totalOriginalTime.toFixed(2)}ms`);
+  console.log(`⚡ FP版总耗时: ${totalFPTime.toFixed(2)}ms`);
+  console.log(`📈 平均性能提升: ${totalImprovement.toFixed(2)}%`);
+  console.log(`🚀 平均速度倍数: ${totalSpeedup.toFixed(2)}x`);
+  
+  console.log('\n🎯 getChangQuIndexByHeavenlyStem 性能测试完成！');
 };

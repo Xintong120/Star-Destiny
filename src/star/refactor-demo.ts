@@ -3,7 +3,10 @@ import {
   getZuoYouIndex,
   getChangQuIndex,
   getKongJieIndex,
-  getStartIndex, getStartIndexFP, testStartIndexPerformance
+  getStartIndex, getStartIndexFP,
+  getHuagaiXianchiIndex, getHuagaiXianchiIndexFP, testHuagaiXianchiConsistency, testHuagaiXianchiPerformance,
+  getChangQuIndexByHeavenlyStem, getChangQuIndexByHeavenlyStemFP, testChangQuByHeavenlyStemConsistency, testChangQuByHeavenlyStemPerformance,
+  getGuGuaIndex, getGuGuaIndexFP, testGuGuaIndexConsistency, testGuGuaIndexPerformance
 } from './location';
 
 /**
@@ -94,7 +97,10 @@ const runRefactorDemo = () => {
     // 步骤2: 性能测试（可选）
     console.log('\n📊 性能测试:');
     console.log('-'.repeat(30));
-    console.log('💡 提示: 运行 testStartIndexPerformance() 来测试紫微星算法性能');
+    console.log('💡 提示:');
+    console.log('   🌟 华盖咸池: testHuagaiXianchiConsistency(), testHuagaiXianchiPerformance()');
+    console.log('   ⭐ 流昌流曲: testChangQuByHeavenlyStemConsistency(), testChangQuByHeavenlyStemPerformance()');
+    console.log('   🏮 孤辰寡宿: testGuGuaIndexConsistency(), testGuGuaIndexPerformance()');
   }
   
   // 步骤3: 学习总结
@@ -118,12 +124,38 @@ if (typeof window !== 'undefined') {
   // 紫微星算法函数
   (window as any).getStartIndex = getStartIndex;
   (window as any).getStartIndexFP = getStartIndexFP;
-  (window as any).testStartIndexPerformance = testStartIndexPerformance;
+  
+  // 华盖咸池算法函数
+  (window as any).getHuagaiXianchiIndex = getHuagaiXianchiIndex;
+  (window as any).getHuagaiXianchiIndexFP = getHuagaiXianchiIndexFP;
+  (window as any).testHuagaiXianchiConsistency = testHuagaiXianchiConsistency;
+  (window as any).testHuagaiXianchiPerformance = testHuagaiXianchiPerformance;
+  
+  // 流昌流曲算法函数
+  (window as any).getChangQuIndexByHeavenlyStem = getChangQuIndexByHeavenlyStem;
+  (window as any).getChangQuIndexByHeavenlyStemFP = getChangQuIndexByHeavenlyStemFP;
+  (window as any).testChangQuByHeavenlyStemConsistency = testChangQuByHeavenlyStemConsistency;
+  (window as any).testChangQuByHeavenlyStemPerformance = testChangQuByHeavenlyStemPerformance;
+  
+  // 孤辰寡宿算法函数
+  (window as any).getGuGuaIndex = getGuGuaIndex;
+  (window as any).getGuGuaIndexFP = getGuGuaIndexFP;
+  (window as any).testGuGuaIndexConsistency = testGuGuaIndexConsistency;
+  (window as any).testGuGuaIndexPerformance = testGuGuaIndexPerformance;
   
   console.log('🎯 函数式编程演示已加载! 可用的函数:');
   console.log('📚 演示函数: runRefactorDemo(), verifyRefactor()');
   console.log('🌙 基础函数: getZuoYouIndex(), getChangQuIndex(), getKongJieIndex()');
-  console.log('🔥 紫微星算法: getStartIndex(), getStartIndexFP(), testStartIndexPerformance()');
+  console.log('🔥 紫微星算法: getStartIndex(), getStartIndexFP()');
+  console.log('🌟 华盖咸池算法:');
+  console.log('   - getHuagaiXianchiIndex(), getHuagaiXianchiIndexFP()');
+  console.log('   - testHuagaiXianchiConsistency(), testHuagaiXianchiPerformance()');
+  console.log('⭐ 流昌流曲算法:');
+  console.log('   - getChangQuIndexByHeavenlyStem(), getChangQuIndexByHeavenlyStemFP()');
+  console.log('   - testChangQuByHeavenlyStemConsistency(), testChangQuByHeavenlyStemPerformance()');
+  console.log('🏮 孤辰寡宿算法:');
+  console.log('   - getGuGuaIndex(), getGuGuaIndexFP()');
+  console.log('   - testGuGuaIndexConsistency(), testGuGuaIndexPerformance()');
 }
 
 // 如果在 Node.js 环境中直接运行这个文件，执行演示
